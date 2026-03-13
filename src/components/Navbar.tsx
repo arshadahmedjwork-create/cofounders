@@ -40,68 +40,79 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      <motion.nav
+        initial={{ y: -80 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
             ? "py-2 glass-card shadow-lg"
             : "py-4 bg-transparent"
         }`}
       >
         <div className="container mx-auto flex items-center justify-between px-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-primary inline-block" />
+          <Link to="/" className="flex items-center gap-2 group">
+            <motion.span
+              className="w-3 h-3 rounded-full bg-primary inline-block"
+              whileHover={{ scale: 1.4, rotate: 90 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            />
             <span className="font-accent text-xl font-semibold text-foreground">
               CoFounder <span className="text-primary">✦</span> Matrimony
             </span>
           </Link>
 
-          {/* Desktop links */}
           <div className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
+            {navLinks.map((link, i) => (
+              <motion.a
                 key={link.label}
                 href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.05 }}
+                className={`text-sm font-medium relative group py-1 ${
                   location.pathname === link.href
                     ? "text-primary"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {link.label}
-              </a>
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full" />
+              </motion.a>
             ))}
           </div>
 
-          {/* Right side */}
           <div className="hidden lg:flex items-center gap-3">
-            <button
+            <motion.button
               onClick={toggleTheme}
+              whileTap={{ rotate: 180, scale: 0.9 }}
               className="p-2 rounded-full hover:bg-muted transition-colors"
               aria-label="Toggle theme"
             >
               {dark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
+            </motion.button>
             <button className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Login
             </button>
-            <Link
-              to="/browse"
-              className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
-            >
-              Get Started →
-            </Link>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                to="/browse"
+                className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-primary/20 inline-block"
+              >
+                Get Started →
+              </Link>
+            </motion.div>
           </div>
 
-          {/* Mobile hamburger */}
           <div className="flex lg:hidden items-center gap-2">
-            <button
+            <motion.button
               onClick={toggleTheme}
+              whileTap={{ rotate: 180, scale: 0.9 }}
               className="p-2 rounded-full hover:bg-muted transition-colors"
               aria-label="Toggle theme"
             >
               {dark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
+            </motion.button>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="p-2"
@@ -111,24 +122,24 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
-      {/* Mobile overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-md flex flex-col items-center justify-center gap-6 lg:hidden"
+            initial={{ opacity: 0, clipPath: "circle(0% at top right)" }}
+            animate={{ opacity: 1, clipPath: "circle(150% at top right)" }}
+            exit={{ opacity: 0, clipPath: "circle(0% at top right)" }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="fixed inset-0 z-40 bg-background/98 backdrop-blur-xl flex flex-col items-center justify-center gap-6 lg:hidden"
           >
             {navLinks.map((link, i) => (
               <motion.a
                 key={link.label}
                 href={link.href}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.15 + i * 0.08, type: "spring" }}
                 onClick={() => setMobileOpen(false)}
                 className="text-2xl font-display font-semibold text-foreground hover:text-primary transition-colors"
               >
@@ -138,7 +149,7 @@ export default function Navbar() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.5 }}
               className="flex flex-col gap-3 mt-4"
             >
               <button className="text-lg font-medium text-foreground">Login</button>

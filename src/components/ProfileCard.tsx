@@ -5,8 +5,8 @@ import type { Profile } from "@/data/profiles";
 import { toast } from "sonner";
 
 function getMatchColor(percent: number) {
-  if (percent >= 90) return "text-green-600 border-green-500 bg-green-50 dark:bg-green-950";
-  if (percent >= 75) return "text-orange border-orange bg-orange/10";
+  if (percent >= 90) return "text-green-600 border-green-500 bg-green-50 dark:bg-green-950 dark:text-green-400";
+  if (percent >= 75) return "text-primary border-primary bg-primary/10";
   if (percent >= 60) return "text-teal border-teal bg-teal/10";
   return "text-muted-foreground border-muted bg-muted";
 }
@@ -25,26 +25,35 @@ export default function ProfileCard({ profile, index = 0 }: { profile: Profile; 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.08, duration: 0.4 }}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className="glass-card rounded-xl p-5 relative group cursor-pointer transition-shadow hover:shadow-xl"
+      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay: index * 0.08, duration: 0.5, type: "spring", stiffness: 100 }}
+      whileHover={{ y: -10, transition: { duration: 0.25 } }}
+      className="glass-card rounded-2xl p-5 relative group cursor-pointer"
     >
-      {/* Match badge */}
-      <div className={`absolute top-4 right-4 w-12 h-12 rounded-full border-2 flex items-center justify-center text-xs font-bold ${getMatchColor(profile.matchPercent)}`}>
-        {profile.matchPercent}%
-      </div>
+      {/* Shimmer on hover */}
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer pointer-events-none" />
 
-      {/* Avatar + info */}
+      {/* Match badge */}
+      <motion.div
+        initial={{ scale: 0 }}
+        whileInView={{ scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.3 + index * 0.08, type: "spring", stiffness: 200 }}
+        className={`absolute top-4 right-4 w-12 h-12 rounded-full border-2 flex items-center justify-center text-xs font-bold ${getMatchColor(profile.matchPercent)}`}
+      >
+        {profile.matchPercent}%
+      </motion.div>
+
       <div className="flex items-center gap-3 mb-3">
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-primary-foreground shrink-0"
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-primary-foreground shrink-0 shadow-lg"
           style={{ backgroundColor: profile.avatarColor }}
         >
           {profile.name.split(" ").map((n) => n[0]).join("")}
-        </div>
+        </motion.div>
         <div>
           <h3 className="font-semibold text-foreground text-sm">{profile.name}</h3>
           <p className="text-xs text-muted-foreground">{profile.role}</p>
@@ -54,7 +63,6 @@ export default function ProfileCard({ profile, index = 0 }: { profile: Profile; 
         </div>
       </div>
 
-      {/* Tags */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
           {profile.domain}
@@ -69,27 +77,28 @@ export default function ProfileCard({ profile, index = 0 }: { profile: Profile; 
         ))}
       </div>
 
-      {/* Bio */}
       <p className="text-xs text-foreground/80 leading-relaxed mb-2 line-clamp-3">
         {profile.bio}
       </p>
 
-      {/* Looking for */}
       <p className="text-[10px] text-primary font-medium mb-4">
         🔍 Looking for: {profile.lookingFor}
       </p>
 
-      {/* Actions */}
       <div className="flex items-center gap-2">
-        <button
+        <motion.button
           onClick={handleConnect}
-          className="flex-1 bg-primary text-primary-foreground text-xs font-semibold py-2 px-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          className="flex-1 bg-primary text-primary-foreground text-xs font-semibold py-2.5 px-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-1 shadow-md shadow-primary/20"
         >
           Connect <ArrowRight size={12} />
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           onClick={handleSave}
-          className={`p-2 rounded-lg border transition-all ${
+          whileTap={{ scale: 1.3 }}
+          transition={{ type: "spring", stiffness: 400 }}
+          className={`p-2.5 rounded-lg border transition-all ${
             saved
               ? "bg-primary/10 border-primary text-primary"
               : "border-border text-muted-foreground hover:border-primary hover:text-primary"
@@ -97,7 +106,7 @@ export default function ProfileCard({ profile, index = 0 }: { profile: Profile; 
           aria-label="Save profile"
         >
           <Heart size={14} fill={saved ? "currentColor" : "none"} />
-        </button>
+        </motion.button>
       </div>
     </motion.div>
   );
