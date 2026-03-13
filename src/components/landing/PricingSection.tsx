@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
 
 const tiers = [
@@ -70,17 +70,16 @@ export default function PricingSection() {
             Simple, <span className="font-accent italic text-primary">Transparent</span> Pricing
           </h2>
 
-          {/* Toggle */}
-          <div className="inline-flex items-center gap-3 bg-muted rounded-full p-1">
+          <div className="inline-flex items-center gap-1 bg-muted rounded-full p-1">
             <button
               onClick={() => setYearly(false)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${!yearly ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${!yearly ? "bg-card text-foreground shadow-md" : "text-muted-foreground"}`}
             >
               Monthly
             </button>
             <button
               onClick={() => setYearly(true)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${yearly ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${yearly ? "bg-card text-foreground shadow-md" : "text-muted-foreground"}`}
             >
               Yearly <span className="text-primary text-xs font-bold">-20%</span>
             </button>
@@ -91,53 +90,72 @@ export default function PricingSection() {
           {tiers.map((tier, i) => (
             <motion.div
               key={tier.name}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: i * 0.15, type: "spring" }}
+              whileHover={{ y: -6 }}
               className={`glass-card rounded-2xl p-7 relative ${
-                tier.popular ? "ring-2 ring-primary shadow-xl scale-[1.02]" : ""
+                tier.popular ? "ring-2 ring-primary shadow-xl shadow-primary/10 scale-[1.02]" : ""
               }`}
             >
               {tier.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
+                <motion.span
+                  initial={{ y: -10, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow-md"
+                >
                   Most Popular
-                </span>
+                </motion.span>
               )}
               <h3 className="text-xl font-display font-bold text-foreground mb-1">{tier.name}</h3>
               <p className="text-xs text-muted-foreground mb-4">{tier.desc}</p>
               <div className="mb-6">
-                <motion.span
-                  key={yearly ? "y" : "m"}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-4xl font-display font-bold text-foreground"
-                >
-                  ₹{yearly ? tier.yearlyPrice : tier.monthlyPrice}
-                </motion.span>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={yearly ? "y" : "m"}
+                    initial={{ opacity: 0, y: -15, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 15, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-4xl font-display font-bold text-foreground inline-block"
+                  >
+                    ₹{yearly ? tier.yearlyPrice : tier.monthlyPrice}
+                  </motion.span>
+                </AnimatePresence>
                 <span className="text-sm text-muted-foreground">/mo</span>
               </div>
               <ul className="space-y-3 mb-6">
-                {tier.features.map((f) => (
-                  <li key={f.text} className="flex items-center gap-2 text-sm">
+                {tier.features.map((f, fi) => (
+                  <motion.li
+                    key={f.text}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 + fi * 0.04 }}
+                    className="flex items-center gap-2 text-sm"
+                  >
                     {f.included ? (
                       <Check size={14} className="text-primary shrink-0" />
                     ) : (
                       <X size={14} className="text-muted-foreground/40 shrink-0" />
                     )}
                     <span className={f.included ? "text-foreground" : "text-muted-foreground/50"}>{f.text}</span>
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
-              <button
-                className={`w-full py-3 rounded-xl text-sm font-bold transition-opacity ${
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                className={`w-full py-3 rounded-xl text-sm font-bold transition-all ${
                   tier.popular
-                    ? "bg-primary text-primary-foreground hover:opacity-90"
+                    ? "bg-primary text-primary-foreground hover:opacity-90 shadow-md shadow-primary/20"
                     : "border border-foreground/20 text-foreground hover:bg-muted"
                 }`}
               >
                 {tier.cta}
-              </button>
+              </motion.button>
             </motion.div>
           ))}
         </div>
