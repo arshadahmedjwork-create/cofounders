@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
-import StatsSection from "@/components/landing/StatsSection";
+
 import HowItWorks from "@/components/landing/HowItWorks";
 import ProfilesPreview from "@/components/landing/ProfilesPreview";
 import PsycheMapTeaser from "@/components/landing/PsycheMapTeaser";
@@ -13,7 +13,7 @@ export default function Index() {
     <div className="min-h-screen">
       <Navbar />
       <HeroSection />
-      <StatsSection />
+
       <HowItWorks />
       <ProfilesPreview />
       <PsycheMapTeaser />

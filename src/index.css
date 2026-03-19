@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 230 35% 12%;
 
-    --primary: 350 80% 60%;
+    --primary: 262 83% 58%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 230 45% 25%;
@@ -32,7 +32,7 @@
 
     --border: 220 20% 88%;
     --input: 220 20% 88%;
-    --ring: 350 80% 60%;
+    --ring: 262 83% 58%;
 
     --radius: 0.75rem;
 
@@ -41,8 +41,8 @@
     --navy: 230 45% 25%;
     --ink-soft: 230 20% 35%;
     --teal: 174 60% 40%;
-    --orange: 350 80% 60%;
-    --orange-hover: 350 80% 52%;
+    --orange: 262 83% 58%;
+    --orange-hover: 262 83% 50%;
     --gold: 42 90% 55%;
 
     --font-display: 'Cormorant Garamond', serif;
@@ -69,7 +69,7 @@
     --popover: 230 25% 12%;
     --popover-foreground: 220 20% 92%;
 
-    --primary: 350 75% 62%;
+    --primary: 262 78% 65%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 42 70% 55%;
@@ -86,10 +86,10 @@
 
     --border: 230 20% 18%;
     --input: 230 20% 18%;
-    --ring: 350 75% 62%;
+    --ring: 262 78% 65%;
 
-    --orange: 350 75% 62%;
-    --orange-hover: 350 75% 70%;
+    --orange: 262 78% 65%;
+    --orange-hover: 262 78% 72%;
     --teal: 174 50% 50%;
     --gold: 42 70% 55%;
     --navy: 220 20% 92%;
@@ -161,7 +161,7 @@
 .gradient-mesh {
   background: linear-gradient(-45deg,
     hsl(230 45% 25% / 0.05),
-    hsl(350 80% 60% / 0.06),
+    hsl(262 83% 58% / 0.06),
     hsl(42 90% 55% / 0.05),
     hsl(220 20% 97%)
   );
@@ -173,7 +173,7 @@
   background: linear-gradient(-45deg,
     hsl(230 30% 8%),
     hsl(230 25% 11%),
-    hsl(350 75% 62% / 0.06),
+    hsl(262 78% 65% / 0.06),
     hsl(230 30% 8%)
   );
   background-size: 400% 400%;
@@ -193,8 +193,8 @@
   50% { transform: translateY(-12px); }
 }
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 8px hsl(350 80% 60% / 0.2); }
-  50% { box-shadow: 0 0 24px hsl(350 80% 60% / 0.4); }
+  0%, 100% { box-shadow: 0 0 8px hsl(262 83% 58% / 0.2); }
+  50% { box-shadow: 0 0 24px hsl(262 83% 58% / 0.4); }
 }
 @keyframes shimmer {
   0% { background-position: -200% center; }

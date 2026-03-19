@@ -17,11 +17,11 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           <div className="lg:col-span-1">
-            <span className="font-accent text-lg font-semibold">
-              CoFounder <span className="text-primary">✦</span> Matrimony
+            <span className="font-accent text-xl font-semibold text-foreground">
+              Cofounder <span className="text-primary">✦</span> Matrimony
             </span>
             <p className="text-sm text-secondary-foreground/50 mt-3 leading-relaxed">
-              Where visionary founders find their perfect co-builder.
+              Finding your perfect business cofounder through intelligent, AI-powered matchmaking designed for modern professionals.der.
             </p>
             <div className="flex gap-3 mt-4">
               {[Linkedin, Twitter, Instagram, Youtube].map((Icon, i) => (

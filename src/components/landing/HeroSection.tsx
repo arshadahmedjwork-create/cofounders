@@ -1,15 +1,27 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import CreateProfileModal from "../CreateProfileModal";
 
-const previewCards = [
-  { name: "Ananya K.", role: "Startup Founder", tags: ["Product", "Vision", "AI"], match: 94, color: "#C62828", rotate: -6, delay: 0 },
-  { name: "Vikram S.", role: "Freelance Eng.", tags: ["Backend", "APIs", "FinTech"], match: 91, color: "#2E7D32", rotate: 0, delay: 0.15 },
-  { name: "Deepa N.", role: "Serial Founder", tags: ["Sales", "GTM", "Health"], match: 88, color: "#F57F17", rotate: 6, delay: 0.3 },
-];
 
 export default function HeroSection() {
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden gradient-mesh">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/hero-bg.mp4" type="video/mp4" />
+      </video>
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-background/30 z-[1]" />
+
       {/* Spinning rings */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="spin-slow w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full border border-primary/10 absolute" />
@@ -39,16 +51,6 @@ export default function HeroSection() {
 
       <div className="container mx-auto px-4 pt-24 pb-16 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.6, type: "spring" }}
-            className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6"
-          >
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-xs font-semibold text-primary">India's #1 Co-Founder Matching Platform</span>
-          </motion.div>
 
           {/* Headline */}
           <motion.h1
@@ -81,7 +83,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-8"
+            className="text-base md:text-lg text-white max-w-2xl mx-auto mb-8 font-medium drop-shadow-md"
           >
             Where visionary founders, brilliant freelancers, and seasoned operators connect to build the next great company.
           </motion.p>
@@ -94,17 +96,17 @@ export default function HeroSection() {
             className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10"
           >
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-              <Link
-                to="/browse"
+              <button
+                onClick={() => setIsProfileModalOpen(true)}
                 className="bg-primary text-primary-foreground px-8 py-3.5 rounded-xl text-sm font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/25 inline-block animate-pulse-glow"
               >
-                Find My Co-Founder →
-              </Link>
+                Create Profile →
+              </button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
                 to="/browse"
-                className="border border-foreground/20 text-foreground px-8 py-3.5 rounded-xl text-sm font-semibold hover:bg-muted transition-all inline-block"
+                className="border border-foreground/20 text-white px-8 py-3.5 rounded-xl text-sm font-semibold hover:bg-muted/20 transition-all inline-block"
               >
                 Browse Profiles
               </Link>
@@ -136,48 +138,33 @@ export default function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Floating preview cards */}
-        <div className="hidden md:flex justify-center items-end gap-4 mt-12 relative">
-          {previewCards.map((card, i) => (
+        {/* Achievement Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 max-w-4xl mx-auto border-t border-border pt-10"
+        >
+          {[
+            { value: "2,400+", label: "Founders Matched" },
+            { value: "₹180Cr+", label: "Raised by Matched Teams" },
+            { value: "94%", label: "Report Culture Fit" },
+            { value: "18", label: "Indian Cities" },
+          ].map((stat, i) => (
             <motion.div
-              key={card.name}
-              initial={{ opacity: 0, y: 60, rotate: 0 }}
-              animate={{ opacity: 1, y: 0, rotate: card.rotate }}
-              transition={{ delay: 0.8 + card.delay, duration: 0.6, type: "spring" }}
-              whileHover={{ y: -12, rotate: 0, scale: 1.05, zIndex: 10 }}
-              className="glass-card rounded-2xl p-4 w-56 shadow-xl cursor-pointer"
-              style={{ zIndex: i === 1 ? 3 : 1 }}
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 + i * 0.1 }}
+              className="text-center"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground shadow-md"
-                  style={{ backgroundColor: card.color }}
-                >
-                  {card.name.split(" ").map(n => n[0]).join("")}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{card.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{card.role}</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-1 mb-2">
-                {card.tags.map(t => (
-                  <span key={t} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{t}</span>
-                ))}
-              </div>
-              <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${card.match}%` }}
-                  transition={{ delay: 1.2 + card.delay, duration: 1, ease: "easeOut" }}
-                  className="bg-primary h-1.5 rounded-full"
-                />
-              </div>
-              <p className="text-[10px] text-primary font-semibold mt-1">{card.match}% match</p>
+              <p className="text-3xl md:text-4xl font-display font-bold text-foreground dark:text-white dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">{stat.value}</p>
+              <p className="text-sm text-muted-foreground dark:text-black font-bold mt-1">{stat.label}</p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
+      <CreateProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
     </section>
   );
 }

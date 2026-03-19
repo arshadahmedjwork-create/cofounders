@@ -14,13 +14,15 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-    if (saved === "dark") {
-      setDark(true);
+    if (saved === "light") {
+      setDark(false);
+      document.documentElement.classList.remove("dark");
+    } else {
       document.documentElement.classList.add("dark");
     }
   }, []);
@@ -44,11 +46,10 @@ export default function Navbar() {
         initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
             ? "py-2 glass-card shadow-lg"
             : "py-4 bg-transparent"
-        }`}
+          }`}
       >
         <div className="container mx-auto flex items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 group">
@@ -58,7 +59,7 @@ export default function Navbar() {
               transition={{ type: "spring", stiffness: 300 }}
             />
             <span className="font-accent text-xl font-semibold text-foreground">
-              CoFounder <span className="text-primary">✦</span> Matrimony
+              Cofounder <span className="text-primary">✦</span> Matrimony
             </span>
           </Link>
 
@@ -70,11 +71,10 @@ export default function Navbar() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.05 }}
-                className={`text-sm font-medium relative group py-1 ${
-                  location.pathname === link.href
+                className={`text-sm font-medium relative group py-1 ${location.pathname === link.href
                     ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                    : "text-black dark:text-foreground hover:text-white"
+                  }`}
               >
                 {link.label}
                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full" />
@@ -91,15 +91,20 @@ export default function Navbar() {
             >
               {dark ? <Sun size={18} /> : <Moon size={18} />}
             </motion.button>
-            <button className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Login
-            </button>
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Link
-                to="/browse"
+                to="/login"
+                className="bg-secondary text-secondary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-secondary/20 inline-block"
+              >
+                Login
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                to="/assessment"
                 className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-primary/20 inline-block"
               >
-                Get Started →
+                Take SYNAPSE™ Test
               </Link>
             </motion.div>
           </div>
@@ -152,13 +157,13 @@ export default function Navbar() {
               transition={{ delay: 0.5 }}
               className="flex flex-col gap-3 mt-4"
             >
-              <button className="text-lg font-medium text-foreground">Login</button>
+              <Link to="/login" onClick={() => setMobileOpen(false)} className="text-lg font-medium text-foreground">Login</Link>
               <Link
-                to="/browse"
+                to="/assessment"
                 onClick={() => setMobileOpen(false)}
                 className="bg-primary text-primary-foreground px-8 py-3 rounded-lg text-lg font-semibold"
               >
-                Get Started →
+                Take SYNAPSE™ Test
               </Link>
             </motion.div>
           </motion.div>
