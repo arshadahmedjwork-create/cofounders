@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, Heart, Users } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,15 +15,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const getUsers = (): { email: string; password: string }[] => {
-    try {
-      return JSON.parse(localStorage.getItem("cofounder_users") || "[]");
-    } catch {
-      return [];
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -42,38 +35,40 @@ export default function Login() {
       return;
     }
 
-    const users = getUsers();
+    setLoading(true);
 
     if (isLogin) {
-      const user = users.find(
-        (u) => u.email === email.toLowerCase() && u.password === password
-      );
-      if (!user) {
-        setError("Invalid email or password. If you're new, sign up first!");
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase(),
+        password,
+      });
+      if (signInError) {
+        setError(signInError.message);
+        setLoading(false);
         return;
       }
-      setLoading(true);
-      localStorage.setItem("cofounder_current_user", email.toLowerCase());
-      setTimeout(() => navigate("/"), 800);
+      setTimeout(() => navigate("/"), 400);
     } else {
       if (!confirmPassword.trim()) {
         setError("Please confirm your password.");
+        setLoading(false);
         return;
       }
       if (password !== confirmPassword) {
         setError("Passwords do not match.");
+        setLoading(false);
         return;
       }
-      const exists = users.find((u) => u.email === email.toLowerCase());
-      if (exists) {
-        setError("This email is already registered. Please login instead.");
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: email.toLowerCase(),
+        password,
+      });
+      if (signUpError) {
+        setError(signUpError.message);
+        setLoading(false);
         return;
       }
-      setLoading(true);
-      users.push({ email: email.toLowerCase(), password });
-      localStorage.setItem("cofounder_users", JSON.stringify(users));
-      localStorage.setItem("cofounder_current_user", email.toLowerCase());
-      setTimeout(() => navigate("/"), 800);
+      setTimeout(() => navigate("/"), 400);
     }
   };
 

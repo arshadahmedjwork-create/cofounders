@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const questions = [
   {
@@ -209,13 +210,31 @@ export default function SynapseTest() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | number>>({});
   const [direction, setDirection] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const question = questions[currentIndex];
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    const { error } = await supabase.from('synapse_assessments').insert([{
+      user_email: 'guest@example.com', // TODO: sync with Auth later
+      answers: answers
+    }]);
+    if (!error) {
+      setSubmitted(true);
+    } else {
+      console.error("Failed to save assessment:", error);
+    }
+    setIsSubmitting(false);
+  };
 
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
       setDirection(1);
       setCurrentIndex((prev) => prev + 1);
+    } else {
+      handleSubmit();
     }
   };
 
@@ -241,7 +260,27 @@ export default function SynapseTest() {
 
       <main className="container mx-auto px-4 pt-32 pb-24">
         <div className="max-w-3xl mx-auto">
-          {/* Header */}
+          {submitted ? (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="text-center py-24 glass-card rounded-3xl border border-border/50 shadow-xl"
+            >
+              <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-4xl text-primary">✓</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
+                Assessment <span className="text-primary italic">Complete</span>
+              </h2>
+              <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+                Your psychological profile has been securely recorded to the database. The matching engine will now use these parameters.
+              </p>
+              <Link to="/browse" className="bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-bold hover:opacity-90 inline-block shadow-lg shadow-primary/20">
+                View Matches Based On Profile →
+              </Link>
+            </motion.div>
+          ) : (
+            <>
+              {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-3">
               Your <span className="text-primary">SYNAPSE™</span> Assessment
@@ -362,7 +401,7 @@ export default function SynapseTest() {
           <div className="flex justify-between items-center mt-8">
             <button
               onClick={handlePrev}
-              disabled={currentIndex === 0}
+              disabled={currentIndex === 0 || isSubmitting}
               className={`flex items-center px-6 py-3 rounded-xl font-semibold border border-border bg-background/50 hover:bg-muted transition-colors ${currentIndex === 0 ? "opacity-40 cursor-not-allowed" : "text-foreground"
                 }`}
             >
@@ -371,13 +410,20 @@ export default function SynapseTest() {
             </button>
             <button
               onClick={handleNext}
-              className="flex items-center px-8 py-3 rounded-xl font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity shadow-md shadow-primary/20"
+              disabled={isSubmitting || answers[question.id] === undefined}
+              className="flex items-center px-8 py-3 rounded-xl font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity shadow-md shadow-primary/20 disabled:opacity-50"
             >
-              Next
-              <ArrowRight size={18} className="ml-2" />
+              {isSubmitting ? (
+                <><Loader2 size={18} className="mr-2 animate-spin" /> Saving...</>
+              ) : currentIndex === questions.length - 1 ? (
+                "Complete"
+              ) : (
+                <>Next <ArrowRight size={18} className="ml-2" /></>
+              )}
             </button>
           </div>
-
+          </>
+        )}
         </div>
       </main>
     </div>

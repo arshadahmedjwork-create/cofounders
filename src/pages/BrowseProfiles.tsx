@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import ProfileCard from "@/components/ProfileCard";
 import Footer from "@/components/landing/Footer";
-import { profiles } from "@/data/profiles";
+import { Profile } from "@/data/profiles";
+import { getProfiles } from "@/services/profileService";
 
 const roleFilters = ["All", "Founders", "Freelancers", "Operators"];
 const domainFilters = ["All Domains", "AI / ML", "FinTech", "HealthTech", "SaaS / B2B", "D2C / Consumer", "Climate Tech"];
@@ -13,14 +14,31 @@ export default function BrowseProfiles() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [domainFilter, setDomainFilter] = useState("All Domains");
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      const data = await getProfiles();
+      setProfiles(data);
+      setLoading(false);
+    };
+    fetchProfiles();
+  }, []);
 
   const filtered = profiles.filter((p) => {
-    const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.tags.some(t => t.toLowerCase().includes(search.toLowerCase())) || p.domain.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = !search || 
+      p.name.toLowerCase().includes(search.toLowerCase()) || 
+      p.tags.some(t => t.toLowerCase().includes(search.toLowerCase())) || 
+      p.domain.toLowerCase().includes(search.toLowerCase());
+
     const matchesRole = roleFilter === "All" ||
       (roleFilter === "Founders" && (p.role.includes("Founder") || p.role.includes("Entrepreneur"))) ||
       (roleFilter === "Freelancers" && p.role.includes("Freelance")) ||
       (roleFilter === "Operators" && p.role.includes("Operator"));
+      
     const matchesDomain = domainFilter === "All Domains" || p.domain === domainFilter;
+    
     return matchesSearch && matchesRole && matchesDomain;
   });
 
@@ -78,11 +96,15 @@ export default function BrowseProfiles() {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">Showing {filtered.length} of 240 profiles</p>
+            {!loading && <p className="text-xs text-muted-foreground">Showing {filtered.length} of {profiles.length} profiles</p>}
           </div>
 
           {/* Grid */}
-          {filtered.length > 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="animate-spin text-primary" size={40} />
+            </div>
+          ) : filtered.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
               {filtered.map((p, i) => (
                 <ProfileCard key={p.id} profile={p} index={i} />

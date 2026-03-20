@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
-
 import HowItWorks from "@/components/landing/HowItWorks";
 import ProfilesPreview from "@/components/landing/ProfilesPreview";
 import PsycheMapTeaser from "@/components/landing/PsycheMapTeaser";
@@ -10,10 +9,13 @@ import Footer from "@/components/landing/Footer";
 
 export default function Index() {
   return (
-    <div className="min-h-screen">
+    // Single unified dark base — sections use atmospheric depth, not alternating BGs
+    <div
+      className="min-h-screen"
+      style={{ background: "hsl(222, 30%, 7%)" }}
+    >
       <Navbar />
       <HeroSection />
-
       <HowItWorks />
       <ProfilesPreview />
       <PsycheMapTeaser />

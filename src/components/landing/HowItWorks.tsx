@@ -7,94 +7,127 @@ const steps = [
     icon: UserPlus,
     title: "Build Your Founder Profile",
     desc: "Tell us your startup vision, domain expertise, skills, and what you're looking for in a co-founder. Our AI-powered profiling goes deep.",
-    badge: "10 MIN SETUP",
-    gradient: "from-primary/20 to-primary/5",
+    badge: "10 min setup",
+    color: "hsl(262, 75%, 68%)",
   },
   {
     num: "02",
     icon: Zap,
     title: "AI-Powered Matching",
     desc: "Our algorithm analyses 47 compatibility dimensions — from skill complementarity and working style to risk appetite and life stage alignment.",
-    badge: "INSTANT RESULTS",
-    gradient: "from-accent/20 to-accent/5",
+    badge: "Instant results",
+    color: "hsl(174, 52%, 52%)",
   },
   {
     num: "03",
     icon: MessageCircle,
     title: "Curated Introductions",
     desc: "Browse your matches, send connection requests, and engage in structured video calls with built-in prompts to accelerate meaningful conversations.",
-    badge: "STRUCTURED CALLS",
-    gradient: "from-secondary/20 to-secondary/5",
+    badge: "Structured calls",
+    color: "hsl(42, 85%, 60%)",
   },
   {
     num: "04",
     icon: BarChart3,
     title: "3-Week Trial Sprint",
-    desc: "Work together on a real mini-project. Our platform tracks collaboration patterns, communication health, and decision-making compatibility weekly.",
-    badge: "LIVE TRACKING",
-    gradient: "from-primary/20 to-primary/5",
+    desc: "Work together on a real mini-project. Our platform tracks collaboration patterns, communication health, and decision-making compatibility.",
+    badge: "Live tracking",
+    color: "hsl(262, 75%, 68%)",
   },
   {
     num: "05",
     icon: Scale,
     title: "Legal Onboarding",
     desc: "Once compatible, our partner legal network helps you draft co-founder agreements, equity splits, vesting schedules, and NDAs efficiently.",
-    badge: "LEGAL SUPPORT",
-    gradient: "from-accent/20 to-accent/5",
+    badge: "Legal support",
+    color: "hsl(174, 52%, 52%)",
   },
 ];
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 bg-background">
-      <div className="container mx-auto px-4">
+    <section id="how-it-works" className="py-28 relative overflow-hidden">
+      {/* Atmospheric top orb */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[250px] atmo-orb atmo-orb-purple opacity-[0.07]" />
+
+      {/* Section rule */}
+      <div className="section-rule mb-0 opacity-40" />
+
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          className="text-center mb-18"
         >
-          <motion.span
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="text-xs font-bold tracking-widest uppercase text-primary mb-2 block"
-          >
-            The Process
-          </motion.span>
-          <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground">
-            From Stranger to <span className="font-accent italic text-primary">Co-Builder</span> in 5 Steps
+          <p className="section-label justify-center mb-3">The Process</p>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold"
+            style={{ color: "hsl(218, 22%, 94%)" }}>
+            From Stranger to{" "}
+            <span className="font-accent italic" style={{ color: "hsl(262, 75%, 72%)" }}>
+              Co-Builder
+            </span>{" "}
+            in 5 Steps
           </h2>
         </motion.div>
 
-        {/* All 5 cards in one row */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-7xl mx-auto">
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 max-w-7xl mx-auto mt-14">
           {steps.map((step, i) => (
             <motion.div
               key={step.num}
-              initial={{ opacity: 0, y: 40, rotateX: 10 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.12, duration: 0.5, type: "spring" }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="glass-card rounded-2xl p-5 relative overflow-hidden group flex flex-col"
+              transition={{ delay: i * 0.1, duration: 0.5, type: "spring", damping: 20 }}
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="rounded-2xl p-6 flex flex-col cursor-default relative overflow-hidden group"
+              style={{
+                background: "hsl(222, 28%, 10%)",
+                border: "1px solid hsl(222, 22%, 16%)",
+              }}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
-              <span className="absolute -top-4 -right-2 text-6xl font-display font-bold text-primary/5 select-none group-hover:text-primary/10 transition-colors duration-500">
+              {/* Number watermark */}
+              <span className="absolute -top-3 -right-1 text-7xl font-display font-bold pointer-events-none select-none group-hover:opacity-[0.45] transition-opacity duration-300"
+                style={{ color: step.color, opacity: 0.25 }}>
                 {step.num}
               </span>
+
+              {/* Top bar accent */}
+              <div className="absolute top-0 left-6 right-6 h-px rounded-full"
+                style={{ background: `linear-gradient(90deg, transparent, ${step.color}44, transparent)` }} />
+
+              {/* Icon */}
               <motion.div
-                whileHover={{ rotate: 10, scale: 1.1 }}
-                className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 relative z-10"
+                whileHover={{ rotate: 8, scale: 1.1 }}
+                className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 z-10"
+                style={{ background: `${step.color}18`, border: `1px solid ${step.color}30` }}
               >
-                <step.icon className="text-primary" size={18} />
+                <step.icon size={19} style={{ color: step.color }} />
               </motion.div>
-              <h3 className="text-sm font-semibold text-foreground mb-2 relative z-10">{step.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed relative z-10 mb-4 flex-grow">{step.desc}</p>
-              <span className="inline-block text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-md border border-border text-muted-foreground relative z-10 self-start mt-auto">
+
+              <h3 className="text-sm font-bold mb-2.5 z-10"
+                style={{ color: "hsl(218, 22%, 90%)" }}>
+                {step.title}
+              </h3>
+              <p className="text-xs leading-relaxed flex-grow z-10 mb-5"
+                style={{ color: "hsl(218, 14%, 52%)" }}>
+                {step.desc}
+              </p>
+
+              {/* Badge */}
+              <span className="inline-block text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-lg z-10 self-start"
+                style={{
+                  background: `${step.color}12`,
+                  border: `1px solid ${step.color}28`,
+                  color: step.color,
+                }}>
                 {step.badge}
               </span>
+
+              {/* Hover glow */}
+              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{ background: `radial-gradient(circle at 30% 80%, ${step.color}08, transparent 60%)` }} />
             </motion.div>
           ))}
         </div>
