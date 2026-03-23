@@ -92,6 +92,23 @@ export const getIncomingRequests = async (userId: string): Promise<ConnectionReq
 };
 
 /**
+ * Fetches RAW incoming requests WITHOUT joins (fallback for schema issues).
+ */
+export const getIncomingRequestsRaw = async (userId: string): Promise<ConnectionRequest[]> => {
+  const { data, error } = await supabase
+    .from("connection_requests")
+    .select("*")
+    .eq("receiver_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching incoming requests raw:", error);
+    return [];
+  }
+  return data as ConnectionRequest[];
+};
+
+/**
  * Fetches requests sent BY the logged in user.
  */
 export const getOutgoingRequests = async (userId: string): Promise<ConnectionRequest[]> => {
@@ -110,6 +127,57 @@ export const getOutgoingRequests = async (userId: string): Promise<ConnectionReq
     return [];
   }
   return data as ConnectionRequest[];
+};
+
+/**
+ * Fetches RAW outgoing requests WITHOUT joins (fallback for schema issues).
+ */
+export const getOutgoingRequestsRaw = async (userId: string): Promise<ConnectionRequest[]> => {
+  const { data, error } = await supabase
+    .from("connection_requests")
+    .select("*")
+    .eq("sender_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching outgoing requests raw:", error);
+    return [];
+  }
+  return data as ConnectionRequest[];
+};
+
+/**
+ * Checks if a connection request already exists between two users.
+ * Returns the status if it exists, otherwise null.
+ */
+export const checkExistingConnection = async (
+  senderId: string,
+  receiverId: string
+): Promise<ConnectionStatus | null> => {
+  // Guard against non-UUID IDs if the column is UUID (to avoid 400 errors)
+  const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  
+  // If we know the table expects UUIDs but we have a numeric ID (like '5' from mock data), 
+  // skip the DB check to avoid 400 errors.
+  // Note: We only check if the DB explicitly errors with 400.
+  
+  try {
+    const { data, error } = await supabase
+      .from("connection_requests")
+      .select("status")
+      .or(`and(sender_id.eq."${senderId}",receiver_id.eq."${receiverId}"),and(sender_id.eq."${receiverId}",receiver_id.eq."${senderId}")`)
+      .maybeSingle();
+
+    if (error) {
+      if (error.code === '22P02') return null; // Invalid UUID input syntax
+      console.error("Error checking existing connection:", error);
+      return null;
+    }
+    
+    return data?.status || null;
+  } catch (err) {
+    return null;
+  }
 };
 
 /**

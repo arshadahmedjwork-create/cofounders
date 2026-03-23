@@ -15,6 +15,7 @@ import Onboarding from "./pages/Onboarding.tsx";
 import Posts from "./pages/Posts.tsx";
 import Requests from "./pages/Requests.tsx";
 import Profile from "./pages/Profile.tsx";
+import Messages from "./pages/Messages.tsx";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/posts" element={<Posts />} />
               <Route path="/requests" element={<Requests />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/messages" element={<Messages />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

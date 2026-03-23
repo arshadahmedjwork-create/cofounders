@@ -4,7 +4,8 @@ import { useState } from "react";
 import type { Profile } from "@/data/profiles";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { sendConnectionRequest } from "@/services/connectionService";
+import { sendConnectionRequest, checkExistingConnection, ConnectionStatus } from "@/services/connectionService";
+import { useEffect } from "react";
 
 function getMatchColor(percent: number) {
   return "text-green-600 border-green-500 bg-green-50 dark:bg-green-950 dark:text-green-400";
@@ -13,7 +14,18 @@ function getMatchColor(percent: number) {
 export default function ProfileCard({ profile, index = 0 }: { profile: Profile; index?: number }) {
   const [saved, setSaved] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus | null>(null);
   const { user } = useAuth();
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (user && profile.id) {
+        const status = await checkExistingConnection(user.id, profile.id);
+        setConnectionStatus(status);
+      }
+    };
+    checkStatus();
+  }, [user, profile.id]);
 
   const handleConnect = async () => {
     if (isConnecting) return;
@@ -41,6 +53,7 @@ export default function ProfileCard({ profile, index = 0 }: { profile: Profile; 
 
     if (res.success) {
       toast.success(`Connection request sent to ${profile.name.split(" ")[0]}! ✓`);
+      setConnectionStatus("pending");
     } else {
       toast.error(res.error || "Failed to send connection request.");
     }
@@ -116,11 +129,24 @@ export default function ProfileCard({ profile, index = 0 }: { profile: Profile; 
       <div className="flex items-center gap-2">
         <motion.button
           onClick={handleConnect}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          className="flex-1 bg-primary text-primary-foreground text-xs font-semibold py-2.5 px-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-1 shadow-md shadow-primary/20"
+          disabled={isConnecting || !!connectionStatus}
+          whileHover={!connectionStatus ? { scale: 1.02 } : {}}
+          whileTap={!connectionStatus ? { scale: 0.97 } : {}}
+          className={`flex-1 text-xs font-semibold py-2.5 px-3 rounded-lg transition-all flex items-center justify-center gap-1 shadow-md ${
+            connectionStatus 
+              ? "bg-muted text-muted-foreground cursor-default border border-border" 
+              : "bg-primary text-primary-foreground hover:opacity-90 shadow-primary/20"
+          }`}
         >
-          Connect <ArrowRight size={12} />
+          {connectionStatus === "pending" ? (
+            "Request Sent"
+          ) : connectionStatus === "accepted" ? (
+            "Connected ✓"
+          ) : connectionStatus === "rejected" ? (
+            "Request Declined"
+          ) : (
+            <>Connect <ArrowRight size={12} /></>
+          )}
         </motion.button>
         <motion.button
           onClick={handleSave}

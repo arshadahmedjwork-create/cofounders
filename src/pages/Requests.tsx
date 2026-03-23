@@ -1,11 +1,14 @@
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
-import { getIncomingRequests, getOutgoingRequests, updateRequestStatus, ConnectionRequest } from "@/services/connectionService";
+import { getIncomingRequestsRaw, getOutgoingRequestsRaw, updateRequestStatus, ConnectionRequest } from "@/services/connectionService";
+import { getProfiles } from "@/services/profileService";
+import { supabase } from "@/lib/supabase";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X } from "lucide-react";
+import { Check, X, ArrowRight } from "lucide-react";
 
 export default function Requests() {
   const { user } = useAuth();
@@ -18,13 +21,51 @@ export default function Requests() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [inc, out] = await Promise.all([
-      getIncomingRequests(user.id),
-      getOutgoingRequests(user.id)
-    ]);
-    setIncoming(inc);
-    setOutgoing(out);
-    setLoading(false);
+    setLoading(true);
+    
+    try {
+      const [incRaw, outRaw, allProfiles, { data: allPosts }] = await Promise.all([
+        getIncomingRequestsRaw(user.id),
+        getOutgoingRequestsRaw(user.id),
+        getProfiles(),
+        supabase.from("cofounder_posts").select("id, title, role_required")
+      ]);
+
+      const profileMap = new Map(allProfiles.map(p => [p.id, p]));
+      const postMap = new Map((allPosts || []).map(p => [p.id, p]));
+
+      console.log('Requests Debug:', { 
+        userId: user.id, 
+        incRaw, 
+        outRaw, 
+        profilesCount: allProfiles.length,
+        profileMapKeys: Array.from(profileMap.keys()) 
+      });
+
+      const mapRequest = (req: any) => {
+        const mapped = {
+          ...req,
+          sender_profile: profileMap.get(req.sender_id),
+          receiver_profile: profileMap.get(req.receiver_id),
+          post_details: postMap.get(req.post_id)
+        };
+        if (!mapped.sender_profile || !mapped.receiver_profile) {
+          console.warn('Incomplete profile mapping for request:', req.id, {
+            senderFound: !!mapped.sender_profile,
+            receiverFound: !!mapped.receiver_profile
+          });
+        }
+        return mapped;
+      };
+
+      setIncoming(incRaw.map(mapRequest));
+      setOutgoing(outRaw.map(mapRequest));
+    } catch (err) {
+      console.error("Error fetching connection data:", err);
+      toast.error("Failed to load some connection data.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchData(); }, [user]);
@@ -123,12 +164,21 @@ export default function Requests() {
                   {outgoing.length === 0 ? <p className="text-[hsl(218,14%,56%)]">You haven't sent any requests.</p> : (
                     <div className="space-y-4">
                       {outgoing.map(req => (
-                        <div key={req.id} className="p-5 rounded-xl bg-[hsl(222,28%,12%)] border border-[hsl(222,22%,20%)] flex justify-between items-center">
+                        <div key={req.id} className="p-5 rounded-xl bg-[hsl(222,28%,12%)] border border-[hsl(222,22%,20%)] flex justify-between items-center group">
                           <div>
-                            <p className="text-sm text-white font-semibold mb-1">Applied for: {req.post_details?.title || "Unknown Post"}</p>
-                            <p className="text-xs text-[hsl(218,14%,56%)]">Date: {new Date(req.created_at).toLocaleDateString()}</p>
+                            <p className="text-sm text-white font-semibold mb-1">
+                              Applied for: {req.post_details?.title || "General Synergy"}
+                            </p>
+                            <p className="text-xs text-[hsl(218,14%,56%)] mb-1">
+                              To: <span className="text-primary/80">{req.receiver_profile?.first_name} {req.receiver_profile?.last_name}</span>
+                            </p>
+                            <p className="text-[10px] text-[hsl(218,14%,40%)]">Sent on {new Date(req.created_at).toLocaleDateString()}</p>
                           </div>
-                          <span className={`text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider ${req.status === 'accepted' ? 'bg-green-500/10 text-green-400' : req.status === 'rejected' ? 'bg-red-500/10 text-red-500' : 'bg-primary/20 text-primary'}`}>
+                          <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter shadow-sm ${
+                            req.status === 'accepted' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
+                            req.status === 'rejected' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 
+                            'bg-primary/20 text-primary border border-primary/20'
+                          }`}>
                             {req.status}
                           </span>
                         </div>
@@ -154,10 +204,15 @@ export default function Requests() {
                               {peerName[0].toUpperCase()}
                             </div>
                             <h3 className="font-bold text-white text-lg mb-1">{peerName}</h3>
-                            <p className="text-sm text-[hsl(218,14%,66%)] mb-3">
-                              Connected via: <span className="text-white">{req.post_details?.title || "General Synergy"}</span>
+                            <p className="text-sm text-[hsl(218,14%,66%)] mb-4">
+                              Connected via: <span className="text-white/80">{req.post_details?.title || "General Synergy"}</span>
                             </p>
-                            <button className="text-xs text-primary font-bold hover:underline py-1">Send Message / Schedule Call &rarr;</button>
+                            <Link 
+                              to={`/messages?connectionId=${req.id}`}
+                              className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-all border border-primary/20"
+                            >
+                              Message Now <ArrowRight size={14} />
+                            </Link>
                           </div>
                         );
                       })}

@@ -43,7 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await Promise.race([fetchPromise, timeoutPromise]) as any;
         
       if (result && result.error) {
-        // If it's a real error (not just not found), don't assume profile is missing
         console.error("Profile check error:", result.error);
         return; 
       }
@@ -51,12 +50,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (result && result.data) {
         setHasProfile(true);
       } else if (result) {
-        // No data and no error means definitely no profile
         setHasProfile(false);
       }
     } catch (err) {
       console.error("Error checking profile (timeout/abort):", err);
-      // Keep hasProfile as null to avoid redirecting incorrectly
+      // Retry once if it was a timeout
+      if (err instanceof Error && err.message.includes("timeout")) {
+        console.log("Retrying profile check...");
+        setTimeout(() => checkProfile(currentEmail), 1000);
+        return;
+      }
     } finally {
       if (checkingProfileRef.current === currentEmail) {
         checkingProfileRef.current = null;
