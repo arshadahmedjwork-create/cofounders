@@ -88,9 +88,9 @@ export default function HeroSection() {
             <AnimatePresence mode="wait">
               <motion.span
                 key={wordIdx}
-                initial={{ opacity: 0, y: 20, clipPath: "inset(100% 0% 0% 0%)" }}
-                animate={{ opacity: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)" }}
-                exit={{ opacity: 0, y: -20, clipPath: "inset(0% 0% 100% 0%)" }}
+                initial={{ opacity: 0, y: 20, clipPath: "inset(100% 0% -20% 0%)" }}
+                animate={{ opacity: 1, y: 0, clipPath: "inset(-20% 0% -20% 0%)" }}
+                exit={{ opacity: 0, y: -20, clipPath: "inset(-20% 0% 100% 0%)" }}
                 transition={{ duration: 0.45, ease: "easeInOut" }}
                 className="font-accent italic inline-block"
                 style={{ color: "hsl(262, 75%, 72%)" }}

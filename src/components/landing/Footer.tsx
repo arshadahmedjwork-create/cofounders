@@ -35,7 +35,7 @@ export default function Footer() {
           {/* Brand col */}
           <div className="lg:col-span-2">
             <div className="flex items-center mb-4">
-              <img src="/logo.png" alt="Cofounder Matrimony" className="h-20 w-auto object-contain" />
+              <img src="/logo.png" alt="Cofounder Matrimony" className="h-40 w-auto object-contain" />
             </div>
             <p
               className="text-sm leading-relaxed max-w-xs mb-6"

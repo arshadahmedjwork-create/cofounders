@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -16,13 +16,12 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dark, setDark] = useState(true);
   const location = useLocation();
 
+  // Always enforce dark mode — light mode is removed.
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "light") { setDark(false); document.documentElement.classList.remove("dark"); }
-    else document.documentElement.classList.add("dark");
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
   }, []);
 
   useEffect(() => {
@@ -30,13 +29,6 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const toggleTheme = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-  };
 
   return (
     <>
@@ -61,13 +53,13 @@ export default function Navbar() {
         <div className="container mx-auto flex items-center justify-between px-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <motion.div
-              className="w-2.5 h-2.5 rounded-full bg-primary"
-              whileHover={{ scale: 1.5, boxShadow: "0 0 12px hsl(262 75% 68% / 0.7)" }}
-              transition={{ type: "spring", stiffness: 300 }}
+            <img
+              src="/logo-symbol.png"
+              alt="Cofounder Matrimony Logo"
+              className="h-10 lg:h-12 w-auto object-contain"
             />
             <span className="font-accent text-xl font-semibold" style={{ color: "hsl(218, 22%, 94%)" }}>
-              Cofounder <span style={{ color: "hsl(262, 75%, 72%)" }}>✦</span> Matrimony
+              Cofounder Matrimony
             </span>
           </Link>
 
@@ -96,16 +88,6 @@ export default function Navbar() {
 
           {/* Desktop actions */}
           <div className="hidden lg:flex items-center gap-3">
-            <motion.button
-              onClick={toggleTheme}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ rotate: 180, scale: 0.9 }}
-              className="p-2 rounded-full transition-colors"
-              style={{ color: "hsl(218, 14%, 56%)" }}
-              aria-label="Toggle theme"
-            >
-              {dark ? <Sun size={17} /> : <Moon size={17} />}
-            </motion.button>
 
             {!user ? (
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
@@ -122,17 +104,35 @@ export default function Navbar() {
                 </Link>
               </motion.div>
             ) : (
-              <div className="flex items-center gap-3 p-1 pr-4 rounded-full"
-                style={{ background: "hsl(222, 28%, 12%)", border: "1px solid hsl(222, 22%, 20%)" }}>
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-sm">
-                  {user.email?.[0].toUpperCase()}
+              <div className="relative group">
+                <div className="flex items-center gap-3 p-1 pr-4 rounded-full cursor-pointer hover:bg-[hsl(222,28%,14%)] transition-colors"
+                  style={{ background: "hsl(222, 28%, 12%)", border: "1px solid hsl(222, 22%, 20%)" }}>
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-sm">
+                    {user.email?.[0].toUpperCase()}
+                  </div>
+                  <span className="text-sm font-semibold" style={{ color: "hsl(218, 14%, 56%)" }}>Menu</span>
                 </div>
-                <button onClick={() => signOut()} className="text-sm font-semibold transition-colors"
-                  style={{ color: "hsl(218, 14%, 56%)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(218, 18%, 82%)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(218, 14%, 56%)")}>
-                  Sign Out
-                </button>
+                
+                {/* Dropdown Options for Backend Features */}
+                <div className="absolute right-0 mt-2 w-48 rounded-xl shadow-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-[hsl(222,22%,20%)]"
+                  style={{ background: "hsl(222, 30%, 7%)" }}>
+                  <Link to="/profile" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
+                    My Profile
+                  </Link>
+                  <Link to="/posts" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
+                    My Posts
+                  </Link>
+                  <Link to="/requests?tab=selections" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
+                    My Selections
+                  </Link>
+                  <Link to="/requests?tab=sent" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
+                    My Requests
+                  </Link>
+                  <div className="w-full h-px" style={{ background: "hsl(222, 22%, 18%)" }}></div>
+                  <button onClick={() => signOut()} className="w-full text-left block px-4 py-3 text-sm font-semibold transition-colors text-[hsl(0,62%,60%)] hover:bg-[hsl(222,28%,12%)]">
+                    Sign Out
+                  </button>
+                </div>
               </div>
             )}
 
@@ -153,11 +153,6 @@ export default function Navbar() {
 
           {/* Mobile toggle */}
           <div className="flex lg:hidden items-center gap-2">
-            <motion.button onClick={toggleTheme} whileTap={{ rotate: 180 }}
-              className="p-2 rounded-full"
-              style={{ color: "hsl(218, 14%, 62%)" }}>
-              {dark ? <Sun size={17} /> : <Moon size={17} />}
-            </motion.button>
             <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2"
               style={{ color: "hsl(218, 14%, 72%)" }}>
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}

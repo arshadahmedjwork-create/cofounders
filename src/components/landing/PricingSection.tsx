@@ -126,7 +126,7 @@ export default function PricingSection() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.12, type: "spring", damping: 20 }}
               whileHover={{ y: -8 }}
-              className="rounded-2xl p-7 flex flex-col relative overflow-hidden cursor-default"
+              className="rounded-2xl p-7 flex flex-col relative cursor-default"
               style={tier.popular ? {
                 background: "hsl(222, 28%, 11%)",
                 border: `1px solid ${tier.accent}44`,
@@ -148,19 +148,17 @@ export default function PricingSection() {
                   initial={{ y: -10, opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
                   viewport={{ once: true }}
-                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold"
-                  style={{ background: tier.accent, color: "hsl(222, 30%, 7%)" }}
+                  className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider"
+                  style={{ 
+                    background: tier.accent, 
+                    color: "hsl(222, 30%, 7%)",
+                    boxShadow: `0 0 16px ${tier.accent}66`
+                  }}
                 >
-                  <Zap size={11} />
+                  <Zap size={10} strokeWidth={3} />
                   Most Popular
                 </motion.div>
               )}
-
-              {/* Accent top corner */}
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-5"
-                style={{ background: `${tier.accent}18`, border: `1px solid ${tier.accent}30` }}>
-                <div className="w-2.5 h-2.5 rounded-full" style={{ background: tier.accent }} />
-              </div>
 
               <h3 className="text-xl font-display font-bold mb-1" style={{ color: "hsl(218, 22%, 94%)" }}>
                 {tier.name}
