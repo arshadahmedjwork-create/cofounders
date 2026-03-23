@@ -19,23 +19,33 @@ export default function BrowseProfiles() {
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      const data = await getProfiles();
-      setProfiles(data);
-      setLoading(false);
+      try {
+        const data = await getProfiles();
+        setProfiles(data);
+      } catch (err) {
+        console.error("Failed to load profiles:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProfiles();
   }, []);
 
   const filtered = profiles.filter((p) => {
+    const s = search.toLowerCase();
+    const pName = p.name?.toLowerCase() || '';
+    const pDomain = p.domain?.toLowerCase() || '';
+    const pRole = p.role?.toLowerCase() || '';
+    
     const matchesSearch = !search || 
-      p.name.toLowerCase().includes(search.toLowerCase()) || 
-      p.tags.some(t => t.toLowerCase().includes(search.toLowerCase())) || 
-      p.domain.toLowerCase().includes(search.toLowerCase());
+      pName.includes(s) || 
+      (p.tags || []).some(t => t?.toLowerCase().includes(s)) || 
+      pDomain.includes(s);
 
     const matchesRole = roleFilter === "All" ||
-      (roleFilter === "Founders" && (p.role.includes("Founder") || p.role.includes("Entrepreneur"))) ||
-      (roleFilter === "Freelancers" && p.role.includes("Freelance")) ||
-      (roleFilter === "Operators" && p.role.includes("Operator"));
+      (roleFilter === "Founders" && (pRole.includes("founder") || pRole.includes("entrepreneur"))) ||
+      (roleFilter === "Freelancers" && pRole.includes("freelance")) ||
+      (roleFilter === "Operators" && pRole.includes("operator"));
       
     const matchesDomain = domainFilter === "All Domains" || p.domain === domainFilter;
     

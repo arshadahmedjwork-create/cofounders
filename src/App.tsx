@@ -12,6 +12,9 @@ import Login from "./pages/Login.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import SynapseTest from "./pages/SynapseTest.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
+import Posts from "./pages/Posts.tsx";
+import Requests from "./pages/Requests.tsx";
+import Profile from "./pages/Profile.tsx";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +39,9 @@ const App = () => (
             <Route element={<ProtectedRoute requireProfile={true} />}>
               <Route path="/browse" element={<BrowseProfiles />} />
               <Route path="/assessment" element={<SynapseTest />} />
+              <Route path="/posts" element={<Posts />} />
+              <Route path="/requests" element={<Requests />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

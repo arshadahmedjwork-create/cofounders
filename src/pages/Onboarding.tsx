@@ -5,6 +5,7 @@ import { Check, ChevronDown, ChevronRight, ChevronLeft, Loader2 } from "lucide-r
 import { UserProfile } from "@/types/profile";
 import { saveProfile } from "@/services/profileService";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface Option { label: string; value: string; }
 
@@ -107,13 +108,19 @@ export default function Onboarding() {
     
     setIsSubmitting(true);
     try {
-      await saveProfile(formData);
+      const res = await saveProfile(user!.id, formData);
+      if (!res.success) {
+        toast.error(`Error: ${res.error}`);
+        setIsSubmitting(false);
+        return;
+      }
       // Wait for success, refresh global AuthContext so the ProtectedRoutes open up
       await checkProfile(user?.email);
       // Navigate to browse matches now that onboarding is complete
       navigate("/browse");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      toast.error(error.message || "Failed to save profile");
       setIsSubmitting(false);
     }
   };

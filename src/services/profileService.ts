@@ -2,9 +2,10 @@ import { supabase } from "../lib/supabase";
 import { UserProfile } from "../types/profile";
 import { Profile } from "../data/profiles";
 
-export const saveProfile = async (data: UserProfile): Promise<{ success: boolean; id: string | null }> => {
+export const saveProfile = async (userId: string, data: UserProfile): Promise<{ success: boolean; id: string | null; error?: any }> => {
   // Map form data to database columns
   const insertData = {
+    id: userId,
     first_name: data.firstName,
     last_name: data.lastName,
     email: data.email,
@@ -25,7 +26,7 @@ export const saveProfile = async (data: UserProfile): Promise<{ success: boolean
 
   if (error) {
     console.error("Error saving profile:", error);
-    throw error;
+    return { success: false, id: null, error: error.message };
   }
 
   return { success: true, id: result?.id || null };
@@ -41,18 +42,18 @@ export const getProfiles = async (): Promise<Profile[]> => {
     return [];
   }
 
-  // Map DB structure back to UI Profile interface
+  // Map DB structure back to UI Profile interface with robust fallbacks
   return (data || []).map((row: any) => ({
     id: row.id,
-    name: `${row.first_name} ${row.last_name}`,
-    role: row.role,
-    location: row.city,
-    domain: row.industry,
-    tags: row.skills || [],
+    name: `${row.first_name || ''} ${row.last_name || ''}`.trim() || 'Anonymous User',
+    role: row.role || 'Founder',
+    location: row.city || 'Unknown Location',
+    domain: row.industry || 'General',
+    tags: Array.isArray(row.skills) ? row.skills : (typeof row.skills === 'string' ? [row.skills] : []),
     stage: row.stage || 'Idea',
-    matchPercent: row.match_percent || 70,
-    avatarColor: row.avatar_color || '#1E293B',
-    bio: row.bio || row.idea || 'No bio provided.',
+    matchPercent: row.match_percent || Math.floor(Math.random() * 30 + 70), // fallback fake score 70-99
+    avatarColor: row.avatar_color || `hsl(${Math.floor(Math.random() * 360)}, 70%, 40%)`,
+    bio: row.bio || row.idea || 'Ready to build something amazing.',
     lookingFor: row.looking_for || 'Co-founder',
   }));
 };

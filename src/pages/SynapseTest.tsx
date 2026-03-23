@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { ArrowLeft, ArrowRight, Loader2, RefreshCw, BarChart3, CheckCircle2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { saveAssessment, getLastAssessment, AssessmentResult } from "@/services/assessmentService";
 
 const questions = [
   {
@@ -207,24 +208,37 @@ const questions = [
 ];
 
 export default function SynapseTest() {
+  const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | number>>({});
   const [direction, setDirection] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loadingInitial, setLoadingInitial] = useState(true);
+  const [lastAssessment, setLastAssessment] = useState<AssessmentResult | null>(null);
+  const [showPretest, setShowPretest] = useState(true);
 
-  const question = questions[currentIndex];
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (user?.email) {
+        const result = await getLastAssessment(user.email);
+        if (result) {
+          setLastAssessment(result);
+        }
+      }
+      setLoadingInitial(false);
+    };
+    checkStatus();
+  }, [user]);
 
   const handleSubmit = async () => {
+    if (!user?.email) return;
     setIsSubmitting(true);
-    const { error } = await supabase.from('synapse_assessments').insert([{
-      user_email: 'guest@example.com', // TODO: sync with Auth later
-      answers: answers
-    }]);
-    if (!error) {
+    const { success } = await saveAssessment(user.email, answers);
+    if (success) {
       setSubmitted(true);
     } else {
-      console.error("Failed to save assessment:", error);
+      console.error("Failed to save assessment.");
     }
     setIsSubmitting(false);
   };
@@ -246,13 +260,74 @@ export default function SynapseTest() {
   };
 
   const selectOption = (value: string | number) => {
-    setAnswers({ ...answers, [question.id]: value });
+    setAnswers({ ...answers, [questions[currentIndex].id]: value });
     if (currentIndex < questions.length - 1) {
       setTimeout(() => {
         handleNext();
       }, 400); // short delay to show selection
     }
   };
+
+  const startTest = (isRetake = false) => {
+    if (isRetake) {
+      setAnswers({});
+      setCurrentIndex(0);
+      setSubmitted(false);
+    }
+    setShowPretest(false);
+  };
+
+  if (loadingInitial) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <Loader2 className="animate-spin text-primary mb-4" size={40} />
+        <p className="text-muted-foreground animate-pulse">Loading Synapse Engine...</p>
+      </div>
+    );
+  }
+
+  // Pre-test screen if user has already taken it
+  if (showPretest && lastAssessment && !submitted) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto px-4 pt-40 pb-24">
+          <div className="max-w-3xl mx-auto">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+              className="glass-card bg-card/40 rounded-3xl p-8 md:p-12 text-center border border-border/50 shadow-2xl"
+            >
+              <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-2xl mb-8">
+                <BarChart3 className="text-primary" size={40} />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
+                SYNAPSE™ <span className="text-primary italic">Status</span>
+              </h1>
+              <p className="text-lg text-muted-foreground mb-10 max-w-lg mx-auto leading-relaxed">
+                You have an active psychological profile on record. You can browse matches based on current data or update your profile.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link to="/browse" className="bg-primary text-primary-foreground px-8 py-4 rounded-xl font-bold hover:opacity-90 flex items-center justify-center shadow-lg shadow-primary/25 group transition-all">
+                  Browse Matches <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <button 
+                  onClick={() => startTest(true)}
+                  className="bg-muted hover:bg-muted/80 text-foreground px-8 py-4 rounded-xl font-bold flex items-center justify-center border border-border transition-all"
+                >
+                  <RefreshCw size={20} className="mr-2" /> Retake Assessment
+                </button>
+              </div>
+              
+              <p className="mt-10 text-xs text-muted-foreground uppercase tracking-widest font-bold opacity-60">
+                Last updated: {new Date(lastAssessment.created_at || '').toLocaleDateString(undefined, { dateStyle: 'long' })}
+              </p>
+            </motion.div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -262,168 +337,200 @@ export default function SynapseTest() {
         <div className="max-w-3xl mx-auto">
           {submitted ? (
             <motion.div 
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="text-center py-24 glass-card rounded-3xl border border-border/50 shadow-xl"
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-20 glass-card rounded-3xl border border-border/50 shadow-2xl bg-card/30"
             >
-              <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-4xl text-primary">✓</span>
-              </div>
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
+              <motion.div 
+                initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }}
+                className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-8 ring-8 ring-primary/5"
+              >
+                <CheckCircle2 className="text-primary" size={48} />
+              </motion.div>
+              <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
                 Assessment <span className="text-primary italic">Complete</span>
               </h2>
-              <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-                Your psychological profile has been securely recorded to the database. The matching engine will now use these parameters.
+              <p className="text-lg text-muted-foreground mb-12 max-w-lg mx-auto leading-relaxed">
+                Your psychological DNA has been recorded. Our engine will now prioritize matches with high cognitive and emotional synergy.
               </p>
-              <Link to="/browse" className="bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-bold hover:opacity-90 inline-block shadow-lg shadow-primary/20">
-                View Matches Based On Profile →
-              </Link>
+              <div className="flex flex-col md:flex-row gap-4 justify-center">
+                <Link to="/browse" className="bg-primary text-primary-foreground px-10 py-4 rounded-xl font-bold hover:opacity-90 shadow-xl shadow-primary/25 transition-all text-lg">
+                  View Synergy Matches →
+                </Link>
+                <button 
+                   onClick={() => setShowPretest(true)}
+                   className="px-8 py-4 rounded-xl font-bold bg-muted text-foreground border border-border hover:bg-muted/80 transition-all"
+                >
+                  Back to Dashboard
+                </button>
+              </div>
             </motion.div>
           ) : (
             <>
               {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-3">
-              Your <span className="text-primary">SYNAPSE™</span> Assessment
-            </h1>
-            <p className="text-muted-foreground text-sm md:text-base">
-              Psychometric science + Graphology analysis · ~20 minutes · No right or wrong answers
-            </p>
-          </div>
-
-          {/* Progress Section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
-              <span>PSYCHEMAP™ — FOUNDER PSYCHE</span>
-              <span className="text-foreground">{currentIndex + 1} of {questions.length}</span>
-            </div>
-            <div className="flex gap-1">
-              {questions.map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i < currentIndex ? "bg-primary" :
-                      i === currentIndex ? "bg-primary/50 relative overflow-hidden" :
-                        "bg-primary/10"
-                    }`}
-                >
-                  {i === currentIndex && (
-                    <motion.div
-                      className="absolute inset-y-0 left-0 bg-primary"
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Question Card */}
-          <div className="glass-card bg-card/60 rounded-3xl p-6 md:p-10 shadow-lg border border-border/50 relative overflow-hidden">
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={currentIndex}
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -40 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-              >
-                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold mb-4">
-                  <span>💭</span> PSYCHEMAP™
+              {showPretest && !lastAssessment ? (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
+                   <h1 className="text-4xl md:text-6xl font-display font-bold text-foreground mb-6 tracking-tight">
+                    Start Your <span className="text-primary">SYNAPSE™</span>
+                  </h1>
+                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed mb-10">
+                    Unlock matches based on psychometric science and behavioral data. This assessment determines your founder DNA.
+                  </p>
+                  <button 
+                    onClick={() => startTest()} 
+                    className="bg-primary text-primary-foreground px-12 py-5 rounded-2xl font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-primary/30 active:scale-95"
+                  >
+                    Begin Assessment
+                  </button>
+                  <div className="mt-12 flex flex-wrap justify-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
+                     <span className="font-bold text-sm tracking-widest uppercase">Psychometrics</span>
+                     <span className="font-bold text-sm tracking-widest uppercase">Graphology</span>
+                     <span className="font-bold text-sm tracking-widest uppercase">SYNERGY™ Engine</span>
+                  </div>
+                </motion.div>
+              ) : (
+                <>
+                <div className="text-center mb-12">
+                  <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-3">
+                    Your <span className="text-primary">SYNAPSE™</span> Assessment
+                  </h1>
                 </div>
 
-                <p className="text-sm text-muted-foreground mb-2">
-                  Question {currentIndex + 1} of {questions.length} · {question.category}
-                </p>
-
-                <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-8 leading-relaxed">
-                  {question.text}
-                </h2>
-
-                {/* Options Layout */}
-                {question.type === "multiple-choice" ? (
-                  <div className="flex flex-col gap-3">
-                    {question.options?.map((option) => (
-                      <button
-                        key={option.id}
-                        onClick={() => selectOption(option.id)}
-                        className={`flex items-center p-4 rounded-xl border transition-all text-left w-full
-                          ${answers[question.id] === option.id
-                            ? "border-primary bg-primary/5 shadow-sm"
-                            : "border-border hover:border-primary/40 hover:bg-muted/50"
-                          }
-                        `}
+                {/* Progress Section */}
+                <div className="mb-8">
+                  <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
+                    <span>PSYCHEMAP™ — FOUNDER PSYCHE</span>
+                    <span className="text-foreground">{currentIndex + 1} of {questions.length}</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {questions.map((_, i) => (
+                      <div
+                        key={i}
+                        className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i < currentIndex ? "bg-primary" :
+                            i === currentIndex ? "bg-primary/50 relative overflow-hidden" :
+                              "bg-primary/10"
+                          }`}
                       >
-                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center font-bold text-sm mr-4 shrink-0 transition-colors
-                          ${answers[question.id] === option.id
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "border-muted-foreground/30 text-muted-foreground"
-                          }
-                        `}>
-                          {option.id}
-                        </div>
-                        <span className={`text-base font-medium ${answers[question.id] === option.id ? "text-foreground" : "text-foreground/80"}`}>
-                          {option.text}
-                        </span>
-                      </button>
+                        {i === currentIndex && (
+                          <motion.div
+                            className="absolute inset-y-0 left-0 bg-primary"
+                            initial={{ width: "0%" }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: 0.5 }}
+                          />
+                        )}
+                      </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="py-6">
-                    <div className="flex justify-between px-2 mb-6">
-                      <span className="text-xs font-semibold text-muted-foreground uppercase">Strongly Disagree</span>
-                      <span className="text-xs font-semibold text-muted-foreground uppercase">Strongly Agree</span>
-                    </div>
-                    <div className="flex justify-between gap-2 max-w-lg mx-auto">
-                      {[1, 2, 3, 4, 5, 6, 7].map((val) => (
-                        <button
-                          key={val}
-                          onClick={() => selectOption(val)}
-                          className={`w-10 h-10 md:w-14 md:h-14 rounded-full border-2 flex items-center justify-center text-lg font-bold transition-all
-                            ${answers[question.id] === val
-                              ? "bg-primary border-primary text-primary-foreground scale-110 shadow-lg shadow-primary/30"
-                              : "border-primary/20 text-foreground/70 hover:border-primary/50 hover:bg-primary/5"
-                            }
-                          `}
-                        >
-                          {val}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between items-center mt-8">
-            <button
-              onClick={handlePrev}
-              disabled={currentIndex === 0 || isSubmitting}
-              className={`flex items-center px-6 py-3 rounded-xl font-semibold border border-border bg-background/50 hover:bg-muted transition-colors ${currentIndex === 0 ? "opacity-40 cursor-not-allowed" : "text-foreground"
-                }`}
-            >
-              <ArrowLeft size={18} className="mr-2" />
-              Previous
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={isSubmitting || answers[question.id] === undefined}
-              className="flex items-center px-8 py-3 rounded-xl font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity shadow-md shadow-primary/20 disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <><Loader2 size={18} className="mr-2 animate-spin" /> Saving...</>
-              ) : currentIndex === questions.length - 1 ? (
-                "Complete"
-              ) : (
-                <>Next <ArrowRight size={18} className="ml-2" /></>
+                {/* Question Card */}
+                <div className="glass-card bg-card/60 rounded-3xl p-6 md:p-10 shadow-lg border border-border/50 relative overflow-hidden min-h-[400px]">
+                  <AnimatePresence mode="wait" custom={direction}>
+                    <motion.div
+                      key={currentIndex}
+                      custom={direction}
+                      initial={{ opacity: 0, x: direction * 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: direction * -40 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold mb-4">
+                        <span>💭</span> PSYCHEMAP™
+                      </div>
+
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Question {currentIndex + 1} of {questions.length} · {questions[currentIndex].category}
+                      </p>
+
+                      <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-8 leading-relaxed">
+                        {questions[currentIndex].text}
+                      </h2>
+
+                      {/* Options Layout */}
+                      {questions[currentIndex].type === "multiple-choice" ? (
+                        <div className="flex flex-col gap-3">
+                          {questions[currentIndex].options?.map((option) => (
+                            <button
+                              key={option.id}
+                              onClick={() => selectOption(option.id)}
+                              className={`flex items-center p-4 rounded-xl border transition-all text-left w-full group
+                                ${answers[questions[currentIndex].id] === option.id
+                                  ? "border-primary bg-primary/5 shadow-sm"
+                                  : "border-border hover:border-primary/40 hover:bg-muted/50"
+                                }
+                              `}
+                            >
+                              <div className={`w-8 h-8 rounded-full border flex items-center justify-center font-bold text-sm mr-4 shrink-0 transition-colors
+                                ${answers[questions[currentIndex].id] === option.id
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "border-muted-foreground/30 text-muted-foreground group-hover:border-primary/50"
+                                }
+                              `}>
+                                {option.id}
+                              </div>
+                              <span className={`text-base font-medium ${answers[questions[currentIndex].id] === option.id ? "text-foreground" : "text-foreground/80"}`}>
+                                {option.text}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="py-10">
+                          <div className="flex justify-between px-2 mb-6">
+                            <span className="text-xs font-bold text-muted-foreground uppercase opacity-60">Strongly Disagree</span>
+                            <span className="text-xs font-bold text-muted-foreground uppercase opacity-60">Strongly Agree</span>
+                          </div>
+                          <div className="flex justify-between gap-2 max-w-lg mx-auto">
+                            {[1, 2, 3, 4, 5, 6, 7].map((val) => (
+                              <button
+                                key={val}
+                                onClick={() => selectOption(val)}
+                                className={`w-10 h-10 md:w-14 md:h-14 rounded-full border-2 flex items-center justify-center text-lg font-black transition-all
+                                  ${answers[questions[currentIndex].id] === val
+                                    ? "bg-primary border-primary text-primary-foreground scale-110 shadow-xl shadow-primary/40"
+                                    : "border-primary/20 text-foreground/70 hover:border-primary/50 hover:bg-primary/5"
+                                  }
+                                `}
+                              >
+                                {val}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between items-center mt-8">
+                  <button
+                    onClick={handlePrev}
+                    disabled={currentIndex === 0 || isSubmitting}
+                    className={`flex items-center px-6 py-3 rounded-xl font-semibold border border-border bg-background/50 hover:bg-muted transition-colors ${currentIndex === 0 ? "opacity-30 cursor-not-allowed" : "text-foreground active:scale-95"
+                      }`}
+                  >
+                    <ArrowLeft size={18} className="mr-2" />
+                    Previous
+                  </button>
+                  <button
+                    onClick={handleNext}
+                    disabled={isSubmitting || answers[questions[currentIndex].id] === undefined}
+                    className="flex items-center px-8 py-3 rounded-xl font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all shadow-lg shadow-primary/20 disabled:opacity-40 disabled:scale-100 active:scale-95"
+                  >
+                    {isSubmitting ? (
+                      <><Loader2 size={18} className="mr-2 animate-spin" /> Syncing...</>
+                    ) : currentIndex === questions.length - 1 ? (
+                      "Complete Assessment"
+                    ) : (
+                      <>Next Question <ArrowRight size={18} className="ml-2" /></>
+                    )}
+                  </button>
+                </div>
+                </>
               )}
-            </button>
-          </div>
-          </>
-        )}
+            </>
+          )}
         </div>
       </main>
     </div>

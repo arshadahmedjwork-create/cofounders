@@ -5,51 +5,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 222 28% 96%;
-    --foreground: 228 40% 10%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 228 40% 10%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 228 40% 10%;
-
-    --primary: 262 78% 58%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 228 30% 92%;
-    --secondary-foreground: 228 40% 20%;
-
-    --muted: 220 18% 92%;
-    --muted-foreground: 220 12% 50%;
-
-    --accent: 42 90% 55%;
-    --accent-foreground: 228 40% 10%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 20% 88%;
-    --input: 220 20% 88%;
-    --ring: 262 78% 58%;
-
-    --radius: 0.875rem;
-
-    --font-display: 'Cormorant Garamond', serif;
-    --font-body: 'Plus Jakarta Sans', sans-serif;
-    --font-accent: 'Lora', serif;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
+  /* Dark mode is the only mode. :root always uses the dark palette. */
+  :root,
   .dark {
     /* === UNIFIED DARK PALETTE ================================================
        One base. Sections differ by atmospheric depth, not bg color.
@@ -85,6 +42,12 @@
     --gold: 42 85% 60%;
     --teal: 174 52% 52%;
     --navy: 218 22% 88%;
+
+    --radius: 0.875rem;
+
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-accent: 'Lora', serif;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -16,61 +16,74 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [hasProfile, setHasProfile] = useState<boolean | null>(null); // null means checking
   const [loading, setLoading] = useState(true);
+  const checkingProfileRef = useRef<string | null>(null);
 
   const checkProfile = async (currentEmail?: string) => {
     if (!currentEmail) {
       setHasProfile(false);
       return;
     }
+    
+    // Prevent redundant checks if already checking this email
+    if (checkingProfileRef.current === currentEmail) return;
+    checkingProfileRef.current = currentEmail;
+
     try {
-      // In the schema, we uniquely identify profiles by email for now
-      const { data, error } = await supabase
+      // Force a timeout to prevent infinite hanging
+      const fetchPromise = supabase
         .from("user_profiles")
         .select("id")
         .eq("email", currentEmail)
-        .single();
+        .maybeSingle();
         
-      if (data && !error) {
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Supabase query timeout")), 30000)
+      );
+
+      const result = await Promise.race([fetchPromise, timeoutPromise]) as any;
+        
+      if (result && result.error) {
+        // If it's a real error (not just not found), don't assume profile is missing
+        console.error("Profile check error:", result.error);
+        return; 
+      }
+
+      if (result && result.data) {
         setHasProfile(true);
-      } else {
+      } else if (result) {
+        // No data and no error means definitely no profile
         setHasProfile(false);
       }
     } catch (err) {
-      console.error("Error checking profile:", err);
-      setHasProfile(false);
+      console.error("Error checking profile (timeout/abort):", err);
+      // Keep hasProfile as null to avoid redirecting incorrectly
+    } finally {
+      if (checkingProfileRef.current === currentEmail) {
+        checkingProfileRef.current = null;
+      }
     }
   };
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    const getSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-         console.warn("Auth session error:", error.message);
-      }
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser?.email) {
-        await checkProfile(currentUser.email);
-      } else {
-        setHasProfile(false);
-      }
-      setLoading(false);
-    };
-
-    getSession();
-
     // Listen for changes on auth state (log in, log out, etc.)
+    // Note: onAuthStateChange fires with the initial session on subscribe
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
-        const currentUser = session?.user ?? null;
-        setUser(currentUser);
-        if (currentUser?.email) {
-          await checkProfile(currentUser.email);
-        } else {
+        try {
+          const currentUser = session?.user ?? null;
+          setUser(currentUser);
+          if (currentUser?.email) {
+            await checkProfile(currentUser.email);
+          } else {
+            setHasProfile(false);
+          }
+        } catch (err) {
+          console.error("Critical AuthContext subscription failure:", err);
           setHasProfile(false);
+          setUser(null);
+        } finally {
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
@@ -80,9 +93,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setHasProfile(false);
+    try {
+      // Clear local state first for immediate UI response
+      setUser(null);
+      setHasProfile(false);
+      
+      // Attempt to notify Supabase (and clear cookies)
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error("Sign out error:", err);
+    } finally {
+      // Always ensure we are back at the home or login page
+      window.location.href = "/login";
+    }
   };
 
   return (

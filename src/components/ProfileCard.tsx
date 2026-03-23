@@ -3,19 +3,47 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import type { Profile } from "@/data/profiles";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { sendConnectionRequest } from "@/services/connectionService";
 
 function getMatchColor(percent: number) {
-  if (percent >= 90) return "text-green-600 border-green-500 bg-green-50 dark:bg-green-950 dark:text-green-400";
-  if (percent >= 75) return "text-primary border-primary bg-primary/10";
-  if (percent >= 60) return "text-teal border-teal bg-teal/10";
-  return "text-muted-foreground border-muted bg-muted";
+  return "text-green-600 border-green-500 bg-green-50 dark:bg-green-950 dark:text-green-400";
 }
 
 export default function ProfileCard({ profile, index = 0 }: { profile: Profile; index?: number }) {
   const [saved, setSaved] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const { user } = useAuth();
 
-  const handleConnect = () => {
-    toast.success(`Connection request sent to ${profile.name.split(" ")[0]}! ✓`);
+  const handleConnect = async () => {
+    if (isConnecting) return;
+    if (!user) {
+      toast.error("Please log in to connect with founders.");
+      return;
+    }
+
+    setIsConnecting(true);
+    
+    // In a full implementation, we map receiverId correctly.
+    // Using profile.id as a fallback for both receiver and post for now.
+    const res = await sendConnectionRequest(
+      user.id,
+      profile.id, 
+      null, // Allow connection without a specific post context
+      user.email || 'Anonymous Founder', 
+      profile.name, 
+      `${profile.name.split(" ")[0].toLowerCase()}@example.com`, // mock email
+      profile.lookingFor,
+      `Looking for ${profile.role}`
+    );
+    
+    setIsConnecting(false);
+
+    if (res.success) {
+      toast.success(`Connection request sent to ${profile.name.split(" ")[0]}! ✓`);
+    } else {
+      toast.error(res.error || "Failed to send connection request.");
+    }
   };
 
   const handleSave = () => {
