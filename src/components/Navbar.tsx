@@ -68,20 +68,44 @@ export default function Navbar() {
             {navLinks.map((link, i) => {
               const active = location.pathname + location.hash === link.href ||
                 (link.href.startsWith("/#") && location.pathname === "/" && location.hash === link.href.slice(1));
+              
+              const isAnchor = link.href.startsWith("/#");
+              
+              if (isAnchor) {
+                return (
+                  <motion.a
+                    key={link.label}
+                    href={link.href}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + i * 0.05 }}
+                    className="text-sm font-medium relative group py-1"
+                    style={{ color: active ? "hsl(262, 75%, 72%)" : "hsl(218, 14%, 62%)" }}
+                  >
+                    {link.label}
+                    <span className="absolute bottom-0 left-0 w-full h-px rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+                      style={{ background: "hsl(262, 75%, 68%)" }} />
+                  </motion.a>
+                );
+              }
+              
               return (
-                <motion.a
+                <Link
                   key={link.label}
-                  href={link.href}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.05 }}
+                  to={link.href}
                   className="text-sm font-medium relative group py-1"
                   style={{ color: active ? "hsl(262, 75%, 72%)" : "hsl(218, 14%, 62%)" }}
                 >
-                  {link.label}
+                  <motion.span
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + i * 0.05 }}
+                  >
+                    {link.label}
+                  </motion.span>
                   <span className="absolute bottom-0 left-0 w-full h-px rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
                     style={{ background: "hsl(262, 75%, 68%)" }} />
-                </motion.a>
+                </Link>
               );
             })}
           </div>

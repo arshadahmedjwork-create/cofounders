@@ -214,22 +214,15 @@ export default function SynapseTest() {
   const [direction, setDirection] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [loadingInitial, setLoadingInitial] = useState(true);
-  const [lastAssessment, setLastAssessment] = useState<AssessmentResult | null>(null);
   const [showPretest, setShowPretest] = useState(true);
 
-  useEffect(() => {
-    const checkStatus = async () => {
-      if (user?.email) {
-        const result = await getLastAssessment(user.email);
-        if (result) {
-          setLastAssessment(result);
-        }
-      }
-      setLoadingInitial(false);
-    };
-    checkStatus();
-  }, [user]);
+  // useQuery handles caching and synchronization of assessment status
+  const { data: lastAssessment, isLoading: loadingInitial } = useQuery({
+    queryKey: ["assessment", user?.email],
+    queryFn: () => user?.email ? getLastAssessment(user.email) : Promise.resolve(null),
+    enabled: !!user?.email,
+  });
+
 
   const handleSubmit = async () => {
     if (!user?.email) return;

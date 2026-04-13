@@ -119,8 +119,8 @@ export default function Onboarding() {
       // Navigate to browse matches now that onboarding is complete
       navigate("/browse");
     } catch (error: any) {
-      console.error(error);
       toast.error(error.message || "Failed to save profile");
+    } finally {
       setIsSubmitting(false);
     }
   };

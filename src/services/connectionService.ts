@@ -154,12 +154,12 @@ export const checkExistingConnection = async (
   senderId: string,
   receiverId: string
 ): Promise<ConnectionStatus | null> => {
-  // Guard against non-UUID IDs if the column is UUID (to avoid 400 errors)
+  // Guard against non-UUID IDs if the column is UUID (to avoid 400 errors from Postgres)
   const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
   
-  // If we know the table expects UUIDs but we have a numeric ID (like '5' from mock data), 
-  // skip the DB check to avoid 400 errors.
-  // Note: We only check if the DB explicitly errors with 400.
+  if (!isUuid(senderId) || !isUuid(receiverId)) {
+    return null;
+  }
   
   try {
     const { data, error } = await supabase
@@ -170,7 +170,6 @@ export const checkExistingConnection = async (
 
     if (error) {
       if (error.code === '22P02') return null; // Invalid UUID input syntax
-      console.error("Error checking existing connection:", error);
       return null;
     }
     

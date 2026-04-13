@@ -11,9 +11,6 @@ export function ProtectedRoute({ requireProfile = true }: { requireProfile?: boo
       <div className="h-screen w-screen flex flex-col items-center justify-center bg-background">
         <Loader2 className="animate-spin text-primary mb-4" size={40} />
         <p className="text-muted-foreground font-medium animate-pulse">Authenticating...</p>
-        <p className="text-xs text-muted-foreground mt-4 opacity-50">
-          Debug: loading={String(loading)}, user={user ? "yes" : "no"}, hasProfile={String(hasProfile)}
-        </p>
       </div>
     );
   }

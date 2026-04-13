@@ -1,91 +1,66 @@
-import { createContext, useContext, useEffect, useState, useRef } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface AuthContextType {
   user: User | null;
   hasProfile: boolean | null;
   loading: boolean;
   signOut: () => Promise<void>;
-  checkProfile: (userId: string | undefined) => Promise<void>;
+  checkProfile: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [hasProfile, setHasProfile] = useState<boolean | null>(null); // null means checking
   const [loading, setLoading] = useState(true);
-  const checkingProfileRef = useRef<string | null>(null);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const checkProfile = async (currentEmail?: string) => {
-    if (!currentEmail) {
-      setHasProfile(false);
-      return;
-    }
-    
-    // Prevent redundant checks if already checking this email
-    if (checkingProfileRef.current === currentEmail) return;
-    checkingProfileRef.current = currentEmail;
-
-    try {
-      // Force a timeout to prevent infinite hanging
-      const fetchPromise = supabase
+  // Use TanStack Query for profile matching - this handles caching and fast retrieval
+  const { data: profileData, isLoading: profileLoading, refetch: checkProfile } = useQuery({
+    queryKey: ["profile", user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const { data, error } = await supabase
         .from("user_profiles")
         .select("id")
-        .eq("email", currentEmail)
+        .eq("email", user.email)
         .maybeSingle();
-        
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Supabase query timeout")), 30000)
-      );
 
-      const result = await Promise.race([fetchPromise, timeoutPromise]) as any;
-        
-      if (result && result.error) {
-        console.error("Profile check error:", result.error);
-        return; 
-      }
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.email,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
 
-      if (result && result.data) {
-        setHasProfile(true);
-      } else if (result) {
-        setHasProfile(false);
-      }
-    } catch (err) {
-      console.error("Error checking profile (timeout/abort):", err);
-      // Retry once if it was a timeout
-      if (err instanceof Error && err.message.includes("timeout")) {
-        console.log("Retrying profile check...");
-        setTimeout(() => checkProfile(currentEmail), 1000);
-        return;
-      }
-    } finally {
-      if (checkingProfileRef.current === currentEmail) {
-        checkingProfileRef.current = null;
-      }
-    }
-  };
+  const hasProfile = user ? (profileLoading ? null : !!profileData) : false;
 
   useEffect(() => {
-    // Listen for changes on auth state (log in, log out, etc.)
-    // Note: onAuthStateChange fires with the initial session on subscribe
+    // Initial session check
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+      } catch (err) {
+        console.error("Auth initialization error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
-        try {
-          const currentUser = session?.user ?? null;
-          setUser(currentUser);
-          if (currentUser?.email) {
-            await checkProfile(currentUser.email);
-          } else {
-            setHasProfile(false);
-          }
-        } catch (err) {
-          console.error("Critical AuthContext subscription failure:", err);
-          setHasProfile(false);
-          setUser(null);
-        } finally {
-          setLoading(false);
+        setUser(session?.user ?? null);
+        setLoading(false);
+        if (!session) {
+          queryClient.clear(); // Clear cache on logout
         }
       }
     );
@@ -93,26 +68,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [queryClient]);
 
   const signOut = async () => {
     try {
-      // Clear local state first for immediate UI response
-      setUser(null);
-      setHasProfile(false);
-      
-      // Attempt to notify Supabase (and clear cookies)
       await supabase.auth.signOut();
+      setUser(null);
+      queryClient.clear();
+      navigate("/login");
     } catch (err) {
       console.error("Sign out error:", err);
-    } finally {
-      // Always ensure we are back at the home or login page
+      // Fallback if SDK fails
       window.location.href = "/login";
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, hasProfile, loading, signOut, checkProfile }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        hasProfile, 
+        loading: loading || (!!user && profileLoading), 
+        signOut, 
+        checkProfile: () => checkProfile() 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

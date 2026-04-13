@@ -34,14 +34,6 @@ export default function Requests() {
       const profileMap = new Map(allProfiles.map(p => [p.id, p]));
       const postMap = new Map((allPosts || []).map(p => [p.id, p]));
 
-      console.log('Requests Debug:', { 
-        userId: user.id, 
-        incRaw, 
-        outRaw, 
-        profilesCount: allProfiles.length,
-        profileMapKeys: Array.from(profileMap.keys()) 
-      });
-
       const mapRequest = (req: any) => {
         const mapped = {
           ...req,
@@ -49,12 +41,6 @@ export default function Requests() {
           receiver_profile: profileMap.get(req.receiver_id),
           post_details: postMap.get(req.post_id)
         };
-        if (!mapped.sender_profile || !mapped.receiver_profile) {
-          console.warn('Incomplete profile mapping for request:', req.id, {
-            senderFound: !!mapped.sender_profile,
-            receiverFound: !!mapped.receiver_profile
-          });
-        }
         return mapped;
       };
 

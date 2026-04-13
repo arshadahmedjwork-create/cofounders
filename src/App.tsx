@@ -1,32 +1,48 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { Loader2 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
-import Index from "./pages/Index.tsx";
-import BrowseProfiles from "./pages/BrowseProfiles.tsx";
-import Login from "./pages/Login.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import SynapseTest from "./pages/SynapseTest.tsx";
-import Onboarding from "./pages/Onboarding.tsx";
-import Posts from "./pages/Posts.tsx";
-import Requests from "./pages/Requests.tsx";
-import Profile from "./pages/Profile.tsx";
-import Messages from "./pages/Messages.tsx";
+// Lazy load pages
+const Index = lazy(() => import("./pages/Index.tsx"));
+const BrowseProfiles = lazy(() => import("./pages/BrowseProfiles.tsx"));
+const Login = lazy(() => import("./pages/Login.tsx"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const SynapseTest = lazy(() => import("./pages/SynapseTest.tsx"));
+const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
+const Posts = lazy(() => import("./pages/Posts.tsx"));
+const Requests = lazy(() => import("./pages/Requests.tsx"));
+const Profile = lazy(() => import("./pages/Profile.tsx"));
+const Messages = lazy(() => import("./pages/Messages.tsx"));
 
-const queryClient = new QueryClient();
+// Loading fallback
+const PageLoader = () => (
+  <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+    <Loader2 className="animate-spin text-primary mb-4" size={40} />
+    <p className="text-muted-foreground font-medium animate-pulse">Loading...</p>
+  </div>
+);
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
+        <Suspense fallback={<PageLoader />}>
+          <Routes location={location}>
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
@@ -48,8 +64,31 @@ const App = () => (
 
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        </Suspense>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <AnimatedRoutes />
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
