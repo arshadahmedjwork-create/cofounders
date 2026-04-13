@@ -64,12 +64,22 @@ export default function Onboarding() {
     idea: "",
     city: "",
     linkedin: "",
+    avatarUrl: "",
+    experience: "",
   });
 
-  // Sync email if user loads slightly after mount
+  // Sync data from LinkedIn Metadata if available
   useEffect(() => {
-    if (user?.email && !formData.email) {
-      setFormData(prev => ({ ...prev, email: user.email! }));
+    if (user) {
+      const meta = user.user_metadata;
+      setFormData(prev => ({
+        ...prev,
+        email: user.email || prev.email,
+        firstName: prev.firstName || meta.given_name || meta.full_name?.split(' ')[0] || "",
+        lastName: prev.lastName || meta.family_name || meta.full_name?.split(' ').slice(1).join(' ') || "",
+        avatarUrl: prev.avatarUrl || meta.avatar_url || meta.picture || "",
+        experience: prev.experience || meta.headline || "",
+      }));
     }
   }, [user]);
 
@@ -186,6 +196,28 @@ export default function Onboarding() {
               {/* STEP 1: IDENTITY */}
               {step === 1 && (
                 <>
+                  <div className="flex flex-col items-center mb-6">
+                    <div className="relative group">
+                      <div className="w-24 h-24 rounded-full border-4 border-primary/20 p-1 relative overflow-hidden bg-muted flex items-center justify-center">
+                        {formData.avatarUrl ? (
+                          <img 
+                            src={formData.avatarUrl} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <div className="text-muted-foreground font-bold text-2xl">
+                            {formData.firstName[0]}{formData.lastName[0]}
+                          </div>
+                        )}
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg border-2 border-card">
+                        <Check size={12} strokeWidth={3} />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-primary font-bold tracking-widest uppercase mt-3">Identity Synced via LinkedIn</p>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-muted-foreground tracking-widest uppercase">First Name</label>
@@ -293,6 +325,18 @@ export default function Onboarding() {
                         </label>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <label className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Professional Background / Headline</label>
+                    <textarea
+                      placeholder="e.g. Serial Entrepreneur | Ex-Google Product Manager"
+                      value={formData.experience}
+                      onChange={e => setFormData({ ...formData, experience: e.target.value })}
+                      rows={2}
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-foreground font-medium"
+                    />
+                    <p className="text-[10px] text-muted-foreground">This was synced from your LinkedIn headline. Feel free to refine it.</p>
                   </div>
                 </>
               )}

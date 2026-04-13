@@ -9,4 +9,6 @@ export interface UserProfile {
   idea: string;
   city: string;
   linkedin: string;
+  avatarUrl?: string;
+  experience?: string;
 }

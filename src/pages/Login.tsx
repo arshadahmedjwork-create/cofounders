@@ -180,185 +180,68 @@ export default function Login() {
           </Link>
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <h2 className="font-display text-3xl font-bold text-foreground mb-2">
-              {isLogin ? "Welcome Back" : "Create Account"}
+          <div className="text-center mb-10">
+            <h2 className="font-display text-4xl font-bold text-foreground mb-3">
+              Join the Network
             </h2>
-            <p className="text-muted-foreground text-sm">
-              {isLogin
-                ? "Enter your credentials to access your account"
-                : "Sign up to start your journey"}
+            <p className="text-muted-foreground text-sm max-w-[280px] mx-auto">
+              Connect with founders and builders. Securely login via LinkedIn.
             </p>
           </div>
 
-          {/* Tab Switcher */}
-          <div className="flex bg-muted rounded-xl p-1 mb-8">
-            <button
-              onClick={() => switchMode()}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-                isLogin
-                  ? "bg-background text-foreground shadow-md"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+          <div className="space-y-6">
+            <motion.button
+              onClick={async () => {
+                setLoading(true);
+                setError("");
+                const { error: authError } = await supabase.auth.signInWithOAuth({
+                  provider: "linkedin_oidc",
+                  options: {
+                    redirectTo: window.location.origin + "/",
+                    scopes: "openid profile email", // Standard OIDC scopes
+                  },
+                });
+                if (authError) {
+                  setError(authError.message);
+                  setLoading(false);
+                }
+              }}
+              disabled={loading}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-4 rounded-2xl bg-[#0077b5] text-white font-bold text-base flex items-center justify-center gap-3 shadow-xl shadow-[#0077b5]/20 hover:bg-[#0077b5]/90 transition-all disabled:opacity-70"
             >
-              Login
-            </button>
-            <button
-              onClick={() => switchMode()}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-                !isLogin
-                  ? "bg-background text-foreground shadow-md"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Sign Up
-            </button>
-          </div>
+              {loading ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                <>
+                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+                  </svg>
+                  Continue with LinkedIn
+                </>
+              )}
+            </motion.button>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={isLogin ? "login" : "signup"}
-                initial={{ opacity: 0, x: isLogin ? -20 : 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: isLogin ? 20 : -20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-5"
-              >
-                {/* Email */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground" htmlFor="email">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail
-                      size={18}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <input
-                      id="email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground" htmlFor="password">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock
-                      size={18}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder={isLogin ? "Enter your password" : "Create a password (min 6 chars)"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-11 pr-12 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Confirm Password (Sign Up only) */}
-                {!isLogin && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="space-y-2"
-                  >
-                    <label className="text-sm font-medium text-foreground" htmlFor="confirmPassword">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <Lock
-                        size={18}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                      />
-                      <input
-                        id="confirmPassword"
-                        type={showConfirm ? "text" : "password"}
-                        placeholder="Re-enter your password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full pl-11 pr-12 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirm(!showConfirm)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </motion.div>
-            </AnimatePresence>
+            {/* Privacy note */}
+            <p className="text-center text-[10px] text-muted-foreground leading-relaxed px-4">
+              By continuing, you agree to our <span className="underline cursor-pointer">Terms of Service</span> and <span className="underline cursor-pointer">Privacy Policy</span>. We only sync your professional profile.
+            </p>
 
             {/* Error Message */}
             <AnimatePresence>
               {error && (
                 <motion.div
-                  initial={{ opacity: 0, y: -8 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  className="bg-destructive/10 text-destructive text-sm px-4 py-3 rounded-xl border border-destructive/20"
+                  exit={{ opacity: 0 }}
+                  className="bg-destructive/10 text-destructive text-xs p-3 rounded-xl border border-destructive/20 text-center"
                 >
                   {error}
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Submit Button */}
-            <motion.button
-              type="submit"
-              disabled={loading}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                  className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                />
-              ) : (
-                <>
-                  {isLogin ? "Login" : "Create Account"}
-                  <ArrowRight size={16} />
-                </>
-              )}
-            </motion.button>
-          </form>
-
-          {/* Footer text */}
-          <p className="text-center text-muted-foreground text-xs mt-8">
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
-            <button
-              onClick={switchMode}
-              className="text-primary font-semibold hover:underline"
-            >
-              {isLogin ? "Sign Up" : "Login"}
-            </button>
-          </p>
+          </div>
         </motion.div>
       </div>
     </div>

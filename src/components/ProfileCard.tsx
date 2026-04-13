@@ -90,10 +90,18 @@ export default function ProfileCard({ profile, index = 0 }: { profile: Profile; 
       <div className="flex items-center gap-3 mb-3">
         <motion.div
           whileHover={{ scale: 1.1, rotate: 5 }}
-          className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-primary-foreground shrink-0 shadow-lg"
+          className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden text-lg font-bold text-primary-foreground shrink-0 shadow-lg"
           style={{ backgroundColor: profile.avatarColor }}
         >
-          {profile.name.split(" ").map((n) => n[0]).join("")}
+          {profile.avatarUrl ? (
+            <img 
+              src={profile.avatarUrl} 
+              alt={profile.name} 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            profile.name.split(" ").map((n) => n[0]).join("")
+          )}
         </motion.div>
         <div>
           <h3 className="font-semibold text-foreground text-sm">{profile.name}</h3>

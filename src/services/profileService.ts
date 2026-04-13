@@ -16,11 +16,13 @@ export const saveProfile = async (userId: string, data: UserProfile): Promise<{ 
     looking_for: data.lookingFor,
     idea: data.idea,
     skills: data.selectedSkills,
+    avatar_url: data.avatarUrl,
+    experience: data.experience,
   };
 
   const { data: result, error } = await supabase
     .from("user_profiles")
-    .insert([insertData])
+    .upsert([insertData]) // Use upsert in case they are re-onboarding
     .select()
     .single();
 
@@ -53,7 +55,8 @@ export const getProfiles = async (): Promise<Profile[]> => {
     stage: row.stage || 'Idea',
     matchPercent: row.match_percent || Math.floor(Math.random() * 30 + 70),
     avatarColor: row.avatar_color || `hsl(${Math.floor(Math.random() * 360)}, 70%, 40%)`,
-    bio: row.bio || row.idea || 'Ready to build something amazing.',
+    avatarUrl: row.avatar_url,
+    bio: row.experience || row.bio || row.idea || 'Ready to build something amazing.',
     lookingFor: row.looking_for || 'Co-founder',
   }));
 
