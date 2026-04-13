@@ -33,17 +33,22 @@ export const sendConnectionRequest = async (
   postTitle: string
 ): Promise<{ success: boolean; error?: string }> => {
   try {
+    const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+    // SIMULATION MODE: Skip DB for demo profiles
+    if (!isUuid(receiverId)) {
+      return { success: true };
+    }
+
     // Attempt to insert the connection request
-    const { error: dbError } = await supabase
-      .from("connection_requests")
-      .insert([
-        {
-          sender_id: senderId,
-          receiver_id: receiverId,
-          post_id: postId,
-          status: "pending",
-        },
-      ]);
+    const { error: dbError } = await supabase.from("connection_requests").insert([
+      {
+        sender_id: senderId,
+        receiver_id: receiverId,
+        post_id: postId,
+        status: "pending",
+      },
+    ]);
 
     if (dbError) {
       if (dbError.code === "23505") { // unique violation
@@ -165,11 +170,10 @@ export const checkExistingConnection = async (
     const { data, error } = await supabase
       .from("connection_requests")
       .select("status")
-      .or(`and(sender_id.eq."${senderId}",receiver_id.eq."${receiverId}"),and(sender_id.eq."${receiverId}",receiver_id.eq."${senderId}")`)
+      .or(`and(sender_id.eq.${senderId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${senderId})`)
       .maybeSingle();
 
     if (error) {
-      if (error.code === '22P02') return null; // Invalid UUID input syntax
       return null;
     }
     
