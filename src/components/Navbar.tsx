@@ -3,11 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 const navLinks = [
-  { label: "How It Works", href: "/#how-it-works" },
   { label: "Browse Profiles", href: "/browse" },
-  { label: "Our Process", href: "/#process" },
   { label: "Success Stories", href: "/#testimonials" },
   { label: "Pricing", href: "/#pricing" },
 ];

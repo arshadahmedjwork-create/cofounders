@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
-import HowItWorks from "@/components/landing/HowItWorks";
 import ProfilesPreview from "@/components/landing/ProfilesPreview";
 import PsycheMapTeaser from "@/components/landing/PsycheMapTeaser";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
@@ -16,7 +15,6 @@ export default function Index() {
     >
       <Navbar />
       <HeroSection />
-      <HowItWorks />
       <ProfilesPreview />
       <PsycheMapTeaser />
       <TestimonialsSection />

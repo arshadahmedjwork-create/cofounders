@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const links = {
-  Product: ["Browse Profiles", "PsycheMap™", "Founder Sprint", "Pricing"],
+  Product: ["Browse Profiles", "PsycheMap™", "Pricing"],
   Resources: ["Blog", "Guides", "Webinars", "Community"],
   Company: ["About Us", "Careers", "Press", "Contact"],
   Legal: ["Privacy Policy", "Terms of Service", "Cookie Policy"],

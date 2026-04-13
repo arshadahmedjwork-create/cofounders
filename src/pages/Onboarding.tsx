@@ -75,8 +75,8 @@ export default function Onboarding() {
       setFormData(prev => ({
         ...prev,
         email: user.email || prev.email,
-        firstName: prev.firstName || meta.given_name || meta.full_name?.split(' ')[0] || "",
-        lastName: prev.lastName || meta.family_name || meta.full_name?.split(' ').slice(1).join(' ') || "",
+        firstName: prev.firstName || meta.given_name || meta.full_name?.split(' ')[0] || meta.name?.split(' ')[0] || meta.user_name || "",
+        lastName: prev.lastName || meta.family_name || meta.full_name?.split(' ').slice(1).join(' ') || meta.name?.split(' ').slice(1).join(' ') || "",
         avatarUrl: prev.avatarUrl || meta.avatar_url || meta.picture || "",
         experience: prev.experience || meta.headline || "",
       }));
