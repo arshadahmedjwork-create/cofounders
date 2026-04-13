@@ -16,7 +16,46 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const location = useLocation();
+
+  useEffect(() => {
+    if (!user) {
+      setPendingCount(0);
+      return;
+    }
+
+    const fetchPending = async () => {
+      const { count } = await supabase
+        .from("connection_requests")
+        .select("*", { count: 'exact', head: true })
+        .eq("receiver_id", user.id)
+        .eq("status", "pending");
+      
+      setPendingCount(count || 0);
+    };
+
+    fetchPending();
+
+    // Subscribe to real-time updates for NEW connections
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'connection_requests',
+          filter: `receiver_id=eq.${user.id}`
+        },
+        () => fetchPending()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   // Always enforce dark mode — light mode is removed.
   useEffect(() => {
@@ -129,12 +168,21 @@ export default function Navbar() {
               </motion.div>
             ) : (
               <div className="relative group">
-                <div className="flex items-center gap-3 p-1 pr-4 rounded-full cursor-pointer hover:bg-[hsl(222,28%,14%)] transition-colors"
+                <div className="flex items-center gap-3 p-1 pr-4 rounded-full cursor-pointer hover:bg-[hsl(222,28%,14%)] transition-colors relative"
                   style={{ background: "hsl(222, 28%, 12%)", border: "1px solid hsl(222, 22%, 20%)" }}>
                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-sm">
                     {user.email?.[0].toUpperCase()}
                   </div>
                   <span className="text-sm font-semibold" style={{ color: "hsl(218, 14%, 56%)" }}>Menu</span>
+                  
+                  {pendingCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-[10px] items-center justify-center text-white font-bold">
+                        {pendingCount}
+                      </span>
+                    </span>
+                  )}
                 </div>
                 
                 {/* Dropdown Options for Backend Features */}
@@ -148,6 +196,14 @@ export default function Navbar() {
                   </Link>
                   <Link to="/requests?tab=selections" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
                     My Selections
+                  </Link>
+                  <Link to="/requests?tab=incoming" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)] flex justify-between items-center">
+                    Incoming Requests
+                    {pendingCount > 0 && (
+                      <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                        {pendingCount}
+                      </span>
+                    )}
                   </Link>
                   <Link to="/requests?tab=sent" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
                     My Requests
