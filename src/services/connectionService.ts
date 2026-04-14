@@ -104,8 +104,7 @@ export const getIncomingRequests = async (userId: string): Promise<ConnectionReq
     .from("connection_requests")
     .select(`
       *,
-      sender_profile:user_profiles!sender_id(first_name, last_name, email, role, city),
-      post_details:cofounder_posts!post_id(title, role_required)
+      sender_profile:user_profiles!sender_id(first_name, last_name, email, role, city)
     `)
     .eq("receiver_id", userId)
     .order("created_at", { ascending: false });
@@ -142,8 +141,7 @@ export const getOutgoingRequests = async (userId: string): Promise<ConnectionReq
     .from("connection_requests")
     .select(`
       *,
-      receiver_profile:user_profiles!receiver_id(first_name, last_name, role),
-      post_details:cofounder_posts!post_id(title)
+      receiver_profile:user_profiles!receiver_id(first_name, last_name, role)
     `)
     .eq("sender_id", userId)
     .order("created_at", { ascending: false });

@@ -16,7 +16,7 @@ const Login = lazy(() => import("./pages/Login.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const SynapseTest = lazy(() => import("./pages/SynapseTest.tsx"));
 const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
-const Posts = lazy(() => import("./pages/Posts.tsx"));
+const OpportunityHub = lazy(() => import("./pages/OpportunityHub.tsx"));
 const Requests = lazy(() => import("./pages/Requests.tsx"));
 const Profile = lazy(() => import("./pages/Profile.tsx"));
 const Messages = lazy(() => import("./pages/Messages.tsx"));
@@ -56,7 +56,7 @@ const AnimatedRoutes = () => {
             <Route element={<ProtectedRoute requireProfile={true} />}>
               <Route path="/browse" element={<BrowseProfiles />} />
               <Route path="/assessment" element={<SynapseTest />} />
-              <Route path="/posts" element={<Posts />} />
+              <Route path="/posts" element={<OpportunityHub />} />
               <Route path="/requests" element={<Requests />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Messages />} />

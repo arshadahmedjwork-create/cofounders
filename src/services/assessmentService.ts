@@ -10,7 +10,7 @@ export interface AssessmentResult {
 export const saveAssessment = async (userEmail: string, answers: Record<number, string | number>): Promise<{ success: boolean; error?: string }> => {
   try {
     const { error } = await supabase
-      .from("synapse_assessments")
+      .from("assessments")
       .insert([
         {
           user_email: userEmail,
@@ -30,7 +30,7 @@ export const saveAssessment = async (userEmail: string, answers: Record<number, 
 export const getLastAssessment = async (userEmail: string): Promise<AssessmentResult | null> => {
   try {
     const { data, error } = await supabase
-      .from("synapse_assessments")
+      .from("assessments")
       .select("*")
       .eq("user_email", userEmail)
       .order("created_at", { ascending: false })

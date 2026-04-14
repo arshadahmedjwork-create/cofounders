@@ -17,6 +17,7 @@ export default function Messages() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [peerId, setPeerId] = useState<string | null>(null);
   const [peerName, setPeerName] = useState("Founder");
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -26,13 +27,12 @@ export default function Messages() {
       return;
     }
 
+    let subscription: { unsubscribe: () => void } | null = null;
+
     const loadData = async () => {
       setLoading(true);
-      // Fetch messages
-      const msgs = await getMessages(connectionId);
-      setMessages(msgs);
       
-      // Fetch peer info
+      // 1. Fetch connection/peer info first to get peerId
       const { data: conn } = await supabase
         .from("connection_requests")
         .select(`
@@ -46,10 +46,29 @@ export default function Messages() {
       
       if (conn) {
         const isSender = conn.sender_id === user.id;
-        // In case Supabase returns profiles as single-item arrays
-        const rawPeer = isSender ? conn.receiver_profile : conn.sender_profile;
-        const peer = Array.isArray(rawPeer) ? rawPeer[0] : rawPeer;
-        setPeerName(`${peer?.first_name || "Co-founder"} ${peer?.last_name || ""}`);
+        const targetPeerId = isSender ? conn.receiver_id : conn.sender_id;
+        const peerProfile = isSender ? conn.receiver_profile : conn.sender_profile;
+        
+        // Support both raw schema (first/last) and mapped (name)
+        const name = peerProfile?.name || `${peerProfile?.first_name || "Co-founder"} ${peerProfile?.last_name || ""}`;
+        
+        setPeerId(targetPeerId);
+        setPeerName(name.trim());
+
+        // 2. Fetch messages for this conversation
+        const msgs = await getMessages(user.id, targetPeerId);
+        setMessages(msgs);
+
+        // 3. Subscribe to new messages for this specific duo
+        subscription = subscribeToMessages(user.id, targetPeerId, (msg) => {
+          setMessages((prev) => {
+            if (prev.find(m => m.id === msg.id)) return prev;
+            return [...prev, msg];
+          });
+        });
+      } else {
+        toast.error("Synergy channel not found.");
+        navigate("/requests");
       }
       
       setLoading(false);
@@ -57,16 +76,8 @@ export default function Messages() {
 
     loadData();
 
-    // Subscribe to new messages
-    const subscription = subscribeToMessages(connectionId, (msg) => {
-      setMessages((prev) => {
-        if (prev.find(m => m.id === msg.id)) return prev;
-        return [...prev, msg];
-      });
-    });
-
     return () => {
-      subscription.unsubscribe();
+      if (subscription) subscription.unsubscribe();
     };
   }, [connectionId, user, navigate]);
 
@@ -78,14 +89,14 @@ export default function Messages() {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user || !connectionId) return;
+    if (!newMessage.trim() || !user || !peerId) return;
 
     const content = newMessage;
     setNewMessage(""); // Clear immediate for UX
     
-    const res = await sendMessage(connectionId, user.id, content);
+    const res = await sendMessage(user.id, peerId, content);
     if (!res.success) {
-      toast.error("Failed to send message.");
+      toast.error("Failed to transmit message.");
       setNewMessage(content); // Restore if failed
     }
   };

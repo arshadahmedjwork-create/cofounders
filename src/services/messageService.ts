@@ -2,22 +2,22 @@ import { supabase } from "../lib/supabase";
 
 export interface Message {
   id: string;
-  connection_id: string;
   sender_id: string;
+  receiver_id: string;
   content: string;
   created_at: string;
 }
 
 /**
- * Sends a message to a specific connection.
+ * Sends a message between two users.
  */
-export const sendMessage = async (connectionId: string, senderId: string, content: string): Promise<{ success: boolean; error?: string }> => {
+export const sendMessage = async (senderId: string, receiverId: string, content: string): Promise<{ success: boolean; error?: string }> => {
   try {
     const { error } = await supabase
       .from("messages")
       .insert([{ 
-        connection_id: connectionId, 
         sender_id: senderId, 
+        receiver_id: receiverId, 
         content 
       }]);
 
@@ -30,14 +30,14 @@ export const sendMessage = async (connectionId: string, senderId: string, conten
 };
 
 /**
- * Fetches all messages for a specific connection.
+ * Fetches all messages between two users (the conversation history).
  */
-export const getMessages = async (connectionId: string): Promise<Message[]> => {
+export const getMessages = async (userIdA: string, userIdB: string): Promise<Message[]> => {
   try {
     const { data, error } = await supabase
       .from("messages")
       .select("*")
-      .eq("connection_id", connectionId)
+      .or(`and(sender_id.eq.${userIdA},receiver_id.eq.${userIdB}),and(sender_id.eq.${userIdB},receiver_id.eq.${userIdA})`)
       .order("created_at", { ascending: true });
 
     if (error) throw error;
@@ -49,21 +49,28 @@ export const getMessages = async (connectionId: string): Promise<Message[]> => {
 };
 
 /**
- * Subscribes to real-time messages for a specific connection.
+ * Subscribes to real-time messages for a conversation between two users.
  */
-export const subscribeToMessages = (connectionId: string, callback: (message: Message) => void) => {
+export const subscribeToMessages = (userIdA: string, userIdB: string, callback: (message: Message) => void) => {
   return supabase
-    .channel(`messages:${connectionId}`)
+    .channel(`chat:${userIdA}:${userIdB}`)
     .on(
       "postgres_changes",
       {
         event: "INSERT",
         schema: "public",
         table: "messages",
-        filter: `connection_id=eq.${connectionId}`,
       },
       (payload) => {
-        callback(payload.new as Message);
+        const msg = payload.new as Message;
+        // Only trigger callback if message belongs to this conversation
+        const isMaching = 
+          (msg.sender_id === userIdA && msg.receiver_id === userIdB) ||
+          (msg.sender_id === userIdB && msg.receiver_id === userIdA);
+        
+        if (isMaching) {
+          callback(msg);
+        }
       }
     )
     .subscribe();

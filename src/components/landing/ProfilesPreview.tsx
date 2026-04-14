@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import ProfileCard from "@/components/ProfileCard";
-import { Profile, DEMO_PROFILES } from "@/data/profiles";
+import { Profile } from "@/data/profiles";
+import { getProfiles } from "@/services/profileService";
 
 const filters = ["All", "Founders", "Freelancers", "Operators"];
 
@@ -13,17 +14,30 @@ export default function ProfilesPreview() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setProfiles(DEMO_PROFILES);
-    setLoading(false);
+    const loadProfiles = async () => {
+      try {
+        const data = await getProfiles();
+        setProfiles(data);
+      } catch (error) {
+        console.error("Failed to load profiles:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProfiles();
   }, []);
 
   const filtered = profiles.filter((p) => {
     if (active === "All") return true;
-    if (active === "Founders") return p.role.includes("Founder") || p.role.includes("Entrepreneur");
-    if (active === "Freelancers") return p.role.includes("Freelance");
-    if (active === "Operators") return p.role.includes("Operator");
+    const roleLower = p.role?.toLowerCase() || "";
+    if (active === "Founders") return roleLower.includes("founder") || roleLower.includes("entrepreneur");
+    if (active === "Freelancers") return roleLower.includes("freelance");
+    if (active === "Operators") return roleLower.includes("operator");
     return true;
   });
+
+  // If we have few profiles, show them all. Otherwise limit to 6 for the preview grid.
+  const displayProfiles = filtered.length <= 8 ? filtered : filtered.slice(0, 6);
 
   return (
     <section id="process" className="py-28 relative overflow-hidden">
@@ -91,7 +105,7 @@ export default function ProfilesPreview() {
               transition={{ duration: 0.3 }}
               className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto"
             >
-              {filtered.slice(0, 6).map((p, i) => (
+              {displayProfiles.map((p, i) => (
                 <motion.div
                   key={p.id}
                   initial={{ opacity: 0, y: 20 }}

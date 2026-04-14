@@ -90,7 +90,15 @@ export default function Navbar() {
       >
         <div className="container mx-auto flex items-center justify-between px-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
+          <Link 
+            to="/" 
+            className="flex items-center gap-2.5 group"
+            onClick={() => {
+              if (location.pathname === "/") {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+          >
             <img
               src="/logo-symbol.png"
               alt="Cofounder Matrimony Logo"
@@ -104,26 +112,36 @@ export default function Navbar() {
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-7">
             {navLinks.map((link, i) => {
-              const active = location.pathname + location.hash === link.href ||
-                (link.href.startsWith("/#") && location.pathname === "/" && location.hash === link.href.slice(1));
-              
               const isAnchor = link.href.startsWith("/#");
+              const active = location.pathname + location.hash === link.href ||
+                (isAnchor && location.pathname === "/" && location.hash === link.href.slice(1));
               
               if (isAnchor) {
                 return (
-                  <motion.a
+                  <Link
                     key={link.label}
-                    href={link.href}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 + i * 0.05 }}
+                    to={link.href}
                     className="text-sm font-medium relative group py-1"
                     style={{ color: active ? "hsl(262, 75%, 72%)" : "hsl(218, 14%, 62%)" }}
+                    onClick={(e) => {
+                      if (location.pathname === "/") {
+                        e.preventDefault();
+                        const id = link.href.split("#")[1];
+                        const el = document.getElementById(id);
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
                   >
-                    {link.label}
+                    <motion.span
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 + i * 0.05 }}
+                    >
+                      {link.label}
+                    </motion.span>
                     <span className="absolute bottom-0 left-0 w-full h-px rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
                       style={{ background: "hsl(262, 75%, 68%)" }} />
-                  </motion.a>
+                  </Link>
                 );
               }
               
@@ -172,7 +190,7 @@ export default function Navbar() {
                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-sm">
                     {user.email?.[0].toUpperCase()}
                   </div>
-                  <span className="text-sm font-semibold" style={{ color: "hsl(218, 14%, 56%)" }}>Menu</span>
+                  <span className="text-sm font-semibold" style={{ color: "hsl(218, 14%, 56%)" }}>Dashboard</span>
                   
                   {pendingCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4">
@@ -187,29 +205,26 @@ export default function Navbar() {
                 {/* Dropdown Options for Backend Features */}
                 <div className="absolute right-0 mt-2 w-48 rounded-xl shadow-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-[hsl(222,22%,20%)]"
                   style={{ background: "hsl(222, 30%, 7%)" }}>
+                  <Link to="/browse" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
+                    Explore Network
+                  </Link>
                   <Link to="/profile" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
-                    My Profile
+                    My Account
                   </Link>
                   <Link to="/posts" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
-                    My Posts
+                    My Opportunity Hub
                   </Link>
-                  <Link to="/requests?tab=selections" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
-                    My Selections
-                  </Link>
-                  <Link to="/requests?tab=incoming" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)] flex justify-between items-center">
-                    Incoming Requests
+                  <Link to="/requests" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)] flex justify-between items-center">
+                    Network Requests
                     {pendingCount > 0 && (
                       <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
                         {pendingCount}
                       </span>
                     )}
                   </Link>
-                  <Link to="/requests?tab=sent" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
-                    My Requests
-                  </Link>
                   <div className="w-full h-px" style={{ background: "hsl(222, 22%, 18%)" }}></div>
                   <button onClick={() => signOut()} className="w-full text-left block px-4 py-3 text-sm font-semibold transition-colors text-[hsl(0,62%,60%)] hover:bg-[hsl(222,28%,12%)]">
-                    Sign Out
+                    Secure Sign Out
                   </button>
                 </div>
               </div>
