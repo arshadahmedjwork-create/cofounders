@@ -79,7 +79,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-[1.05] mb-6"
+            className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-[1.1] md:leading-[1.05] mb-6 tracking-tight"
             style={{ color: "hsl(218, 22%, 96%)" }}
           >
             Find Your Co-Founder.
@@ -105,7 +105,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-base md:text-lg max-w-2xl mx-auto mb-10"
+            className="text-sm md:text-lg max-w-2xl mx-auto mb-10 px-4 md:px-0"
             style={{ color: "hsl(218, 14%, 62%)" }}
           >
             Where visionary founders, brilliant freelancers, and seasoned operators

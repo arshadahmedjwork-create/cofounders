@@ -269,42 +269,54 @@ export default function Navbar() {
               backdropFilter: "blur(24px)",
             }}
           >
-            {navLinks.map((link, i) => (
-              <motion.a
-                key={link.label}
-                href={link.href}
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 + i * 0.08, type: "spring" }}
-                onClick={() => setMobileOpen(false)}
-                className="text-2xl font-display font-semibold transition-colors"
-                style={{ color: "hsl(218, 22%, 88%)" }}
-              >
-                {link.label}
-              </motion.a>
-            ))}
+            <div className="flex flex-col items-center gap-6 mb-8 mt-12">
+              {navLinks.map((link, i) => (
+                <motion.a
+                  key={link.label}
+                  href={link.href}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 + i * 0.08, type: "spring" }}
+                  onClick={() => setMobileOpen(false)}
+                  className="text-2xl font-display font-semibold transition-colors"
+                  style={{ color: "hsl(218, 22%, 88%)" }}
+                >
+                  {link.label}
+                </motion.a>
+              ))}
+            </div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55 }}
-              className="flex flex-col gap-3 mt-4 w-full px-6"
+              transition={{ delay: 0.4 }}
+              className="flex flex-col gap-3 w-full px-6 overflow-y-auto max-h-[60vh] pb-10"
             >
+              {user && (
+                <div className="flex flex-col gap-3 py-6 border-y border-border/30 mb-4">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2 px-2">Account Control</span>
+                  <Link to="/profile" onClick={() => setMobileOpen(false)} className="text-xl font-bold py-2 px-2 text-foreground/80">My Profile</Link>
+                  <Link to="/requests" onClick={() => setMobileOpen(false)} className="text-xl font-bold py-2 px-2 text-foreground/80 flex justify-between items-center">
+                    Network Requests
+                    {pendingCount > 0 && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{pendingCount}</span>}
+                  </Link>
+                  <Link to="/posts" onClick={() => setMobileOpen(false)} className="text-xl font-bold py-2 px-2 text-foreground/80">Opportunity Hub</Link>
+                </div>
+              )}
+
               {!user ? (
                 <Link to="/login" onClick={() => setMobileOpen(false)}
-                  className="py-3.5 rounded-xl text-lg font-semibold text-center transition-all"
-                  style={{ background: "hsl(222, 28%, 14%)", border: "1px solid hsl(222, 22%, 22%)", color: "hsl(218, 18%, 76%)" }}>
-                  Login
+                  className="py-4 rounded-2xl text-lg font-semibold text-center transition-all bg-[hsl(222,28%,14%)] border border-[hsl(222,22%,22%)] text-[hsl(218,18%,76%)]">
+                  Access Portal
                 </Link>
               ) : (
                 <button onClick={() => { signOut(); setMobileOpen(false); }}
-                  className="py-3.5 rounded-xl text-lg font-semibold text-center"
-                  style={{ background: "hsl(222, 28%, 14%)", color: "hsl(218, 14%, 60%)" }}>
-                  Sign Out
+                  className="py-4 rounded-2xl text-lg font-semibold text-center bg-destructive/10 text-destructive border border-destructive/20">
+                  Logout Current Session
                 </button>
               )}
               <Link to="/assessment" onClick={() => setMobileOpen(false)}
-                className="py-3.5 rounded-xl text-lg font-bold text-center shadow-xl"
-                style={{ background: "hsl(262, 75%, 60%)", color: "#fff" }}>
+                className="py-4 rounded-2xl text-lg font-bold text-center shadow-xl bg-[hsl(262,75%,60%)] text-white">
                 Take SYNAPSE™ Test
               </Link>
             </motion.div>

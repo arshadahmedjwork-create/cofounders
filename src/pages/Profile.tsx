@@ -131,12 +131,12 @@ export default function Profile() {
         <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] rounded-full bg-secondary/5 blur-[100px]" />
       </div>
 
-      <div className="container mx-auto px-4 pt-32 pb-20">
+      <div className="container mx-auto px-4 pt-24 md:pt-32 pb-20">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
-            <div className="flex items-center gap-6">
-              <div className="w-24 h-24 rounded-3xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-4xl font-bold text-primary shadow-xl overflow-hidden relative group">
+          <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-6 mb-10 md:mb-12 text-center md:text-left">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="w-24 h-24 md:w-28 md:h-28 rounded-3xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-4xl font-bold text-primary shadow-xl overflow-hidden relative group">
                 {formData.avatarUrl ? (
                   <img src={formData.avatarUrl} className="w-full h-full object-cover" />
                 ) : (
@@ -146,10 +146,12 @@ export default function Profile() {
                   <Sparkles size={20} className="text-white" />
                 </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-display font-bold">{formData.firstName} {formData.lastName}</h1>
-                <p className="text-muted-foreground flex items-center gap-2 mt-1">
-                  <span className="text-primary font-bold">{formData.userType}</span> • {formData.city}
+              <div className="space-y-1">
+                <h1 className="text-2xl md:text-4xl font-display font-bold leading-tight">{formData.firstName} {formData.lastName}</h1>
+                <p className="text-sm md:text-base text-muted-foreground flex items-center justify-center md:justify-start gap-2">
+                  <span className="text-primary font-black uppercase tracking-wider">{formData.userType}</span> 
+                  <span className="opacity-40">•</span> 
+                  <span className="font-medium text-foreground/80">{formData.city}</span>
                 </p>
               </div>
             </div>
@@ -157,14 +159,14 @@ export default function Profile() {
             <button 
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+              className="w-full md:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
             >
-              <Save size={18} /> {isSaving ? "Saving..." : "Save Changes"}
+              <Save size={18} /> {isSaving ? "Syncing..." : "Save Changes"}
             </button>
           </div>
 
           {/* Tabs Navigation */}
-          <div className="flex border-b border-border/50 mb-8 overflow-x-auto no-scrollbar">
+          <div className="flex border-b border-border/50 mb-8 overflow-x-auto no-scrollbar mask-fade-right">
             {[
               { id: 'personal', label: 'Identity', icon: User },
               { id: 'professional', label: 'History', icon: Briefcase },
@@ -174,10 +176,10 @@ export default function Profile() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-all text-sm font-bold whitespace-nowrap ${
+                className={`flex items-center gap-2 px-5 md:px-6 py-4 border-b-2 transition-all text-xs md:text-sm font-bold whitespace-nowrap ${
                   activeTab === tab.id 
-                  ? "border-primary text-primary" 
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  ? "border-primary text-primary bg-primary/5" 
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/5"
                 }`}
               >
                 <tab.icon size={16} /> {tab.label}
@@ -185,7 +187,7 @@ export default function Profile() {
             ))}
           </div>
 
-          <div className="glass-card rounded-3xl p-8 shadow-2xl">
+          <div className="glass-card rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8 shadow-2xl relative overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -196,10 +198,10 @@ export default function Profile() {
               >
                 {/* PERSONAL TAB */}
                 {activeTab === 'personal' && (
-                  <div className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-6 md:space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                       <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">First Name</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">First Name</label>
                         <input 
                           value={formData.firstName}
                           onChange={(e) => setFormData({...formData, firstName: e.target.value})}
@@ -207,7 +209,7 @@ export default function Profile() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Last Name</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Last Name</label>
                         <input 
                           value={formData.lastName}
                           onChange={(e) => setFormData({...formData, lastName: e.target.value})}
@@ -215,7 +217,7 @@ export default function Profile() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">User Type</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">User Type</label>
                         <select 
                           value={formData.userType}
                           onChange={(e) => setFormData({...formData, userType: e.target.value as any})}
@@ -228,7 +230,7 @@ export default function Profile() {
                         </select>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Location</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Location</label>
                         <input 
                           value={formData.city}
                           onChange={(e) => setFormData({...formData, city: e.target.value})}
@@ -238,14 +240,14 @@ export default function Profile() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
                         Long-form Biography
-                        <span className="text-[10px] text-primary">{formData.fullBio?.length || 0} characters</span>
+                        <span className="text-[10px] text-primary lowercase">{formData.fullBio?.length || 0} chars</span>
                       </label>
                       <textarea 
                         value={formData.fullBio}
                         onChange={(e) => setFormData({...formData, fullBio: e.target.value})}
-                        className="onboarding-input min-h-[200px] py-4"
+                        className="onboarding-input min-h-[150px] md:min-h-[200px] py-4"
                         placeholder="Tell your story..."
                       />
                     </div>
@@ -254,11 +256,11 @@ export default function Profile() {
 
                 {/* PROFESSIONAL TAB */}
                 {activeTab === 'professional' && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
+                  <div className="space-y-10 md:space-y-12">
+                     <div className="space-y-6 text-left">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-bold flex items-center gap-2">
-                            <Briefcase className="text-primary" size={20} /> Work Experience
+                          <h3 className="text-base md:text-lg font-bold flex items-center gap-2">
+                            <Briefcase className="text-primary" size={18} /> Work Experience
                           </h3>
                           <button 
                             onClick={() => setFormData(prev => ({...prev, experienceHistory: [...(prev.experienceHistory || []), { company: "", role: "", year: "" }]}))}
@@ -269,8 +271,8 @@ export default function Profile() {
                         </div>
                         <div className="space-y-4">
                           {formData.experienceHistory?.map((exp, idx) => (
-                            <div key={idx} className="grid grid-cols-12 gap-3 p-4 bg-muted/30 rounded-2xl border border-border/50 items-end">
-                              <div className="col-span-5 md:col-span-4 space-y-1 text-left">
+                            <div key={idx} className="flex flex-col md:grid md:grid-cols-12 gap-3 p-4 md:p-5 bg-muted/30 rounded-2xl border border-border/50 relative">
+                              <div className="md:col-span-4 space-y-1">
                                 <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Company</label>
                                 <input value={exp.company} onChange={(e) => {
                                   const newList = [...(formData.experienceHistory || [])];
@@ -278,7 +280,7 @@ export default function Profile() {
                                   setFormData({...formData, experienceHistory: newList});
                                 }} className="onboarding-input-small" />
                               </div>
-                              <div className="col-span-4 md:col-span-5 space-y-1 text-left">
+                              <div className="md:col-span-5 space-y-1">
                                 <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Role</label>
                                 <input value={exp.role} onChange={(e) => {
                                   const newList = [...(formData.experienceHistory || [])];
@@ -286,16 +288,16 @@ export default function Profile() {
                                   setFormData({...formData, experienceHistory: newList});
                                 }} className="onboarding-input-small" />
                               </div>
-                              <div className="col-span-2 space-y-1 text-left">
-                                <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Year</label>
-                                <input value={exp.year} onChange={(e) => {
-                                  const newList = [...(formData.experienceHistory || [])];
-                                  newList[idx].year = e.target.value;
-                                  setFormData({...formData, experienceHistory: newList});
-                                }} className="onboarding-input-small" />
-                              </div>
-                              <div className="col-span-1 pb-1">
-                                <button onClick={() => setFormData(prev => ({...prev, experienceHistory: (prev.experienceHistory || []).filter((_, i) => i !== idx)}))} className="p-2 text-muted-foreground hover:text-destructive">
+                              <div className="flex gap-2 items-end md:col-span-3">
+                                <div className="flex-grow space-y-1">
+                                  <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Year</label>
+                                  <input value={exp.year} onChange={(e) => {
+                                    const newList = [...(formData.experienceHistory || [])];
+                                    newList[idx].year = e.target.value;
+                                    setFormData({...formData, experienceHistory: newList});
+                                  }} className="onboarding-input-small" />
+                                </div>
+                                <button onClick={() => setFormData(prev => ({...prev, experienceHistory: (prev.experienceHistory || []).filter((_, i) => i !== idx)}))} className="p-2 mb-0.5 text-muted-foreground hover:text-destructive shrink-0">
                                   <Trash2 size={16} />
                                 </button>
                               </div>
@@ -304,10 +306,10 @@ export default function Profile() {
                         </div>
                      </div>
 
-                     <div className="space-y-6">
+                     <div className="space-y-6 text-left">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-bold flex items-center gap-2">
-                            <GraduationCap className="text-secondary" size={20} /> Academic History
+                          <h3 className="text-base md:text-lg font-bold flex items-center gap-2">
+                            <GraduationCap className="text-secondary" size={18} /> Academic History
                           </h3>
                           <button 
                             onClick={() => setFormData(prev => ({...prev, educationHistory: [...(prev.educationHistory || []), { school: "", degree: "", year: "" }]}))}
@@ -318,8 +320,8 @@ export default function Profile() {
                         </div>
                         <div className="space-y-4">
                           {formData.educationHistory?.map((edu, idx) => (
-                            <div key={idx} className="grid grid-cols-12 gap-3 p-4 bg-muted/30 rounded-2xl border border-border/50 items-end">
-                              <div className="col-span-5 md:col-span-4 space-y-1 text-left">
+                            <div key={idx} className="flex flex-col md:grid md:grid-cols-12 gap-3 p-4 md:p-5 bg-muted/30 rounded-2xl border border-border/50 relative">
+                              <div className="md:col-span-4 space-y-1">
                                 <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">School</label>
                                 <input value={edu.school} onChange={(e) => {
                                   const newList = [...(formData.educationHistory || [])];
@@ -327,7 +329,7 @@ export default function Profile() {
                                   setFormData({...formData, educationHistory: newList});
                                 }} className="onboarding-input-small" />
                               </div>
-                              <div className="col-span-4 md:col-span-5 space-y-1 text-left">
+                              <div className="md:col-span-5 space-y-1">
                                 <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Degree</label>
                                 <input value={edu.degree} onChange={(e) => {
                                   const newList = [...(formData.educationHistory || [])];
@@ -335,16 +337,16 @@ export default function Profile() {
                                   setFormData({...formData, educationHistory: newList});
                                 }} className="onboarding-input-small" />
                               </div>
-                              <div className="col-span-2 space-y-1 text-left">
-                                <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Year</label>
-                                <input value={edu.year} onChange={(e) => {
-                                  const newList = [...(formData.educationHistory || [])];
-                                  newList[idx].year = e.target.value;
-                                  setFormData({...formData, educationHistory: newList});
-                                }} className="onboarding-input-small" />
-                              </div>
-                              <div className="col-span-1 pb-1">
-                                <button onClick={() => setFormData(prev => ({...prev, educationHistory: (prev.educationHistory || []).filter((_, i) => i !== idx)}))} className="p-2 text-muted-foreground hover:text-destructive">
+                              <div className="flex gap-2 items-end md:col-span-3">
+                                <div className="flex-grow space-y-1">
+                                  <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Year</label>
+                                  <input value={edu.year} onChange={(e) => {
+                                    const newList = [...(formData.educationHistory || [])];
+                                    newList[idx].year = e.target.value;
+                                    setFormData({...formData, educationHistory: newList});
+                                  }} className="onboarding-input-small" />
+                                </div>
+                                <button onClick={() => setFormData(prev => ({...prev, educationHistory: (prev.educationHistory || []).filter((_, i) => i !== idx)}))} className="p-2 mb-0.5 text-muted-foreground hover:text-destructive shrink-0">
                                   <Trash2 size={16} />
                                 </button>
                               </div>

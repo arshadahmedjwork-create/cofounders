@@ -22,7 +22,7 @@ export const saveProfile = async (userId: string, data: UserProfile): Promise<{ 
     time_commitment: data.timeCommitment,
     education_history: data.educationHistory || [],
     experience_history: data.experienceHistory || [],
-    // New fields
+    // New matching fields
     user_type: data.userType,
     full_bio: data.fullBio,
     company_name: data.companyName,
@@ -30,6 +30,22 @@ export const saveProfile = async (userId: string, data: UserProfile): Promise<{ 
     company_description: data.companyDescription,
     company_logo: data.companyLogo,
     discovery_preference: data.discoveryPreference,
+    
+    // Structured Matching
+    intent: data.intent,
+    startup_goal: data.startupGoal,
+    startup_stage: data.startupStage,
+    what_you_cover: data.whatYouCover,
+    what_you_need: data.whatYouNeed,
+    cofounder_type: data.cofounderType,
+    compensation: data.compensation,
+    non_negotiables: data.nonNegotiables,
+    aspirant_goal: data.aspirantGoal,
+    preferred_stage: data.preferredStage,
+    work_style: data.workStyle,
+    survival_time: data.survivalTime,
+    equity_expectation: data.equityExpectation,
+    domain_tags: data.domainTags,
   };
 
   const { data: result, error } = await supabase
@@ -54,11 +70,18 @@ export const getProfileById = async (userId: string): Promise<Profile | null> =>
     .single();
 
   if (error) {
-    if (error.code !== 'PGRST116') { // Ignore 'no rows found' errors
+    if (error.code !== 'PGRST116') {
       console.error("Error fetching profile by ID:", error);
     }
     return null;
   }
+
+  // Check for Synapse Test
+  const { data: assessment } = await supabase
+    .from("assessments")
+    .select("id")
+    .eq("user_email", data.email)
+    .maybeSingle();
 
   const row = data;
   return {
@@ -83,6 +106,21 @@ export const getProfileById = async (userId: string): Promise<Profile | null> =>
     companyDescription: row.company_description,
     companyLogo: row.company_logo,
     discoveryPreference: row.discovery_preference,
+    intent: row.intent,
+    startupGoal: row.startup_goal,
+    startupStage: row.startup_stage,
+    whatYouCover: row.what_you_cover,
+    whatYouNeed: row.what_you_need,
+    cofounderType: row.cofounder_type,
+    compensation: row.compensation,
+    nonNegotiables: row.non_negotiables,
+    aspirantGoal: row.aspirant_goal,
+    preferredStage: row.preferred_stage,
+    workStyle: row.work_style,
+    survivalTime: row.survival_time,
+    equityExpectation: row.equity_expectation,
+    domainTags: row.domain_tags,
+    hasTakenSynapse: !!assessment,
   };
 };
 
@@ -119,6 +157,20 @@ export const getProfiles = async (): Promise<Profile[]> => {
     companyDescription: row.company_description,
     companyLogo: row.company_logo,
     discoveryPreference: row.discovery_preference,
+    intent: row.intent,
+    startupGoal: row.startup_goal,
+    startupStage: row.startup_stage,
+    whatYouCover: row.what_you_cover,
+    whatYouNeed: row.what_you_need,
+    cofounderType: row.cofounder_type,
+    compensation: row.compensation,
+    nonNegotiables: row.non_negotiables,
+    aspirantGoal: row.aspirant_goal,
+    preferredStage: row.preferred_stage,
+    workStyle: row.work_style,
+    survivalTime: row.survival_time,
+    equityExpectation: row.equity_expectation,
+    domainTags: row.domain_tags,
   }));
 
   return dbProfiles;

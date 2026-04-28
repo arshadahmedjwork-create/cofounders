@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import BottomNav from "./components/BottomNav.tsx";
 
 // Lazy load pages
 const Index = lazy(() => import("./pages/Index.tsx"));
@@ -79,6 +80,7 @@ const queryClient = new QueryClient({
   },
 });
 
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -87,6 +89,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <AnimatedRoutes />
+          <BottomNav />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

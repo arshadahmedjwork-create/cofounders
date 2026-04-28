@@ -21,6 +21,24 @@ export interface Profile {
   companyDescription?: string;
   companyLogo?: string;
   discoveryPreference?: 'candidates' | 'companies';
+  
+  // Structured Matching Fields
+  intent?: 'building' | 'joining';
+  startupGoal?: string;
+  startupStage?: string;
+  whatYouCover?: string[];
+  whatYouNeed?: string[];
+  cofounderType?: string;
+  compensation?: string;
+  nonNegotiables?: string[];
+  
+  aspirantGoal?: string;
+  preferredStage?: string;
+  workStyle?: string[];
+  survivalTime?: string;
+  equityExpectation?: string;
+  domainTags?: string[];
+  hasTakenSynapse?: boolean;
 }
 
 export interface Testimonial {

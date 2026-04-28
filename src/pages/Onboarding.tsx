@@ -1,38 +1,50 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Check, ChevronRight, ChevronLeft, Loader2, Award, Clock, Target, Briefcase, GraduationCap, Plus, Trash2, Linkedin, MapPin, Users, Building } from "lucide-react";
+import { 
+  Check, ChevronRight, ChevronLeft, Loader2, 
+  Target, Rocket, UserPlus, Linkedin, MapPin, 
+  Briefcase, GraduationCap, DollarSign, Clock, 
+  Zap, Brain, Heart, Search, ShieldCheck, Plus, Trash2, Building
+} from "lucide-react";
 import { UserProfile, EducationItem, ExperienceItem } from "@/types/profile";
 import { saveProfile } from "@/services/profileService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
-const timeOptions = [
-  { id: "<10", label: "<10 hrs/week", desc: "Exploratory / Part-time" },
-  { id: "10-20", label: "10–20 hrs/week", desc: "Serious side-hustle" },
-  { id: "20+", label: "20+ hrs/week", desc: "Full-time commitment" },
+// Options from the MASTER PROMPT
+const startupGoals = ["Validate idea", "Build MVP", "Improve product", "Get first users", "Scale"];
+const startupStages = ["Idea", "MVP", "Early traction"];
+const timeCommitments = [
+  { id: "<10", label: "<10 hrs", desc: "Exploratory" },
+  { id: "10-20", label: "10–20 hrs", desc: "Serious side-hustle" },
+  { id: "20+", label: "20+ hrs", desc: "Full-time / Deep commitment" },
 ];
+const skillCategories = [
+  "Product Strategy", "Engineering", "Marketing", "Sales", 
+  "Operations", "Design", "Data/AI", "Finance", "Biz Dev"
+];
+const cofounderTypes = [
+  { id: "Execution Engine", icon: Zap },
+  { id: "Marketing Strategist", icon: Search },
+  { id: "Financial Builder", icon: DollarSign },
+  { id: "Technical Expert", icon: Brain }
+];
+const compensations = ["Equity only", "Stipend + equity", "Salary + equity", "Flexible"];
+const nonNegotiables = ["Full-time", "Same city (Tamil Nadu)", "Domain expertise", "Startup experience", "Technical", "Business"];
 
-const skillOptions = [
-  "Product Strategy", "Sales / GTM", "Fundraising", "Engineering", 
-  "UI / UX Design", "Data Science / AI", "Marketing / Growth", 
-  "Operations", "Finance / CFO", "Business Development"
-];
-
-const keywordOptions = [
-  "SaaS", "B2B", "Web3", "AI", "D2C", "FinTech", "HealthTech", "EdTech", 
-  "Sustainability", "E-commerce", "Mobile", "Enterprise", "Consumer", 
-  "Hardware", "DeepTech", "Marketplace", "Logistics", "BioTech"
-];
+const aspirantGoals = ["Explore", "Build seriously", "Join early startup", "Long-term cofounder"];
+const workStyles = ["Execute fast", "Think first", "Work with users", "Hands-on builder", "Experiment", "Structured"];
+const survivalTimes = ["<1 month", "1–3 months", "3–6 months", "6+ months"];
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const { user, checkProfile } = useAuth();
   
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // 0: Intent, 1+: Questions
   const [direction, setDirection] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isScraping, setIsScraping] = useState(false);
+  const [noWorkExperience, setNoWorkExperience] = useState(false);
   
   const [formData, setFormData] = useState<UserProfile>({
     firstName: "",
@@ -49,19 +61,31 @@ export default function Onboarding() {
     experience: "",
     work: "",
     timeCommitment: "10-20",
-    educationHistory: [{ school: "", degree: "", year: "" }],
-    experienceHistory: [{ company: "", role: "", year: "" }],
-    // New fields
     userType: "Professional",
     fullBio: "",
-    discoveryPreference: "candidates",
+    intent: undefined,
+    startupGoal: "",
+    startupStage: "",
+    whatYouCover: [],
+    whatYouNeed: [],
+    cofounderType: "",
+    compensation: "",
+    nonNegotiables: [],
+    aspirantGoal: "",
+    preferredStage: "",
+    workStyle: [],
+    survivalTime: "",
+    equityExpectation: "10-25%",
+    educationHistory: [{ school: "", degree: "", year: "" }],
+    experienceHistory: [{ company: "", role: "", year: "" }],
     companyName: "",
     companyStage: "Idea",
     companyDescription: "",
-    companyLogo: "",
   });
 
-  // Sync data from OAuth Metadata if available
+  // Check if logged in via LinkedIn
+  const isLinkedInUser = user?.app_metadata?.provider === "linkedin_oidc" || user?.identities?.some(id => id.provider === "linkedin_oidc");
+
   useEffect(() => {
     if (user) {
       const meta = user.user_metadata;
@@ -71,26 +95,10 @@ export default function Onboarding() {
         firstName: prev.firstName || meta.given_name || meta.full_name?.split(' ')[0] || meta.name?.split(' ')[0] || meta.user_name || "",
         lastName: prev.lastName || meta.family_name || meta.full_name?.split(' ').slice(1).join(' ') || meta.name?.split(' ').slice(1).join(' ') || "",
         avatarUrl: prev.avatarUrl || meta.avatar_url || meta.picture || "",
-        experience: prev.experience || meta.headline || "",
-        work: prev.work || meta.company || meta.work || "",
+        linkedin: prev.linkedin || (isLinkedInUser ? "Verified LinkedIn Account" : ""),
       }));
     }
-  }, [user]);
-
-  useEffect(() => {
-    const fetchCity = async () => {
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        const data = await res.json();
-        if (data.city) {
-          setFormData(prev => ({ ...prev, city: data.city }));
-        }
-      } catch (e) {
-        console.log("Could not auto-detect city");
-      }
-    };
-    fetchCity();
-  }, []);
+  }, [user, isLinkedInUser]);
 
   const addEducation = () => {
     setFormData(prev => ({
@@ -133,47 +141,46 @@ export default function Onboarding() {
   };
 
   const handleNext = () => {
+    if (step === 0 && !formData.intent) {
+      toast.error("Please select your intent to continue.");
+      return;
+    }
+    
     if (step === 1) {
-      if (!formData.firstName || !formData.lastName) {
-        toast.error("Please fill in your name.");
-        return;
-      }
+       if (!formData.firstName || !formData.lastName) {
+         toast.error("Please provide your name.");
+         return;
+       }
+    }
+    
+    if (step === 2 && !isLinkedInUser && !formData.linkedin) {
+       toast.error("Please provide your LinkedIn profile URL.");
+       return;
+    }
 
-      const linkedinRegex = /linkedin\.com\/in\/[a-zA-Z0-9\-_%]+\/?/i;
-      if (!formData.linkedin || !linkedinRegex.test(formData.linkedin)) {
-        toast.error("Please provide a valid LinkedIn Profile URL.");
-        return;
-      }
-
-      if (!formData.fullBio || formData.fullBio.length < 20) {
-        toast.error("Please provide a brief bio (at least 20 characters).");
-        return;
-      }
-
-      if (formData.userType === 'Entrepreneur' && !formData.companyName) {
-        toast.error("Please provide your company name.");
-        return;
-      }
-
-      const hasValidEdu = formData.educationHistory.some(edu => edu.school.trim() && edu.degree.trim() && edu.year.trim());
-      const hasValidExp = formData.experienceHistory.some(exp => exp.company.trim() && exp.role.trim() && exp.year.trim());
-
+    if (step === 4) {
+      const hasValidEdu = formData.educationHistory?.some(edu => edu.school.trim() && edu.degree.trim());
       if (!hasValidEdu) {
-        toast.error("Please provide at least one complete Academic History record.");
+        toast.error("Please provide at least one academic record.");
         return;
       }
+    }
 
+    if (step === 5 && !noWorkExperience) {
+      const hasValidExp = formData.experienceHistory?.some(exp => exp.company.trim() && exp.role.trim());
       if (!hasValidExp) {
-        toast.error("Please provide at least one complete Work Experience record.");
+        toast.error("Please provide your work experience or select 'No work experience'.");
         return;
       }
     }
-    if (step === 2) {
-      if (formData.selectedSkills.length === 0) {
-        toast.error("Please select at least one core skill.");
+
+    if (step === 6 && formData.intent === 'building') {
+      if (!formData.companyName) {
+        toast.error("Please provide your startup's name.");
         return;
       }
     }
+
     setDirection(1);
     setStep(s => s + 1);
   };
@@ -186,7 +193,14 @@ export default function Onboarding() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const res = await saveProfile(user!.id, formData);
+      const finalData = {
+        ...formData,
+        role: formData.intent === 'building' ? 'Founder' : 'Co-founder',
+        lookingFor: formData.intent === 'building' ? 'Co-founder' : 'Startup to join',
+        experienceHistory: noWorkExperience ? [] : formData.experienceHistory
+      };
+
+      const res = await saveProfile(user!.id, finalData);
       if (!res.success) {
         toast.error(`Error: ${res.error}`);
         return;
@@ -201,526 +215,419 @@ export default function Onboarding() {
   };
 
   const variants = {
-    enter: (dir: number) => ({ x: dir > 0 ? 50 : -50, opacity: 0 }),
-    center: { zIndex: 1, x: 0, opacity: 1 },
-    exit: (dir: number) => ({ zIndex: 0, x: dir < 0 ? 50 : -50, opacity: 0 })
+    enter: (dir: number) => ({ y: dir > 0 ? 100 : -100, opacity: 0 }),
+    center: { zIndex: 1, y: 0, opacity: 1 },
+    exit: (dir: number) => ({ zIndex: 0, y: dir < 0 ? 100 : -100, opacity: 0 })
   };
 
+  const totalSteps = formData.intent === 'building' ? 15 : 14;
+  const progress = (step / totalSteps) * 100;
+
   return (
-    <div className="min-h-screen bg-background relative flex flex-col items-center py-12 px-4 overflow-hidden">
-      {/* Dynamic Background */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-secondary/5 blur-[100px]" />
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden">
+      <div className="fixed top-0 left-0 w-full h-1.5 bg-border z-50">
+        <motion.div 
+          className="h-full bg-primary"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+        />
       </div>
 
-      <div className="w-full max-w-4xl relative z-10">
-        <div className="text-center mb-12">
-          <motion.h1 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-4xl md:text-5xl font-display font-bold mb-4"
+      <div className="w-full max-w-2xl relative">
+        <AnimatePresence custom={direction} mode="wait">
+          <motion.div
+            key={step}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="w-full"
           >
-            Forge Your <span className="text-primary italic font-accent">Founder Identity</span>
-          </motion.h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            Complete your profile to unlock the high-fidelity co-founder matching network.
-          </p>
-        </div>
-
-        {/* Stepper Progress */}
-        <div className="flex items-center justify-between mb-10 px-6 max-w-md mx-auto">
-          {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center">
-              <div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
-                  step >= s ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-background border-border text-muted-foreground"
-                }`}
-              >
-                {step > s ? <Check size={20} strokeWidth={3} /> : s}
+            {/* STEP 0: INTENT SELECTION */}
+            {step === 0 && (
+              <div className="space-y-8 text-center">
+                <div className="space-y-2">
+                  <h1 className="text-4xl md:text-5xl font-display font-bold">Select your <span className="text-primary italic">intent</span></h1>
+                  <p className="text-muted-foreground">Choose the path that best describes your current goal.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button
+                    onClick={() => { setFormData({...formData, intent: 'building'}); handleNext(); }}
+                    className={`group p-8 rounded-3xl border-2 transition-all flex flex-col items-center gap-4 ${
+                      formData.intent === 'building' ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Rocket size={32} className="text-primary" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-bold">I am building a startup</h3>
+                      <p className="text-xs text-muted-foreground">Find a co-founder to build with</p>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => { setFormData({...formData, intent: 'joining'}); handleNext(); }}
+                    className={`group p-8 rounded-3xl border-2 transition-all flex flex-col items-center gap-4 ${
+                      formData.intent === 'joining' ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <UserPlus size={32} className="text-secondary" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-bold">I want to join a startup</h3>
+                      <p className="text-xs text-muted-foreground">Become a co-founder in a project</p>
+                    </div>
+                  </button>
+                </div>
               </div>
-              {s < 3 && (
-                <div className="w-12 h-0.5 bg-border mx-2">
-                  <motion.div 
-                    initial={false}
-                    animate={{ width: step > s ? "100%" : "0%" }}
-                    className="h-full bg-primary"
-                  />
+            )}
+
+            {/* COMMON STEP 1: NAME */}
+            {step === 1 && (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-display font-bold">What's your name?</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input autoFocus placeholder="First Name" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="onboarding-input-large" onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
+                  <input placeholder="Last Name" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="onboarding-input-large" onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+              </div>
+            )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-card border border-border rounded-3xl p-8 shadow-2xl relative"
-        >
-          <AnimatePresence custom={direction} mode="wait">
-            <motion.div
-              key={step}
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.4, type: "tween", ease: "easeInOut" }}
-            >
-              {/* STEP 1: IDENTITY & HISTORY */}
-              {step === 1 && (
-                <div className="space-y-10">
-                  <div className="flex flex-col md:flex-row gap-8 items-start">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="relative group">
-                        <div className="w-32 h-32 rounded-3xl bg-muted overflow-hidden border-2 border-border p-1">
-                          {formData.avatarUrl ? (
-                            <img src={formData.avatarUrl} className="w-full h-full object-cover rounded-2xl" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-muted-foreground">
-                              {formData.firstName[0]}
-                            </div>
-                          )}
-                        </div>
-                        <div className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-1.5 rounded-xl shadow-lg border-4 border-card">
-                          <Check size={14} strokeWidth={4} />
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-bold tracking-widest uppercase text-primary">Identity Synced</span>
-                    </div>
-
-                    <div className="flex-1 w-full space-y-6">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground">First Name</label>
-                          <input 
-                            value={formData.firstName}
-                            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                            className="onboarding-input" 
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground">Last Name</label>
-                          <input 
-                            value={formData.lastName}
-                            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                            className="onboarding-input" 
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground">I am a...</label>
-                          <select 
-                            value={formData.userType}
-                            onChange={(e) => setFormData({...formData, userType: e.target.value as any})}
-                            className="onboarding-input"
-                          >
-                            <option value="Professional">Working Professional</option>
-                            <option value="Entrepreneur">Entrepreneur / Founder</option>
-                            <option value="Freelancer">Freelancer</option>
-                            <option value="Student">Student</option>
-                          </select>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground flex items-center justify-between">
-                            Location
-                            <span className="text-[10px] text-primary lowercase animate-pulse">Auto-detected</span>
-                          </label>
-                          <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                            <input 
-                              value={formData.city}
-                              onChange={(e) => setFormData({...formData, city: e.target.value})}
-                              placeholder="e.g. San Francisco"
-                              className="onboarding-input pl-10" 
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground">LinkedIn URL <span className="text-primary">*</span></label>
-                          <div className="relative">
-                            <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                            <input 
-                              value={formData.linkedin}
-                              onChange={(e) => setFormData({...formData, linkedin: e.target.value})}
-                              placeholder="linkedin.com/in/username"
-                              className="onboarding-input pl-10" 
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground">Professional Bio</label>
-                        <textarea 
-                          value={formData.fullBio}
-                          onChange={(e) => setFormData({...formData, fullBio: e.target.value})}
-                          placeholder="Tell your story. What are you building? What are you passionate about?"
-                          className="onboarding-input min-h-[100px] py-4 resize-none"
-                        />
-                        <p className="text-[10px] text-muted-foreground italic">Tip: This is the first thing other founders will read about you.</p>
-                      </div>
-
-                      {formData.userType === 'Entrepreneur' && (
-                        <motion.div 
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          className="space-y-4 p-4 bg-primary/5 border border-primary/20 rounded-2xl"
-                        >
-                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary">Company Details</h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <label className="text-[9px] font-bold text-muted-foreground uppercase">Company Name</label>
-                              <input 
-                                value={formData.companyName}
-                                onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                                placeholder="e.g. QIQ AI"
-                                className="onboarding-input-small"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <label className="text-[9px] font-bold text-muted-foreground uppercase">Stage</label>
-                              <select 
-                                value={formData.companyStage}
-                                onChange={(e) => setFormData({...formData, companyStage: e.target.value})}
-                                className="onboarding-input-small"
-                              >
-                                <option value="Idea">Idea</option>
-                                <option value="MVP">MVP</option>
-                                <option value="Pre-Seed">Pre-Seed</option>
-                                <option value="Seed">Seed</option>
-                                <option value="Growth">Growth/Series A+</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-[9px] font-bold text-muted-foreground uppercase">Logo URL</label>
-                            <input 
-                              value={formData.companyLogo}
-                              onChange={(e) => setFormData({...formData, companyLogo: e.target.value})}
-                              placeholder="Direct link to logo (SVG/PNG)"
-                              className="onboarding-input-small"
-                            />
-                          </div>
-                        </motion.div>
-                      )}
-                    </div>
+            {/* COMMON STEP 2: LINKEDIN */}
+            {step === 2 && (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-display font-bold">Your Professional Profile</h2>
+                {isLinkedInUser ? (
+                  <div className="p-6 bg-primary/5 border border-primary/20 rounded-3xl flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center"><ShieldCheck className="text-primary" /></div>
+                    <div><p className="font-bold">LinkedIn Verified</p><p className="text-xs text-muted-foreground">Your identity is securely synced from LinkedIn.</p></div>
                   </div>
-
-                  {/* ACADEMIC HISTORY */}
-                  <div className="space-y-4 pt-6 border-t border-border/50">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-bold tracking-widest uppercase text-primary flex items-center gap-2">
-                        <GraduationCap size={18} /> Academic History <span className="text-xs font-normal text-muted-foreground lowercase tracking-normal">(Required)</span>
-                      </h3>
-                      <button 
-                        onClick={addEducation}
-                        className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
-                      >
-                        <Plus size={14} /> Add School
-                      </button>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {(formData.educationHistory || []).map((edu, idx) => (
-                        <div key={idx} className="grid grid-cols-12 gap-3 items-end p-4 bg-muted/20 border border-border/50 rounded-2xl relative group hover:border-primary/30 transition-all">
-                          <div className="col-span-4 space-y-1">
-                            <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">University / School</label>
-                            <input 
-                              value={edu.school}
-                              onChange={(e) => updateEducation(idx, 'school', e.target.value)}
-                              placeholder="e.g. Stanford"
-                              className="onboarding-input-small"
-                            />
-                          </div>
-                          <div className="col-span-4 space-y-1">
-                            <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Degree / Field</label>
-                            <input 
-                              value={edu.degree}
-                              onChange={(e) => updateEducation(idx, 'degree', e.target.value)}
-                              placeholder="e.g. Computer Science"
-                              className="onboarding-input-small"
-                            />
-                          </div>
-                          <div className="col-span-3 space-y-1">
-                            <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Year</label>
-                            <input 
-                              value={edu.year}
-                              onChange={(e) => updateEducation(idx, 'year', e.target.value)}
-                              placeholder="2018"
-                              className="onboarding-input-small"
-                            />
-                          </div>
-                          <div className="col-span-1 pb-1">
-                            <button 
-                              onClick={() => removeEducation(idx)}
-                              className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                              title="Remove"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                ) : (
+                  <div className="relative">
+                    <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                    <input autoFocus placeholder="linkedin.com/in/username" value={formData.linkedin} onChange={(e) => setFormData({...formData, linkedin: e.target.value})} className="onboarding-input-large pl-12" onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
                   </div>
+                )}
+              </div>
+            )}
 
-                  {/* WORK EXPERIENCE */}
-                  <div className="space-y-4 pt-6 border-t border-border/50">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-bold tracking-widest uppercase text-primary flex items-center gap-2">
-                        <Briefcase size={18} /> Work Experience <span className="text-xs font-normal text-muted-foreground lowercase tracking-normal">(Required)</span>
-                      </h3>
-                      <button 
-                        onClick={addExperience}
-                        className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
-                      >
-                        <Plus size={14} /> Add Experience
-                      </button>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {(formData.experienceHistory || []).map((exp, idx) => (
-                        <div key={idx} className="grid grid-cols-12 gap-3 items-end p-4 bg-muted/20 border border-border/50 rounded-2xl relative group hover:border-primary/30 transition-all">
-                          <div className="col-span-4 space-y-1">
-                            <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Company / Organization</label>
-                            <input 
-                              value={exp.company}
-                              onChange={(e) => updateExperience(idx, 'company', e.target.value)}
-                              placeholder="e.g. Google"
-                              className="onboarding-input-small"
-                            />
-                          </div>
-                          <div className="col-span-4 space-y-1">
-                            <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Role / Title</label>
-                            <input 
-                              value={exp.role}
-                              onChange={(e) => updateExperience(idx, 'role', e.target.value)}
-                              placeholder="e.g. Sr. Product Manager"
-                              className="onboarding-input-small"
-                            />
-                          </div>
-                          <div className="col-span-3 space-y-1">
-                            <label className="text-[9px] font-bold uppercase text-muted-foreground ml-1">Period</label>
-                            <input 
-                              value={exp.year}
-                              onChange={(e) => updateExperience(idx, 'year', e.target.value)}
-                              placeholder="2019 - Present"
-                              className="onboarding-input-small"
-                            />
-                          </div>
-                          <div className="col-span-1 pb-1">
-                            <button 
-                              onClick={() => removeExperience(idx)}
-                              className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                              title="Remove"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+            {/* COMMON STEP 3: BIO */}
+            {step === 3 && (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-display font-bold">Tell us your story</h2>
+                <textarea autoFocus placeholder="Tell your story. What are you building? What are you passionate about?" value={formData.fullBio} onChange={(e) => setFormData({...formData, fullBio: e.target.value})} className="onboarding-input-large min-h-[200px] py-4 resize-none" />
+              </div>
+            )}
+
+            {/* COMMON STEP 4: ACADEMIC HISTORY */}
+            {step === 4 && (
+              <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2 pb-10">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-3xl font-display font-bold">Education</h2>
+                  <button onClick={addEducation} className="flex items-center gap-2 text-primary font-bold text-sm"><Plus size={18} /> Add</button>
                 </div>
-              )}
-
-              {/* STEP 2: COMMITMENT & SKILLS */}
-              {step === 2 && (
-                <div className="space-y-10">
-                  <div className="space-y-4">
-                    <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground flex items-center gap-2">
-                      <Clock size={14} /> Weekly Time Commitment
-                    </label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {timeOptions.map((opt) => (
-                        <button
-                          key={opt.id}
-                          onClick={() => setFormData({...formData, timeCommitment: opt.id})}
-                          className={`p-5 rounded-2xl text-left border-2 transition-all ${
-                            formData.timeCommitment === opt.id 
-                            ? "bg-primary/10 border-primary shadow-xl shadow-primary/10" 
-                            : "bg-background border-border hover:border-primary/30"
-                          }`}
-                        >
-                          <div className={`w-4 h-4 rounded-full border-2 mb-3 flex items-center justify-center ${
-                            formData.timeCommitment === opt.id ? "border-primary bg-primary" : "border-muted-foreground"
-                          }`}>
-                            {formData.timeCommitment === opt.id && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                          </div>
-                          <div className="font-bold text-sm mb-1">{opt.label}</div>
-                          <div className="text-[10px] text-muted-foreground">{opt.desc}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground flex items-center gap-2">
-                      <Target size={14} /> Your Core Skill Set (Max 3)
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {skillOptions.map((skill) => {
-                        const selected = formData.selectedSkills.includes(skill);
-                        return (
-                          <button
-                            key={skill}
-                            onClick={() => {
-                              if (selected) {
-                                setFormData({...formData, selectedSkills: formData.selectedSkills.filter(s => s !== skill)});
-                              } else if (formData.selectedSkills.length < 3) {
-                                setFormData({...formData, selectedSkills: [...formData.selectedSkills, skill]});
-                              } else {
-                                toast.warning("Maximum of 3 skills allowed");
-                              }
-                            }}
-                            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border-2 ${
-                              selected 
-                              ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20" 
-                              : "bg-background border-border text-muted-foreground hover:border-primary/40"
-                            }`}
-                          >
-                            {skill}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 3: PREFERENCES (KEYWORDS) */}
-              {step === 3 && (
-                <div className="space-y-8">
-                  <div className="space-y-6 pt-6 border-t border-border/50">
-                    <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground flex items-center gap-2">
-                      <Target size={14} /> What do you want to discover?
-                    </label>
+                {formData.educationHistory?.map((edu, idx) => (
+                  <div key={idx} className="p-6 bg-card border border-border rounded-3xl space-y-4 relative">
+                    <input placeholder="University / School" value={edu.school} onChange={(e) => updateEducation(idx, 'school', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-lg font-bold focus:outline-none focus:border-primary" />
                     <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={() => setFormData({...formData, discoveryPreference: 'candidates'})}
-                        className={`p-6 rounded-2xl border-2 transition-all text-center flex flex-col items-center gap-3 ${
-                          formData.discoveryPreference === 'candidates' 
-                          ? "bg-primary/10 border-primary shadow-xl shadow-primary/10 text-primary" 
-                          : "bg-background border-border text-muted-foreground hover:border-primary/30"
-                        }`}
-                      >
-                        <Users size={24} />
-                        <div className="font-bold text-sm">Candidates</div>
-                        <p className="text-[9px]">Finding Talent / Co-founders</p>
-                      </button>
-                      <button
-                        onClick={() => setFormData({...formData, discoveryPreference: 'companies'})}
-                        className={`p-6 rounded-2xl border-2 transition-all text-center flex flex-col items-center gap-3 ${
-                          formData.discoveryPreference === 'companies' 
-                          ? "bg-primary/10 border-primary shadow-xl shadow-primary/10 text-primary" 
-                          : "bg-background border-border text-muted-foreground hover:border-primary/30"
-                        }`}
-                      >
-                        <Building size={24} />
-                        <div className="font-bold text-sm">Companies</div>
-                        <p className="text-[9px]">Finding Projects / Startups</p>
-                      </button>
+                      <input placeholder="Degree" value={edu.degree} onChange={(e) => updateEducation(idx, 'degree', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" />
+                      <input placeholder="Year" value={edu.year} onChange={(e) => updateEducation(idx, 'year', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" />
                     </div>
+                    {idx > 0 && <button onClick={() => removeEducation(idx)} className="absolute top-2 right-2 p-2 text-muted-foreground hover:text-destructive"><Trash2 size={16} /></button>}
                   </div>
-                  
-                  <div className="space-y-4 pt-6">
-                    <div className="text-center space-y-2">
-                       <label className="text-xs font-bold tracking-widest uppercase text-muted-foreground">Interest Keywords</label>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {keywordOptions.map((tag) => {
-                        const selected = (formData.idea || "").includes(tag);
-                        return (
-                          <button
-                            key={tag}
-                            onClick={() => {
-                              const current = (formData.idea || "").split(", ").filter(t => t);
-                              const updated = selected 
-                                ? current.filter(t => t !== tag)
-                                : [...current, tag];
-                              setFormData({...formData, idea: updated.join(", ")});
-                            }}
-                            className={`px-4 py-4 rounded-2xl text-xs font-bold transition-all text-center border-2 ${
-                              selected 
-                              ? "bg-secondary text-secondary-foreground border-secondary shadow-lg shadow-secondary/20" 
-                              : "bg-background border-border text-muted-foreground hover:border-secondary/40"
-                            }`}
-                          >
-                            {tag}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                ))}
+              </div>
+            )}
 
-                  <div className="pt-8 flex justify-center">
-                    <button
-                      onClick={handleSubmit}
-                      disabled={isSubmitting}
-                      className="px-12 py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-base shadow-xl shadow-primary/20 hover:scale-105 transition-all flex items-center gap-3 disabled:opacity-50"
+            {/* COMMON STEP 5: WORK EXPERIENCE */}
+            {step === 5 && (
+              <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2 pb-10">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-3xl font-display font-bold">Work Experience</h2>
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={() => setNoWorkExperience(!noWorkExperience)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border-2 ${noWorkExperience ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}
                     >
-                      {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <>Complete Onboarding <Check size={20} strokeWidth={3} /></>}
+                      No work experience
                     </button>
+                    {!noWorkExperience && <button onClick={addExperience} className="flex items-center gap-2 text-primary font-bold text-sm"><Plus size={18} /> Add</button>}
                   </div>
                 </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
+                {!noWorkExperience && formData.experienceHistory?.map((exp, idx) => (
+                  <div key={idx} className="p-6 bg-card border border-border rounded-3xl space-y-4 relative">
+                    <input placeholder="Company" value={exp.company} onChange={(e) => updateExperience(idx, 'company', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-lg font-bold focus:outline-none focus:border-primary" />
+                    <div className="grid grid-cols-2 gap-4">
+                      <input placeholder="Role" value={exp.role} onChange={(e) => updateExperience(idx, 'role', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" />
+                      <input placeholder="Year / Period" value={exp.year} onChange={(e) => updateExperience(idx, 'year', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" />
+                    </div>
+                    {idx > 0 && <button onClick={() => removeExperience(idx)} className="absolute top-2 right-2 p-2 text-muted-foreground hover:text-destructive"><Trash2 size={16} /></button>}
+                  </div>
+                ))}
+                {noWorkExperience && (
+                   <div className="p-12 text-center border-2 border-dashed border-border rounded-3xl opacity-50">
+                      <Briefcase size={40} className="mx-auto mb-4" />
+                      <p className="font-bold">Focusing on academic background & skills</p>
+                   </div>
+                )}
+              </div>
+            )}
 
-        {/* Navigation Buttons */}
-        {step < 3 && (
-          <div className="flex justify-between items-center mt-8">
-            <button
-              onClick={handleBack}
-              disabled={step === 1}
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold text-muted-foreground hover:text-foreground transition-colors disabled:opacity-0"
-            >
-              <ChevronLeft size={18} /> Previous
-            </button>
-            <button
-              onClick={handleNext}
-              className="flex items-center gap-2 px-10 py-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
-            >
-              Continue <ChevronRight size={18} />
-            </button>
-          </div>
-        )}
+            {/* FLOW A: BUILDING A STARTUP */}
+            {formData.intent === 'building' && (
+              <>
+                {/* A-6: Company Details */}
+                {step === 6 && (
+                  <div className="space-y-8">
+                    <h2 className="text-3xl font-display font-bold">About your Startup</h2>
+                    <div className="space-y-6">
+                      <div className="relative">
+                        <Building className="absolute left-0 top-1/2 -translate-y-1/2 text-primary" size={24} />
+                        <input autoFocus placeholder="Company Name" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} className="onboarding-input-large pl-10" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Tell us more</label>
+                        <textarea placeholder="Describe what you are building..." value={formData.companyDescription} onChange={(e) => setFormData({...formData, companyDescription: e.target.value})} className="w-full bg-card/50 border border-border rounded-2xl p-4 min-h-[120px] focus:outline-none focus:border-primary" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {/* A-7: Goal */}
+                {step === 7 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">What is your current goal?</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {startupGoals.map(goal => (
+                        <button key={goal} onClick={() => { setFormData({...formData, startupGoal: goal}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.startupGoal === goal ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"}`}><span className="font-bold">{goal}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* A-8: Stage */}
+                {step === 8 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Startup Stage</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {startupStages.map(stage => (
+                        <button key={stage} onClick={() => { setFormData({...formData, startupStage: stage}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.startupStage === stage ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"}`}><span className="font-bold">{stage}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* A-9: Time Commitment */}
+                {step === 9 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Time Commitment</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {timeCommitments.map(opt => (
+                        <button key={opt.id} onClick={() => { setFormData({...formData, timeCommitment: opt.id}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.timeCommitment === opt.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"}`}><div className="flex justify-between items-center"><span className="font-bold">{opt.label}</span><span className="text-xs text-muted-foreground">{opt.desc}</span></div></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* A-10: What You Already Cover */}
+                {step === 10 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">What do you already cover? (Max 3)</h2>
+                    <div className="flex flex-wrap gap-3">
+                      {skillCategories.map(skill => (
+                        <button key={skill} onClick={() => { const current = formData.whatYouCover || []; if (current.includes(skill)) { setFormData({...formData, whatYouCover: current.filter(s => s !== skill)}); } else if (current.length < 3) { setFormData({...formData, whatYouCover: [...current, skill]}); } }} className={`px-6 py-3 rounded-xl border-2 font-bold transition-all ${formData.whatYouCover?.includes(skill) ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/30"}`}>{skill}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* A-11: What You Need */}
+                {step === 11 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">What do you need help with? (Max 2)</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {["Product clarity", "Technical build", "User acquisition", "Business execution"].map(need => (
+                        <button key={need} onClick={() => { const current = formData.whatYouNeed || []; if (current.includes(need)) { setFormData({...formData, whatYouNeed: current.filter(s => s !== need)}); } else if (current.length < 2) { setFormData({...formData, whatYouNeed: [...current, need]}); } }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.whatYouNeed?.includes(need) ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/30"}`}><span className="font-bold">{need}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* A-12: Co-founder Type */}
+                {step === 12 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Ideal Co-founder Type</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                      {cofounderTypes.map(type => (
+                        <button key={type.id} onClick={() => { setFormData({...formData, cofounderType: type.id}); handleNext(); }} className={`p-6 rounded-3xl border-2 flex flex-col items-center gap-3 transition-all ${formData.cofounderType === type.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"}`}><type.icon size={24} className={formData.cofounderType === type.id ? "text-primary" : "text-muted-foreground"} /><span className="text-xs font-bold text-center">{type.id}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* A-13: Compensation */}
+                {step === 13 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Compensation Offer</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {compensations.map(comp => (
+                        <button key={comp} onClick={() => { setFormData({...formData, compensation: comp}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.compensation === comp ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"}`}><span className="font-bold">{comp}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* A-14: Equity Slider */}
+                {step === 14 && (
+                  <div className="space-y-8">
+                    <h2 className="text-3xl font-display font-bold">Equity Expectation</h2>
+                    <div className="space-y-4">
+                      <input type="range" min="0" max="3" step="1" value={["<10%", "10-25%", "25-40%", "40%+"].indexOf(formData.equityExpectation || "10-25%")} onChange={(e) => { const vals = ["<10%", "10-25%", "25-40%", "40%+"]; setFormData({...formData, equityExpectation: vals[parseInt(e.target.value)]}); }} className="w-full h-3 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-primary" />
+                      <div className="flex justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest"><span>Low</span><span className="text-primary text-xl font-display">{formData.equityExpectation}</span><span>High</span></div>
+                    </div>
+                  </div>
+                )}
+                {/* A-15: Non-Negotiables */}
+                {step === 15 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Any Non-Negotiables?</h2>
+                    <div className="flex flex-wrap gap-3">
+                      {nonNegotiables.map(nn => (
+                        <button key={nn} onClick={() => { const current = formData.nonNegotiables || []; if (current.includes(nn)) { setFormData({...formData, nonNegotiables: current.filter(s => s !== nn)}); } else { setFormData({...formData, nonNegotiables: [...current, nn]}); } }} className={`px-6 py-3 rounded-xl border-2 font-bold transition-all ${formData.nonNegotiables?.includes(nn) ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/30"}`}>{nn}</button>
+                      ))}
+                    </div>
+                    <div className="pt-8"><button onClick={handleSubmit} className="w-full py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-xl shadow-xl shadow-primary/20">Complete My Profile</button></div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* FLOW B: BECOME A CO-FOUNDER */}
+            {formData.intent === 'joining' && (
+              <>
+                {/* B-6: Goal */}
+                {step === 6 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">What is your goal?</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {aspirantGoals.map(goal => (
+                        <button key={goal} onClick={() => { setFormData({...formData, aspirantGoal: goal}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.aspirantGoal === goal ? "border-secondary bg-secondary/5" : "border-border hover:border-secondary/30"}`}><span className="font-bold">{goal}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* B-7: Preferred Stage */}
+                {step === 7 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Preferred Startup Stage</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {startupStages.map(stage => (
+                        <button key={stage} onClick={() => { setFormData({...formData, preferredStage: stage}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.preferredStage === stage ? "border-secondary bg-secondary/5" : "border-border hover:border-secondary/30"}`}><span className="font-bold">{stage}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* B-8: Time Commitment */}
+                {step === 8 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Time Commitment</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {timeCommitments.map(opt => (
+                        <button key={opt.id} onClick={() => { setFormData({...formData, timeCommitment: opt.id}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.timeCommitment === opt.id ? "border-secondary bg-secondary/5" : "border-border hover:border-secondary/30"}`}><div className="flex justify-between items-center"><span className="font-bold">{opt.label}</span><span className="text-xs text-muted-foreground">{opt.desc}</span></div></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* B-9: Skills */}
+                {step === 9 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Your Core Skills (Max 3)</h2>
+                    <div className="flex flex-wrap gap-3">
+                      {skillCategories.map(skill => (
+                        <button key={skill} onClick={() => { const current = formData.selectedSkills || []; if (current.includes(skill)) { setFormData({...formData, selectedSkills: current.filter(s => s !== skill)}); } else if (current.length < 3) { setFormData({...formData, selectedSkills: [...current, skill]}); } }} className={`px-6 py-3 rounded-xl border-2 font-bold transition-all ${formData.selectedSkills?.includes(skill) ? "border-secondary bg-secondary text-secondary-foreground" : "border-border hover:border-secondary/30"}`}>{skill}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* B-10: Work Style */}
+                {step === 10 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Work Style (Max 2)</h2>
+                    <div className="flex flex-wrap gap-3">
+                      {workStyles.map(style => (
+                        <button key={style} onClick={() => { const current = formData.workStyle || []; if (current.includes(style)) { setFormData({...formData, workStyle: current.filter(s => s !== style)}); } else if (current.length < 2) { setFormData({...formData, workStyle: [...current, style]}); } }} className={`px-6 py-3 rounded-xl border-2 font-bold transition-all ${formData.workStyle?.includes(style) ? "border-secondary bg-secondary text-secondary-foreground" : "border-border hover:border-secondary/30"}`}>{style}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* B-11: Compensation Expectation */}
+                {step === 11 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Compensation Expectation</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {compensations.map(comp => (
+                        <button key={comp} onClick={() => { setFormData({...formData, compensation: comp}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.compensation === comp ? "border-secondary bg-secondary/5" : "border-border hover:border-secondary/30"}`}><span className="font-bold">{comp}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* B-12: Survival Time */}
+                {step === 12 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Survival Time Without Salary</h2>
+                    <div className="grid grid-cols-1 gap-3">
+                      {survivalTimes.map(time => (
+                        <button key={time} onClick={() => { setFormData({...formData, survivalTime: time}); handleNext(); }} className={`p-5 rounded-2xl border-2 text-left transition-all ${formData.survivalTime === time ? "border-secondary bg-secondary/5" : "border-border hover:border-secondary/30"}`}><span className="font-bold">{time}</span></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* B-13: Equity Slider */}
+                {step === 13 && (
+                  <div className="space-y-8">
+                    <h2 className="text-3xl font-display font-bold">Equity Expectation</h2>
+                    <div className="space-y-4">
+                      <input type="range" min="0" max="3" step="1" value={["<10%", "10-25%", "25-40%", "40%+"].indexOf(formData.equityExpectation || "10-25%")} onChange={(e) => { const vals = ["<10%", "10-25%", "25-40%", "40%+"]; setFormData({...formData, equityExpectation: vals[parseInt(e.target.value)]}); }} className="w-full h-3 bg-secondary/20 rounded-lg appearance-none cursor-pointer accent-secondary" />
+                      <div className="flex justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest"><span>Low</span><span className="text-secondary text-xl font-display">{formData.equityExpectation}</span><span>High</span></div>
+                    </div>
+                  </div>
+                )}
+                {/* B-14: Non-Negotiables */}
+                {step === 14 && (
+                  <div className="space-y-6">
+                    <h2 className="text-3xl font-display font-bold">Any Non-Negotiables?</h2>
+                    <div className="flex flex-wrap gap-3">
+                      {nonNegotiables.map(nn => (
+                        <button key={nn} onClick={() => { const current = formData.nonNegotiables || []; if (current.includes(nn)) { setFormData({...formData, nonNegotiables: current.filter(s => s !== nn)}); } else { setFormData({...formData, nonNegotiables: [...current, nn]}); } }} className={`px-6 py-3 rounded-xl border-2 font-bold transition-all ${formData.nonNegotiables?.includes(nn) ? "border-secondary bg-secondary text-secondary-foreground" : "border-border hover:border-secondary/30"}`}>{nn}</button>
+                      ))}
+                    </div>
+                    <div className="pt-8"><button onClick={handleSubmit} className="w-full py-5 bg-secondary text-secondary-foreground rounded-2xl font-bold text-xl shadow-xl shadow-secondary/20">Complete My Profile</button></div>
+                  </div>
+                )}
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation Controls */}
+        <div className="mt-12 flex items-center justify-between">
+          {step > 0 && <button onClick={handleBack} className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold transition-colors"><ChevronLeft size={20} /> Back</button>}
+          {(
+            step === 1 || // Name
+            step === 3 || // Bio
+            (step === 2 && !isLinkedInUser) || // LinkedIn
+            step === 4 || // Education
+            step === 5 || // Work Experience
+            (step === 6 && formData.intent === 'building') || // Company Details
+            (step === 7 && formData.intent === 'building') || // Cover (A-7)
+            (step === 8 && formData.intent === 'building') || // Need (A-8)
+            (step === 7 && formData.intent === 'joining') || // Skills (B-7)
+            (step === 8 && formData.intent === 'joining')    // Work Style (B-8)
+          ) && (
+            <button onClick={handleNext} className="ml-auto flex items-center gap-2 px-8 py-3 bg-foreground text-background rounded-full font-bold hover:scale-105 transition-all">Continue <ChevronRight size={20} /></button>
+          )}
+        </div>
       </div>
 
       <style>{`
-        .onboarding-input {
-          width: 100%;
-          background: hsl(var(--background));
-          border: 1px solid hsl(var(--border));
-          border-radius: 1rem;
-          padding: 0.75rem 1rem;
-          font-size: 0.875rem;
-          transition: all 0.2s;
-          color: hsl(var(--foreground));
-        }
-        .onboarding-input:focus {
-          outline: none;
-          border-color: hsl(var(--primary));
-          box-shadow: 0 0 0 2px hsla(var(--primary), 0.1);
-        }
-        .onboarding-input-small {
-          width: 100%;
-          background: hsl(var(--background));
-          border: 1px solid hsl(var(--border));
-          border-radius: 0.75rem;
-          padding: 0.5rem 0.75rem;
-          font-size: 0.75rem;
-          transition: all 0.2s;
-          color: hsl(var(--foreground));
-        }
-        .onboarding-input-small:focus {
-          outline: none;
-          border-color: hsl(var(--primary));
-        }
+        .onboarding-input-large { width: 100%; background: transparent; border: none; border-bottom: 2px solid hsl(var(--border)); font-size: 1.5rem; font-weight: 600; padding: 1rem 0; transition: all 0.3s; color: hsl(var(--foreground)); }
+        .onboarding-input-large:focus { outline: none; border-color: hsl(var(--primary)); }
+        @media (min-width: 768px) { .onboarding-input-large { font-size: 2.5rem; } }
       `}</style>
     </div>
   );

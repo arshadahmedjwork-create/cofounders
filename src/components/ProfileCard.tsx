@@ -7,7 +7,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { sendConnectionRequest, checkExistingConnection, ConnectionStatus } from "@/services/connectionService";
 import { useEffect } from "react";
 
-function getMatchColor(percent: number) {
+function getMatchColor(percent: number, hasSynapse: boolean) {
+  if (!hasSynapse) return "text-blue-600 border-blue-500 bg-blue-50 dark:bg-blue-950 dark:text-blue-400";
+  if (percent >= 90) return "text-emerald-600 border-emerald-500 bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-400";
   return "text-green-600 border-green-500 bg-green-50 dark:bg-green-950 dark:text-green-400";
 }
 
@@ -91,9 +93,16 @@ export default function ProfileCard({
         whileInView={{ scale: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.3 + index * 0.08, type: "spring", stiffness: 200 }}
-        className={`absolute top-4 right-4 w-12 h-12 rounded-full border-2 flex items-center justify-center text-xs font-bold ${getMatchColor(profile.matchPercent)}`}
+        className={`absolute top-4 right-4 w-12 h-12 rounded-full border-2 flex flex-col items-center justify-center text-xs font-bold shadow-lg backdrop-blur-md ${getMatchColor(profile.matchPercent, !!profile.hasTakenSynapse)}`}
       >
-        {profile.matchPercent}%
+        {profile.hasTakenSynapse ? (
+          <span>{profile.matchPercent}%</span>
+        ) : (
+          <div className="flex flex-col items-center leading-none">
+            <span className="text-[8px] uppercase opacity-70">Basic</span>
+            <span className="text-[10px]">Match</span>
+          </div>
+        )}
       </motion.div>
 
       <div className="flex items-center gap-3 mb-3">

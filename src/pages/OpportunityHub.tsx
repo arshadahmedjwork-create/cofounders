@@ -169,27 +169,27 @@ export default function Posts() {
         <div className="absolute bottom-[20%] left-[10%] w-[400px] h-[400px] rounded-full bg-secondary/20 blur-[100px]" />
       </div>
 
-      <div className="container mx-auto px-4 pt-40 pb-20">
+      <div className="container mx-auto px-4 pt-32 md:pt-40 pb-20">
         <div className="max-w-4xl mx-auto">
           
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-            <div>
-              <h1 className="text-4xl font-display font-bold mb-2">Opportunity <span className="text-primary italic font-accent">Hub</span></h1>
-              <p className="text-muted-foreground">Broadcast missions and manage co-founder listings.</p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10 md:mb-12">
+            <div className="text-center md:text-left">
+              <h1 className="text-3xl md:text-4xl font-display font-bold mb-2 leading-tight">Opportunity <span className="text-primary italic font-accent">Hub</span></h1>
+              <p className="text-sm md:text-base text-muted-foreground">Broadcast missions and manage co-founder listings.</p>
             </div>
             
-            <div className="flex bg-card/50 backdrop-blur-md border border-border p-1 rounded-2xl self-start">
+            <div className="flex w-full md:w-auto bg-card/50 backdrop-blur-md border border-border p-1 rounded-2xl self-center md:self-start">
               <button 
                 onClick={() => setActiveTab('create')}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === 'create' ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground'}`}
+                className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-[10px] md:text-xs font-bold transition-all ${activeTab === 'create' ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                <Megaphone size={16} /> Broadcast
+                <Megaphone size={16} className="shrink-0" /> Broadcast
               </button>
               <button 
                 onClick={() => setActiveTab('manage')}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === 'manage' ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground'}`}
+                className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-[10px] md:text-xs font-bold transition-all ${activeTab === 'manage' ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                <LayoutDashboard size={16} /> Manage ({myPosts.length})
+                <LayoutDashboard size={16} className="shrink-0" /> Manage ({myPosts.length})
               </button>
             </div>
           </div>
@@ -202,12 +202,12 @@ export default function Posts() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
               >
-                <form onSubmit={handleSubmit} className="glass-card rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-8">
+                <form onSubmit={handleSubmit} className="glass-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 shadow-2xl space-y-8 md:space-y-10">
+                  <div className="flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-10">
+                    <div className="space-y-6 md:space-y-8">
                       {/* Title */}
                       <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                           <FileText size={14} className="text-primary" /> Post Title
                         </label>
                         <input 
@@ -220,7 +220,7 @@ export default function Posts() {
 
                       {/* Roles */}
                       <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                           <Layers size={14} className="text-primary" /> Roles Required
                         </label>
                         <div className="flex gap-2">
@@ -231,13 +231,13 @@ export default function Posts() {
                             placeholder="e.g. CTO, CFO..."
                             className="onboarding-input"
                           />
-                          <button type="button" onClick={addRole} className="p-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors">
+                          <button type="button" onClick={addRole} className="p-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors shrink-0">
                             <Plus size={20} />
                           </button>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {formData.roles.map(r => (
-                            <span key={r} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary">
+                            <span key={r} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-[9px] md:text-[10px] font-bold text-primary">
                               {r} <button type="button" onClick={() => removeRole(r)}><Trash2 size={12} /></button>
                             </span>
                           ))}
@@ -246,7 +246,7 @@ export default function Posts() {
 
                        {/* Offering */}
                        <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                           <Package size={14} className="text-primary" /> Package Offering
                         </label>
                         <input 
@@ -258,20 +258,20 @@ export default function Posts() {
                       </div>
                     </div>
 
-                    <div className="space-y-8">
+                    <div className="space-y-6 md:space-y-8 text-left">
                        {/* Company Info */}
                        <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                           <Building size={14} className="text-primary" /> Startup Details
                         </label>
-                        <div className="space-y-4 p-5 bg-card/40 border border-border rounded-2xl">
+                        <div className="space-y-4 p-4 md:p-5 bg-card/40 border border-border rounded-2xl">
                           <input 
                             value={formData.companyName}
                             onChange={(e) => setFormData({...formData, companyName: e.target.value})}
                             placeholder="Company Name"
                             className="onboarding-input-small"
                           />
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-4">
                             <div className="relative">
                               <Building className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
                               <input 
@@ -296,24 +296,24 @@ export default function Posts() {
 
                       {/* Vision */}
                       <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                           <Target size={14} className="text-primary" /> Opportunity Vision
                         </label>
                         <textarea 
                           value={formData.description}
                           onChange={(e) => setFormData({...formData, description: e.target.value})}
                           placeholder="Describe your vision and what you're looking for in a partner..."
-                          className="onboarding-input min-h-[160px] py-4"
+                          className="onboarding-input min-h-[140px] md:min-h-[160px] py-4"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-10 border-t border-border/50">
+                  <div className="pt-8 md:pt-10 border-t border-border/50">
                     <button 
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-3 py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-lg shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all disabled:opacity-50"
+                      className="w-full flex items-center justify-center gap-3 py-4 md:py-5 bg-primary text-primary-foreground rounded-2xl font-bold text-base md:text-lg shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all disabled:opacity-50"
                     >
                       {isSubmitting ? "Broadcasting..." : "Broadcast Opportunity"} <ArrowRight size={20} />
                     </button>
@@ -335,50 +335,55 @@ export default function Posts() {
                     ))}
                   </div>
                 ) : myPosts.length === 0 ? (
-                  <div className="text-center py-20 bg-card/30 rounded-[3rem] border border-border/50 dashed border-spacing-4">
+                  <div className="text-center py-16 md:py-20 bg-card/30 rounded-[2rem] md:rounded-[3rem] border border-border/50 dashed px-6">
                     <LayoutDashboard size={48} className="mx-auto text-muted-foreground/30 mb-4" />
-                    <h3 className="text-xl font-bold text-muted-foreground">No active broadcasts</h3>
-                    <p className="text-sm text-muted-foreground/70 mb-6">You haven't shared any opportunities yet.</p>
+                    <h3 className="text-lg md:text-xl font-bold text-muted-foreground">No active broadcasts</h3>
+                    <p className="text-sm text-muted-foreground/70 mb-8 max-w-xs mx-auto">You haven't shared any co-founder opportunities yet.</p>
                     <button 
                       onClick={() => setActiveTab('create')}
-                      className="px-8 py-3 bg-primary/10 text-primary rounded-xl font-bold border border-primary/20 hover:bg-primary/20 transition-all"
+                      className="w-full md:w-auto px-8 py-3.5 bg-primary/10 text-primary rounded-xl font-bold border border-primary/20 hover:bg-primary/20 transition-all font-display"
                     >
                       Start First Broadcast
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-6">
+                  <div className="grid grid-cols-1 gap-4 md:gap-6">
                     {myPosts.map(post => (
-                      <div key={post.id} className="glass-card rounded-[2.5rem] p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:border-primary/40 transition-all border-primary/10">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                             <h3 className="text-xl font-bold text-foreground">{post.title}</h3>
-                             <span className="text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full">{post.companyName}</span>
+                      <div key={post.id} className="glass-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:border-primary/40 transition-all border-primary/10 text-left">
+                        <div className="flex-1 overflow-hidden">
+                          <div className="flex flex-wrap items-center gap-2 mb-3">
+                             <h3 className="text-lg md:text-xl font-bold text-foreground leading-tight">{post.title}</h3>
+                             <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.15em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                               {post.companyName}
+                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground line-clamp-2 max-w-2xl mb-4">{post.description}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground line-clamp-2 max-w-2xl mb-5 opacity-80 leading-relaxed font-medium">
+                            {post.description}
+                          </p>
                           <div className="flex flex-wrap gap-2">
-                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-[10px] font-bold uppercase text-muted-foreground">
+                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card/40 border border-border/50 text-[9px] font-bold uppercase text-muted-foreground">
                                <Package size={14} className="text-primary" /> {post.package || 'TBD'}
                              </div>
-                             {post.roles.map(r => (
-                               <span key={r} className="px-3 py-1.5 rounded-xl bg-card border border-border text-[10px] font-bold uppercase text-primary/70">{r}</span>
+                             {post.roles.slice(0, 2).map(r => (
+                               <span key={r} className="px-3 py-1.5 rounded-xl bg-card/40 border border-border/50 text-[9px] font-bold uppercase text-primary/70">{r}</span>
                              ))}
-                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-[10px] font-bold uppercase text-muted-foreground">
-                               <Clock size={14} /> {new Date(post.createdAt).toLocaleDateString()}
+                             {post.roles.length > 2 && <span className="px-3 py-1.5 rounded-xl bg-card/40 border border-border/50 text-[9px] font-bold uppercase text-muted-foreground">+{post.roles.length - 2}</span>}
+                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card/40 border border-border/50 text-[9px] font-bold uppercase text-muted-foreground">
+                               <Clock size={14} className="text-primary/60" /> {new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                              </div>
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 w-full md:w-auto">
                            <button 
-                            className="p-4 rounded-2xl bg-muted hover:bg-muted/80 text-muted-foreground transition-all"
+                            className="flex-1 md:flex-none flex items-center justify-center p-4 rounded-2xl bg-muted/50 hover:bg-muted text-muted-foreground transition-all border border-border/50"
                             onClick={() => toast.info("Edit feature coming soon!")}
                            >
                              <FileText size={18} />
                            </button>
                            <button 
                             onClick={() => handleDelete(post.id)}
-                            className="p-4 rounded-2xl bg-destructive/10 hover:bg-destructive/20 text-destructive transition-all"
+                            className="flex-1 md:flex-none flex items-center justify-center p-4 rounded-2xl bg-destructive/10 hover:bg-destructive/20 text-destructive transition-all border border-destructive/20"
                            >
                              <Trash2 size={18} />
                            </button>
