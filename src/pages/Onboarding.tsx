@@ -196,9 +196,19 @@ export default function Onboarding() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      // Create a descriptive work string from the latest experience
+      let workString = formData.intent === 'building' ? 'Founder' : 'Co-founder';
+      const latestExp = formData.experienceHistory?.[0];
+      if (!noWorkExperience && latestExp && latestExp.role && latestExp.company) {
+        workString = `${latestExp.role} @ ${latestExp.company}`;
+      } else if (noWorkExperience && formData.userType) {
+        workString = formData.userType;
+      }
+
       const finalData = {
         ...formData,
         role: formData.intent === 'building' ? 'Founder' : 'Co-founder',
+        work: workString,
         experienceHistory: noWorkExperience ? [] : formData.experienceHistory
       };
 
