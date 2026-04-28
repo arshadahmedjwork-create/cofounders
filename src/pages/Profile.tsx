@@ -94,6 +94,12 @@ export default function Profile() {
     loadProfile();
   }, [user]);
 
+  useEffect(() => {
+    if (activeTab === 'company' && formData.userType !== 'Entrepreneur') {
+      setActiveTab('personal');
+    }
+  }, [formData.userType, activeTab]);
+
   const handleSave = async () => {
     if (!user) return;
     setIsSaving(true);
@@ -170,9 +176,9 @@ export default function Profile() {
             {[
               { id: 'personal', label: 'Identity', icon: User },
               { id: 'professional', label: 'History', icon: Briefcase },
-              { id: 'company', label: 'Startup', icon: Building },
+              { id: 'company', label: 'Startup', icon: Building, hide: formData.userType !== 'Entrepreneur' },
               { id: 'preferences', label: 'Discovery', icon: Settings },
-            ].map((tab) => (
+            ].filter(t => !t.hide).map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
