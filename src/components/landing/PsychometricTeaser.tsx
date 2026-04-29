@@ -85,7 +85,7 @@ function AnimatedBar({
   );
 }
 
-export default function PsycheMapTeaser() {
+export default function PsychometricTeaser() {
   return (
     <section className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(135deg, hsl(228, 32%, 9%) 0%, hsl(248, 30%, 12%) 50%, hsl(228, 32%, 9%) 100%)" }}>
       {/* Decorative blobs */}
@@ -132,7 +132,7 @@ export default function PsycheMapTeaser() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/synapse-test">
+              <Link to="/assessment">
                 <motion.button
                   whileHover={{ scale: 1.04, boxShadow: "0 0 32px hsl(262 78% 67% / 0.35)" }}
                   whileTap={{ scale: 0.97 }}

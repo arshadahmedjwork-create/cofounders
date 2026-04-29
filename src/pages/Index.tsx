@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import ProfilesPreview from "@/components/landing/ProfilesPreview";
-import PsycheMapTeaser from "@/components/landing/PsycheMapTeaser";
+import PsychometricTeaser from "@/components/landing/PsychometricTeaser";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import PricingSection from "@/components/landing/PricingSection";
 import Footer from "@/components/landing/Footer";
@@ -31,7 +31,7 @@ export default function Index() {
       <Navbar />
       <HeroSection />
       <ProfilesPreview />
-      <PsycheMapTeaser />
+      <PsychometricTeaser />
       <TestimonialsSection />
       <PricingSection />
       <Footer />

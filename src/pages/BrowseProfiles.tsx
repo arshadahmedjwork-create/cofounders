@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Users, Building, Rocket, Package, Layers, MapPin, Search } from "lucide-react";
 import ProfileModal from "@/components/ProfileModal";
 import OpportunityModal from "@/components/OpportunityModal";
-import SynapsePrompt from "@/components/SynapsePrompt";
+import PsychometricPrompt from "@/components/PsychometricPrompt";
 import { Profile } from "@/data/profiles";
 import { FounderPost } from "@/types/post";
 import OpportunityCard from "@/components/OpportunityCard";
@@ -154,7 +154,7 @@ export default function BrowseProfiles() {
             <p className="text-sm md:text-base text-muted-foreground">High-fidelity connections for your startup journey</p>
           </motion.div>
 
-          <SynapsePrompt />
+          <PsychometricPrompt />
 
           {/* Discovery Selector - DEPRECATED: Based on candidate preference now */}
           {/* 

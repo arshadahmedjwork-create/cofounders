@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { getLastAssessment } from "@/services/assessmentService";
 
-const DISMISS_KEY = "synapse_prompt_dismissed_at";
+const DISMISS_KEY = "psychometric_prompt_dismissed_at";
 const COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-export default function SynapsePrompt() {
+export default function PsychometricPrompt() {
   const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -109,7 +109,7 @@ export default function SynapsePrompt() {
               </h2>
               
               <p className="text-sm text-muted-foreground max-w-xs mx-auto mb-8 font-medium leading-relaxed opacity-80">
-                Running the SYNAPSE™ protocol allows our engine to surface founders with perfect mechanical synergy.
+                Completing your psychometric profile allows our engine to surface founders with perfect psychological synergy.
               </p>
             </motion.div>
 
@@ -124,7 +124,7 @@ export default function SynapsePrompt() {
                 to="/assessment"
                 className="group relative w-full h-14 rounded-2xl bg-primary text-white font-black text-sm shadow-[0_15px_40px_-10px_rgba(var(--primary),0.5)] hover:shadow-primary/40 transition-all flex items-center justify-center gap-3 hover:-translate-y-1 active:scale-95 overflow-hidden"
               >
-                Run Protocol <ArrowRight size={18} />
+                Understand DNA <ArrowRight size={18} />
               </Link>
               
               <button
