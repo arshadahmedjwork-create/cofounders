@@ -16,7 +16,8 @@ import {
   Trash2, 
   Building,
   Target,
-  Sparkles
+  Sparkles,
+  MapPin
 } from "lucide-react";
 
 export default function Profile() {
