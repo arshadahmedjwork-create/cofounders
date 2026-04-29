@@ -331,7 +331,17 @@ export default function Onboarding() {
                     <input placeholder="University / School" value={edu.school} onChange={(e) => updateEducation(idx, 'school', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-lg font-bold focus:outline-none focus:border-primary" />
                     <div className="grid grid-cols-2 gap-4">
                       <input placeholder="Degree" value={edu.degree} onChange={(e) => updateEducation(idx, 'degree', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" />
-                      <input placeholder="Year" value={edu.year} onChange={(e) => updateEducation(idx, 'year', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" />
+                      <input 
+                        placeholder="Year (YYYY)" 
+                        type="text"
+                        inputMode="numeric"
+                        value={edu.year} 
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                          updateEducation(idx, 'year', val);
+                        }} 
+                        className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" 
+                      />
                     </div>
                     {idx > 0 && <button onClick={() => removeEducation(idx)} className="absolute top-2 right-2 p-2 text-muted-foreground hover:text-destructive"><Trash2 size={16} /></button>}
                   </div>
@@ -354,7 +364,17 @@ export default function Onboarding() {
                     <input placeholder="Company" value={exp.company} onChange={(e) => updateExperience(idx, 'company', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-lg font-bold focus:outline-none focus:border-primary" />
                     <div className="grid grid-cols-2 gap-4">
                       <input placeholder="Role" value={exp.role} onChange={(e) => updateExperience(idx, 'role', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" />
-                      <input placeholder="Year / Period" value={exp.year} onChange={(e) => updateExperience(idx, 'year', e.target.value)} className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" />
+                      <input 
+                        placeholder="Year (YYYY)" 
+                        type="text"
+                        inputMode="numeric"
+                        value={exp.year} 
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                          updateExperience(idx, 'year', val);
+                        }} 
+                        className="w-full bg-transparent border-b border-border py-2 text-sm focus:outline-none focus:border-primary" 
+                      />
                     </div>
                     {idx > 0 && <button onClick={() => removeExperience(idx)} className="absolute top-2 right-2 p-2 text-muted-foreground hover:text-destructive"><Trash2 size={16} /></button>}
                   </div>

@@ -208,7 +208,7 @@ const questions = [
   }
 ];
 
-export default function SynapseTest() {
+export default function PsychometricTest() {
   const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | number>>({});
@@ -275,7 +275,7 @@ export default function SynapseTest() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center">
         <Loader2 className="animate-spin text-primary mb-4" size={40} />
-        <p className="text-muted-foreground animate-pulse">Loading Synapse Engine...</p>
+        <p className="text-muted-foreground animate-pulse">Analyzing Founder DNA...</p>
       </div>
     );
   }
@@ -295,7 +295,7 @@ export default function SynapseTest() {
                 <BarChart3 className="text-primary" size={40} />
               </div>
               <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
-                SYNAPSE™ <span className="text-primary italic">Status</span>
+                Psychometric <span className="text-primary italic">Status</span>
               </h1>
               <p className="text-lg text-muted-foreground mb-10 max-w-lg mx-auto leading-relaxed">
                 You have an active psychological profile on record. You can browse matches based on current data or update your profile.
@@ -364,10 +364,10 @@ export default function SynapseTest() {
               {showPretest && !lastAssessment ? (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
                    <h1 className="text-4xl md:text-6xl font-display font-bold text-foreground mb-6 tracking-tight">
-                    Start Your <span className="text-primary">SYNAPSE™</span>
+                    Discover Your <span className="text-primary">Founder DNA</span>
                   </h1>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed mb-10">
-                    Unlock matches based on psychometric science and behavioral data. This assessment determines your founder DNA.
+                    Your resume tells them what you've done. Our assessment tells them how you think. Discover your core strengths and find a partner who balances your vision with the perfect execution style.
                   </p>
                   <button 
                     onClick={() => startTest()} 
@@ -377,22 +377,22 @@ export default function SynapseTest() {
                   </button>
                   <div className="mt-12 flex flex-wrap justify-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
                      <span className="font-bold text-sm tracking-widest uppercase">Psychometrics</span>
-                     <span className="font-bold text-sm tracking-widest uppercase">Graphology</span>
-                     <span className="font-bold text-sm tracking-widest uppercase">SYNERGY™ Engine</span>
+                     <span className="font-bold text-sm tracking-widest uppercase">Behavioral Science</span>
+                     <span className="font-bold text-sm tracking-widest uppercase">Matching Engine</span>
                   </div>
                 </motion.div>
               ) : (
                 <>
                 <div className="text-center mb-12">
                   <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-3">
-                    Your <span className="text-primary">SYNAPSE™</span> Assessment
+                    Your <span className="text-primary">Psychometric</span> Assessment
                   </h1>
                 </div>
 
                 {/* Progress Section */}
                 <div className="mb-8">
                   <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
-                    <span>PSYCHEMAP™ — FOUNDER PSYCHE</span>
+                    <span>FOUNDER PSYCHE</span>
                     <span className="text-foreground">{currentIndex + 1} of {questions.length}</span>
                   </div>
                   <div className="flex gap-1">
@@ -429,7 +429,7 @@ export default function SynapseTest() {
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
                       <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold mb-4">
-                        <span>💭</span> PSYCHEMAP™
+                        <span>💭</span> Founder Profile
                       </div>
 
                       <p className="text-sm text-muted-foreground mb-2">

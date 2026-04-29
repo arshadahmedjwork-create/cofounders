@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 
 const navLinks = [
-  { label: "Browse Profiles", href: "/browse" },
+  { label: "Find your ideal co-founder", href: "/browse" },
   { label: "Success Stories", href: "/#testimonials" },
   { label: "Pricing", href: "/#pricing" },
 ];
@@ -206,7 +206,7 @@ export default function Navbar() {
                 <div className="absolute right-0 mt-2 w-48 rounded-xl shadow-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-[hsl(222,22%,20%)]"
                   style={{ background: "hsl(222, 30%, 7%)" }}>
                   <Link to="/browse" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
-                    Explore Network
+                    Find your ideal co-founder
                   </Link>
                   <Link to="/profile" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
                     My Account
@@ -240,7 +240,7 @@ export default function Navbar() {
                   boxShadow: "0 0 16px hsl(262 75% 60% / 0.25)",
                 }}
               >
-                Take SYNAPSE™ Test
+                Understand your founder DNA
               </Link>
             </motion.div>
           </div>
@@ -317,7 +317,7 @@ export default function Navbar() {
               )}
               <Link to="/assessment" onClick={() => setMobileOpen(false)}
                 className="py-4 rounded-2xl text-lg font-bold text-center shadow-xl bg-[hsl(262,75%,60%)] text-white">
-                Take SYNAPSE™ Test
+                Understand your founder DNA
               </Link>
             </motion.div>
           </motion.div>

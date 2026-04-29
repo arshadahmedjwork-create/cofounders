@@ -149,7 +149,7 @@ export default function BrowseProfiles() {
             className="text-center mb-8 md:mb-10"
           >
             <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-3 leading-tight">
-              Explore the <span className="font-accent italic text-primary">Network</span>
+              Find your ideal <span className="font-accent italic text-primary">co-founder</span>
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">High-fidelity connections for your startup journey</p>
           </motion.div>
@@ -253,14 +253,18 @@ export default function BrowseProfiles() {
       </div>
       <Footer />
 
-      <ProfileModal 
-        profile={selectedProfile}
-        onClose={() => setSelectedProfile(null)}
-        onConnect={(p) => {
-          setSelectedProfile(null);
-          toast.success(`Connection request sent to ${p.name}!`);
-        }}
-      />
+      <AnimatePresence>
+        {selectedProfile && (
+          <ProfileModal 
+            profile={selectedProfile}
+            onClose={() => setSelectedProfile(null)}
+            onConnect={(p) => {
+              setSelectedProfile(null);
+              toast.success(`Connection request sent to ${p.name}!`);
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <OpportunityModal 
         post={selectedPost}

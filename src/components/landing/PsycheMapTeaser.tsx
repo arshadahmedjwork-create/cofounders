@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Brain } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ACCENT = "hsl(262, 78%, 72%)";
 
@@ -114,45 +115,42 @@ export default function PsycheMapTeaser() {
                 <Brain size={16} className="text-primary" />
               </span>
               <span className="text-xs font-bold tracking-widest uppercase text-primary">
-                PsycheMap™
+                Psychometric Assessment
               </span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-5 leading-tight" style={{ color: "hsl(220, 18%, 95%)" }}>
               Beyond Skills —{" "}
               <br />
               <span className="font-accent italic" style={{ color: "hsl(262, 78%, 72%)" }}>
-                We Match Founder Psyches
+                Understand Your Founder DNA
               </span>
             </h2>
             <p className="leading-relaxed mb-8 text-base" style={{ color: "hsl(220, 12%, 64%)" }}>
-              Our proprietary 5-dimension assessment goes deeper than résumés.
-              We analyze how you think, decide, communicate, and handle risk to
-              find co-founders who truly complement you.
+              Your resume tells them what you've done. Our assessment tells them how you think. 
+              Discover your core strengths and find a partner who balances your vision with 
+              the perfect execution style.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <motion.button
-                whileHover={{ scale: 1.04, boxShadow: "0 0 32px hsl(262 78% 67% / 0.35)" }}
-                whileTap={{ scale: 0.97 }}
-                className="bg-primary text-primary-foreground px-7 py-3.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/25 flex items-center gap-2 w-fit"
-              >
-                Take the Free Assessment
-                <span className="text-base">→</span>
-              </motion.button>
+              <Link to="/synapse-test">
+                <motion.button
+                  whileHover={{ scale: 1.04, boxShadow: "0 0 32px hsl(262 78% 67% / 0.35)" }}
+                  whileTap={{ scale: 0.97 }}
+                  className="bg-primary text-primary-foreground px-7 py-3.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/25 flex items-center gap-2 w-full sm:w-fit"
+                >
+                  Understand your founder DNA
+                  <span className="text-base">→</span>
+                </motion.button>
+              </Link>
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-7 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 w-fit"
+                className="px-7 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 w-full sm:w-fit"
                 style={{ border: "1px solid hsl(220, 20%, 30%)", color: "hsl(220, 12%, 64%)" }}
               >
                 See Sample Report
               </motion.button>
             </div>
-
-            {/* Mini trust line */}
-            <p className="mt-5 text-xs" style={{ color: "hsl(220, 12%, 46%)" }}>
-              ✦ &nbsp;Taken by 4,200+ founders across India
-            </p>
           </motion.div>
 
           {/* Right: bars */}
@@ -166,10 +164,10 @@ export default function PsycheMapTeaser() {
           >
             <div className="flex items-center justify-between mb-6">
               <p className="text-sm font-semibold" style={{ color: "hsl(220, 18%, 88%)" }}>
-                Match Score Breakdown
+                Founder Personality Profile
               </p>
               <span className="text-xs px-2.5 py-1 rounded-full font-bold" style={{ background: "hsl(42, 80%, 58%, 0.15)", color: "hsl(42, 80%, 65%)", border: "1px solid hsl(42, 80%, 40%)" }}>
-                LIVE DEMO
+                YOUR REPORT
               </span>
             </div>
             {dimensions.map((d, i) => (
@@ -195,3 +193,4 @@ export default function PsycheMapTeaser() {
     </section>
   );
 }
+

@@ -1,4 +1,4 @@
-import { Heart, MapPin, ArrowRight, Clock, GraduationCap, Briefcase } from "lucide-react";
+import { Heart, MapPin, ArrowRight, Clock, GraduationCap, Briefcase, Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import type { Profile } from "@/data/profiles";
@@ -37,7 +37,8 @@ export default function ProfileCard({
     checkStatus();
   }, [user, profile.id]);
 
-  const handleConnect = async () => {
+  const handleConnect = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (isConnecting) return;
     if (!user) {
       toast.error("Please log in to connect with founders.");
@@ -82,7 +83,7 @@ export default function ProfileCard({
       transition={{ delay: index * 0.08, duration: 0.5, type: "spring", stiffness: 100 }}
       whileHover={{ y: -10, transition: { duration: 0.25 } }}
       onClick={onConnect}
-      className="glass-card rounded-2xl p-5 relative group cursor-pointer"
+      className="glass-card rounded-2xl p-4 relative group cursor-pointer"
     >
       {/* Shimmer on hover */}
       <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer pointer-events-none" />
@@ -105,7 +106,7 @@ export default function ProfileCard({
         )}
       </motion.div>
 
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-3 mb-2">
         <motion.div
           whileHover={{ scale: 1.1, rotate: 5 }}
           className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden text-lg font-bold text-primary-foreground shrink-0 shadow-lg"
@@ -136,7 +137,7 @@ export default function ProfileCard({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-x-1.5 gap-y-2 mb-4">
+      <div className="flex flex-wrap gap-x-1 gap-y-1.5 mb-3">
         <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
           {profile.domain}
         </span>
@@ -154,13 +155,13 @@ export default function ProfileCard({
         {profile.bio}
       </p>
 
-      <p className="text-[10px] text-primary font-medium mb-3">
+      <p className="text-[10px] text-primary font-medium mb-2">
         🔍 Looking for: {profile.lookingFor}
       </p>
 
       {/* Structured Background Section */}
       {(profile.educationHistory?.length || 0) > 0 || (profile.experienceHistory?.length || 0) > 0 ? (
-        <div className="space-y-2 mb-4 pt-3 border-t border-border/40">
+        <div className="space-y-1.5 mb-3 pt-2 border-t border-border/40">
           {(profile.experienceHistory || []).slice(0, 1).map((exp, i) => (
             <div key={i} className="flex items-start gap-2">
               <div className="w-5 h-5 rounded-md bg-primary/5 flex items-center justify-center shrink-0 border border-primary/10">
