@@ -17,14 +17,27 @@ import {
   Building,
   Target,
   Sparkles,
-  MapPin
+  MapPin,
+  Zap,
+  Rocket,
+  Layers,
+  CheckCircle2,
+  TrendingUp,
+  MessageSquare,
+  Users,
+  Eye,
+  X
 } from "lucide-react";
+import { MatchingCard } from "@/components/MatchingCard";
+import { Profile } from "@/data/profiles";
+import { PROFILE_BACKGROUNDS } from "@/data/backgrounds";
 
 export default function Profile() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'company' | 'preferences'>('personal');
+  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'company' | 'matching' | 'appearance'>('personal');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const [formData, setFormData] = useState<UserProfile>({
     firstName: "",
@@ -50,6 +63,16 @@ export default function Profile() {
     companyStage: "Idea",
     companyDescription: "",
     companyLogo: "",
+    dnaRisk: 85,
+    dnaSpeed: 90,
+    dnaLeadership: 75,
+    dnaCommunication: 80,
+    compSkill: 95,
+    compVision: 90,
+    compWorkStyle: 85,
+    compAmbition: 90,
+    journeyStage: 'Traction',
+    tractionDetails: ["10K+ Monthly Users", "2 Paying Clients", "Bootstrapped"],
   });
 
   useEffect(() => {
@@ -84,6 +107,17 @@ export default function Profile() {
             companyStage: myProfile.stage || "Idea",
             companyDescription: myProfile.companyDescription || "",
             companyLogo: myProfile.companyLogo || "",
+            profileBackground: myProfile.profileBackground || "sunset",
+            dnaRisk: myProfile.dnaRisk || 85,
+            dnaSpeed: myProfile.dnaSpeed || 90,
+            dnaLeadership: myProfile.dnaLeadership || 75,
+            dnaCommunication: myProfile.dnaCommunication || 80,
+            compSkill: myProfile.compSkill || 95,
+            compVision: myProfile.compVision || 90,
+            compWorkStyle: myProfile.compWorkStyle || 85,
+            compAmbition: myProfile.compAmbition || 90,
+            journeyStage: myProfile.journeyStage || 'Traction',
+            tractionDetails: myProfile.tractionDetails || [],
           });
         }
       } catch (error) {
@@ -171,14 +205,77 @@ export default function Profile() {
               </div>
             </div>
             
-            <button 
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex items-center justify-center gap-2 px-10 py-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
-            >
-              <Save size={18} /> {isSaving ? "Syncing..." : "Save Profile"}
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsPreviewOpen(true)}
+                className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold hover:bg-white/10 transition-all"
+              >
+                <Eye size={18} /> View Card
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-2xl text-sm font-bold hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
+              >
+                <Save size={18} /> {isSaving ? "Saving..." : "Save Profile"}
+              </button>
+            </div>
           </div>
+
+          {/* PREVIEW MODAL */}
+          <AnimatePresence>
+            {isPreviewOpen && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                 <motion.div 
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   exit={{ opacity: 0 }}
+                   onClick={() => setIsPreviewOpen(false)}
+                   className="absolute inset-0 bg-black/90 backdrop-blur-md"
+                 />
+                 <motion.div 
+                   initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                   animate={{ opacity: 1, scale: 1, y: 0 }}
+                   exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                   className="relative w-full max-w-[440px] h-[780px] z-10"
+                 >
+                   <MatchingCard 
+                     profile={{
+                       id: user?.id || "",
+                       name: `${formData.firstName} ${formData.lastName}`,
+                       role: formData.role,
+                       domain: formData.industry,
+                       location: formData.city,
+                       bio: formData.fullBio || "",
+                       tags: formData.selectedSkills,
+                       lookingFor: formData.lookingFor,
+                       avatarUrl: formData.avatarUrl,
+                       matchPercent: 100,
+                       profileBackground: formData.profileBackground,
+                       dnaRisk: formData.dnaRisk,
+                       dnaSpeed: formData.dnaSpeed,
+                       dnaLeadership: formData.dnaLeadership,
+                       dnaCommunication: formData.dnaCommunication,
+                       compSkill: formData.compSkill,
+                       compVision: formData.compVision,
+                       compWorkStyle: formData.compWorkStyle,
+                       compAmbition: formData.compAmbition,
+                       journeyStage: formData.journeyStage,
+                       tractionDetails: formData.tractionDetails,
+                       hasTakenSynapse: true
+                     } as Profile}
+                     isPreview={true}
+                   />
+                   <button 
+                     onClick={() => setIsPreviewOpen(false)}
+                     className="absolute -top-12 right-0 text-white/50 hover:text-white flex items-center gap-2 font-bold uppercase tracking-widest text-xs"
+                   >
+                     <X size={20} /> Close Preview
+                   </button>
+                 </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             {/* Sidebar Navigation */}
@@ -187,6 +284,7 @@ export default function Profile() {
                 { id: 'personal', label: 'Identity', icon: User },
                 { id: 'professional', label: 'History', icon: Briefcase },
                 { id: 'company', label: 'Startup', icon: Building, hide: formData.userType !== 'Entrepreneur' },
+                { id: 'appearance', label: 'Appearance', icon: Sparkles },
                 { id: 'preferences', label: 'Discovery', icon: Settings },
               ].filter(t => !t.hide).map((tab) => (
                 <button
@@ -434,7 +532,162 @@ export default function Profile() {
                     </div>
                   )}
 
-                  {/* PREFERENCES TAB */}
+                    {/* APPEARANCE TAB */}
+                    {activeTab === 'matching' && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                <div>
+                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <Target className="text-primary" size={20} /> Founder DNA
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                      { key: 'dnaRisk', label: 'Risk Appetite', icon: TrendingUp },
+                      { key: 'dnaSpeed', label: 'Speed', icon: Zap },
+                      { key: 'dnaLeadership', label: 'Leadership', icon: Users },
+                      { key: 'dnaCommunication', label: 'Communication', icon: MessageSquare },
+                    ].map(stat => (
+                      <div key={stat.key} className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <label className="text-sm font-medium flex items-center gap-2">
+                            <stat.icon size={14} className="text-muted-foreground" /> {stat.label}
+                          </label>
+                          <span className="text-xs font-bold text-primary">{(formData as any)[stat.key]}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={(formData as any)[stat.key]}
+                          onChange={(e) => setFormData({ ...formData, [stat.key]: parseInt(e.target.value) })}
+                          className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-border">
+                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <Sparkles className="text-primary" size={20} /> Compatibility Breakdown
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                      { key: 'compSkill', label: 'Skill Match' },
+                      { key: 'compVision', label: 'Vision Match' },
+                      { key: 'compWorkStyle', label: 'Work Style' },
+                      { key: 'compAmbition', label: 'Ambition Match' },
+                    ].map(stat => (
+                      <div key={stat.key} className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <label className="text-sm font-medium">{stat.label}</label>
+                          <span className="text-xs font-bold text-primary">{(formData as any)[stat.key]}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={(formData as any)[stat.key]}
+                          onChange={(e) => setFormData({ ...formData, [stat.key]: parseInt(e.target.value) })}
+                          className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-border">
+                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <Rocket className="text-primary" size={20} /> Startup Journey
+                  </h3>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-4 gap-2">
+                      {['Idea', 'MVP', 'Traction', 'Scale'].map((stage) => (
+                        <button
+                          key={stage}
+                          onClick={() => setFormData({ ...formData, journeyStage: stage as any })}
+                          className={`py-3 rounded-xl border-2 transition-all font-bold text-xs ${
+                            formData.journeyStage === stage 
+                              ? 'border-primary bg-primary/10 text-primary' 
+                              : 'border-border bg-card text-muted-foreground hover:border-border/80'
+                          }`}
+                        >
+                          {stage}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-sm font-medium">Traction Highlights (Max 3)</label>
+                      <div className="space-y-2">
+                        {[0, 1, 2].map((i) => (
+                          <input
+                            key={i}
+                            type="text"
+                            placeholder={`Highlight ${i + 1} (e.g. 10K+ Monthly Users)`}
+                            value={formData.tractionDetails?.[i] || ""}
+                            onChange={(e) => {
+                              const newTraction = [...(formData.tractionDetails || [])];
+                              newTraction[i] = e.target.value;
+                              setFormData({ ...formData, tractionDetails: newTraction });
+                            }}
+                            className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 outline-none"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'appearance' && (
+                      <div className="space-y-8">
+                        <div className="space-y-6">
+                          <h3 className="text-xl font-bold flex items-center gap-3 font-display">
+                            <Sparkles className="text-primary" size={22} /> Profile Background
+                          </h3>
+                          <p className="text-sm text-muted-foreground">Select a background to customize how your profile card looks to others.</p>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {PROFILE_BACKGROUNDS.map((bg) => (
+                              <button
+                                key={bg.id}
+                                onClick={() => setFormData({...formData, profileBackground: bg.id})}
+                                className={`group relative overflow-hidden rounded-2xl aspect-video border-2 transition-all ${
+                                  formData.profileBackground === bg.id 
+                                  ? "border-primary ring-4 ring-primary/10 shadow-xl" 
+                                  : "border-border hover:border-primary/40"
+                                }`}
+                              >
+                                <div 
+                                  className={`absolute inset-0 ${bg.class} transition-transform group-hover:scale-110`}
+                                  style={{ background: bg.preview }}
+                                />
+                                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                                <div className="absolute bottom-3 left-3">
+                                  <span className="text-white text-[10px] font-bold uppercase tracking-widest bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-lg">
+                                    {bg.name}
+                                  </span>
+                                </div>
+                                {formData.profileBackground === bg.id && (
+                                  <div className="absolute top-3 right-3 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg">
+                                    <Sparkles size={12} />
+                                  </div>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="p-6 bg-primary/5 rounded-3xl border border-primary/10">
+                          <h4 className="text-sm font-bold text-primary mb-2">Pro Tip</h4>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            A vibrant background makes your profile stand out in the discovery feed, increasing your match rate by up to 40%.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* PREFERENCES TAB */}
                   {activeTab === 'preferences' && (
                     <div className="space-y-10">
                       <div className="space-y-6">

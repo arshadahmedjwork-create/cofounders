@@ -30,7 +30,9 @@ export default function Index() {
     >
       <Navbar />
       <HeroSection />
-      <ProfilesPreview />
+      <div className="hidden md:block">
+        <ProfilesPreview />
+      </div>
       <PsychometricTeaser />
       <TestimonialsSection />
       <PricingSection />

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { sendConnectionRequest, checkExistingConnection, ConnectionStatus } from "@/services/connectionService";
 import { useEffect } from "react";
+import { PROFILE_BACKGROUNDS } from "@/data/backgrounds";
 
 function getMatchColor(percent: number, hasSynapse: boolean) {
   if (!hasSynapse) return "text-blue-600 border-blue-500 bg-blue-50 dark:bg-blue-950 dark:text-blue-400";
@@ -83,8 +84,15 @@ export default function ProfileCard({
       transition={{ delay: index * 0.08, duration: 0.5, type: "spring", stiffness: 100 }}
       whileHover={{ y: -10, transition: { duration: 0.25 } }}
       onClick={onConnect}
-      className="glass-card rounded-2xl p-4 relative group cursor-pointer"
+      className={`glass-card rounded-2xl p-4 relative group cursor-pointer overflow-hidden ${profile.profileBackground ? "border-transparent" : ""}`}
     >
+      {/* Background Decor */}
+      {profile.profileBackground && (
+        <div 
+          className={`absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20 ${PROFILE_BACKGROUNDS.find(bg => bg.id === profile.profileBackground)?.class}`} 
+          style={{ background: PROFILE_BACKGROUNDS.find(bg => bg.id === profile.profileBackground)?.preview }}
+        />
+      )}
       {/* Shimmer on hover */}
       <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer pointer-events-none" />
 

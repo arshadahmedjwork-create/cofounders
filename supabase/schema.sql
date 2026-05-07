@@ -40,6 +40,17 @@ CREATE TABLE public.user_profiles (
     survival_time TEXT,
     equity_expectation TEXT,
     domain_tags TEXT[],
+    profile_background TEXT DEFAULT 'sunset',
+    dna_risk INTEGER DEFAULT 85,
+    dna_speed INTEGER DEFAULT 90,
+    dna_leadership INTEGER DEFAULT 75,
+    dna_communication INTEGER DEFAULT 80,
+    comp_skill INTEGER DEFAULT 95,
+    comp_vision INTEGER DEFAULT 90,
+    comp_work_style INTEGER DEFAULT 85,
+    comp_ambition INTEGER DEFAULT 90,
+    journey_stage TEXT DEFAULT 'Traction',
+    traction_details TEXT[] DEFAULT '{}',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );

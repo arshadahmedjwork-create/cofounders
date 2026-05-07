@@ -7,7 +7,7 @@ import Footer from "@/components/landing/Footer";
 import { getProfiles } from "@/services/profileService";
 import { getPosts } from "@/services/postService";
 import { useQuery } from "@tanstack/react-query";
-import { Users, Building, Rocket, Package, Layers, MapPin, Search } from "lucide-react";
+import { Users, Building, Rocket, Package, Layers, MapPin, Search, Sparkles } from "lucide-react";
 import ProfileModal from "@/components/ProfileModal";
 import OpportunityModal from "@/components/OpportunityModal";
 import PsychometricPrompt from "@/components/PsychometricPrompt";
@@ -47,6 +47,19 @@ export default function BrowseProfiles() {
   });
 
   const isLoading = profilesLoading || postsLoading;
+
+  useEffect(() => {
+    // Redirect mobile users to match mode for a better experience
+    const checkMobile = () => {
+      if (window.innerWidth < 768) {
+        window.location.href = '/match';
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const loadCurrentProfile = async () => {
@@ -166,8 +179,8 @@ export default function BrowseProfiles() {
           */}
 
           {/* Search & filters */}
-          <div className="max-w-4xl mx-auto mb-10 mt-6 space-y-4">
-            <div className="relative">
+          <div className="max-w-4xl mx-auto mb-10 mt-6 flex flex-col md:flex-row gap-4">
+            <div className="relative flex-grow">
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
@@ -177,6 +190,16 @@ export default function BrowseProfiles() {
                 className="onboarding-input py-3 pl-11 shadow-inner bg-secondary/20 w-full"
               />
             </div>
+            
+            <button
+              onClick={() => window.location.href = '/match'}
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all whitespace-nowrap"
+            >
+              <Sparkles size={18} /> Swipe Mode
+            </button>
+          </div>
+
+          <div className="max-w-4xl mx-auto mb-10">
             {discoveryMode === 'candidates' && (
               <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                 {roleFilters.map((f) => (

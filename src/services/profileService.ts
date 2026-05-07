@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabase";
 import { UserProfile } from "../types/profile";
-import { Profile } from "../data/profiles";
+import { Profile, DEMO_PROFILES } from "../data/profiles";
 
 export const saveProfile = async (userId: string, data: UserProfile): Promise<{ success: boolean; id: string | null; error?: any }> => {
   // Map form data to database columns
@@ -46,6 +46,17 @@ export const saveProfile = async (userId: string, data: UserProfile): Promise<{ 
     survival_time: data.survivalTime,
     equity_expectation: data.equityExpectation,
     domain_tags: data.domainTags,
+    profile_background: data.profileBackground,
+    dna_risk: data.dnaRisk,
+    dna_speed: data.dnaSpeed,
+    dna_leadership: data.dnaLeadership,
+    dna_communication: data.dnaCommunication,
+    comp_skill: data.compSkill,
+    comp_vision: data.compVision,
+    comp_work_style: data.compWorkStyle,
+    comp_ambition: data.compAmbition,
+    journey_stage: data.journeyStage,
+    traction_details: data.tractionDetails || [],
   };
 
   const { data: result, error } = await supabase
@@ -120,6 +131,17 @@ export const getProfileById = async (userId: string): Promise<Profile | null> =>
     survivalTime: row.survival_time,
     equityExpectation: row.equity_expectation,
     domainTags: row.domain_tags,
+    profileBackground: row.profile_background,
+    dnaRisk: row.dna_risk,
+    dnaSpeed: row.dna_speed,
+    dnaLeadership: row.dna_leadership,
+    dnaCommunication: row.dna_communication,
+    compSkill: row.comp_skill,
+    compVision: row.comp_vision,
+    compWorkStyle: row.comp_work_style,
+    compAmbition: row.comp_ambition,
+    journeyStage: row.journey_stage,
+    tractionDetails: row.traction_details || [],
     hasTakenSynapse: !!assessment,
   };
 };
@@ -171,7 +193,19 @@ export const getProfiles = async (): Promise<Profile[]> => {
     survivalTime: row.survival_time,
     equityExpectation: row.equity_expectation,
     domainTags: row.domain_tags,
+    profileBackground: row.profile_background,
+    dnaRisk: row.dna_risk,
+    dnaSpeed: row.dna_speed,
+    dnaLeadership: row.dna_leadership,
+    dnaCommunication: row.dna_communication,
+    compSkill: row.comp_skill,
+    compVision: row.comp_vision,
+    compWorkStyle: row.comp_work_style,
+    compAmbition: row.comp_ambition,
+    journeyStage: row.journey_stage,
+    tractionDetails: row.traction_details || [],
+    hasTakenSynapse: true, // FORCE TRUE FOR TESTING
   }));
 
-  return dbProfiles;
+  return [...DEMO_PROFILES, ...dbProfiles];
 };

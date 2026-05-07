@@ -39,6 +39,23 @@ export interface UserProfile {
   survivalTime?: string;
   equityExpectation?: string;
   domainTags?: string[];
+  profileBackground?: string;
+  
+  // Founder DNA (0-100)
+  dnaRisk?: number;
+  dnaSpeed?: number;
+  dnaLeadership?: number;
+  dnaCommunication?: number;
+  
+  // Compatibility Breakdown (0-100)
+  compSkill?: number;
+  compVision?: number;
+  compWorkStyle?: number;
+  compAmbition?: number;
+  
+  // Startup Journey
+  journeyStage?: 'Idea' | 'MVP' | 'Traction' | 'Scale';
+  tractionDetails?: string[];
 }
 
 export interface EducationItem {

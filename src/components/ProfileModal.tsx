@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, GraduationCap, Briefcase, Linkedin, Building, Rocket, Target, MapPin, ArrowRight } from "lucide-react";
 import { Profile } from "@/data/profiles";
+import { PROFILE_BACKGROUNDS } from "@/data/backgrounds";
 
 interface ProfileModalProps {
   profile: Profile | null;
@@ -28,6 +29,14 @@ export default function ProfileModal({ profile, onClose, onConnect }: ProfileMod
         exit={{ opacity: 0, scale: 0.98, y: 10 }}
         className="relative w-full max-w-3xl bg-card border border-border shadow-2xl rounded-[2rem] overflow-hidden max-h-[90vh] flex flex-col"
       >
+        {/* Background Layer */}
+        {profile.profileBackground && (
+          <div 
+            className={`absolute top-0 left-0 w-full h-[300px] ${PROFILE_BACKGROUNDS.find(bg => bg.id === profile.profileBackground)?.class} opacity-10`} 
+            style={{ background: PROFILE_BACKGROUNDS.find(bg => bg.id === profile.profileBackground)?.preview }}
+          />
+        )}
+        
         {/* Header Section */}
         <div className="p-8 pb-0 flex flex-col md:flex-row gap-8 items-start relative z-10">
           <div 

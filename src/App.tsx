@@ -21,6 +21,7 @@ const OpportunityHub = lazy(() => import("./pages/OpportunityHub.tsx"));
 const Requests = lazy(() => import("./pages/Requests.tsx"));
 const Profile = lazy(() => import("./pages/Profile.tsx"));
 const Messages = lazy(() => import("./pages/Messages.tsx"));
+const MatchMode = lazy(() => import("./pages/MatchMode.tsx"));
 
 // Loading fallback
 const PageLoader = () => (
@@ -61,6 +62,7 @@ const AnimatedRoutes = () => {
               <Route path="/requests" element={<Requests />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Messages />} />
+              <Route path="/match" element={<MatchMode />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
