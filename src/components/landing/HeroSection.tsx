@@ -42,26 +42,6 @@ export default function HeroSection() {
       <div className="container mx-auto px-4 pt-28 pb-20 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
 
-          {/* Live badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-8"
-            style={{
-              background: "hsl(262, 75%, 68%, 0.1)",
-              border: "1px solid hsl(262, 75%, 68%, 0.25)",
-              color: "hsl(262, 75%, 78%)",
-            }}
-          >
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-            </span>
-            <span className="text-xs font-bold tracking-widest uppercase">
-              Introducing Psychometric Assessment 2.0
-            </span>
-          </motion.div>
 
           {/* Headline */}
           <motion.h1
