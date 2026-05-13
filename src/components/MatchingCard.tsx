@@ -142,9 +142,9 @@ export const MatchingCard = ({
                   {profile.name[0]}
                 </div>
               )}
-              <div className="absolute bottom-1.5 left-1.5 right-1.5 py-1 bg-green-500/90 backdrop-blur-md rounded-md flex items-center justify-center gap-1 shadow-lg">
+              <div className={`absolute bottom-1.5 left-1.5 right-1.5 py-1 ${profile.intent === 'joining' ? 'bg-blue-500/90' : 'bg-green-500/90'} backdrop-blur-md rounded-md flex items-center justify-center gap-1 shadow-lg`}>
                  <div className="w-1 h-1 rounded-full bg-white animate-pulse" />
-                 <span className="text-[7px] font-black uppercase tracking-tighter text-white">Building</span>
+                 <span className="text-[7px] font-black uppercase tracking-tighter text-white">{profile.intent === 'joining' ? 'Aspirant' : 'Building'}</span>
               </div>
             </div>
             <div className="space-y-0.5 pt-0.5 text-left">
@@ -221,50 +221,84 @@ export const MatchingCard = ({
                 <DNAStat label="Comm" value={profile.dnaCommunication || 88} color="text-teal-500" icon={MessageSquare} />
              </div>
           </motion.div>
-          <div className="space-y-4 text-left">
-             <h4 className="text-[8px] font-black uppercase tracking-[0.2em] text-white flex items-center gap-2 px-1">
-               <Rocket size={10} /> Journey
-             </h4>
-             <div className="relative pt-1 px-1">
-                <div className="absolute top-[22px] left-3 right-3 h-[1px] bg-white/5" />
-                <div className="flex justify-between items-center relative z-10">
-                   {['Idea', 'MVP', 'Tract', 'Scale'].map((label, i) => {
-                     const isPast = ['Idea', 'MVP', 'Traction', 'Scale'].indexOf(profile.journeyStage || 'Traction') >= i;
-                     const isCurrent = (profile.journeyStage || 'Traction') === (label === 'Tract' ? 'Traction' : label);
-                     
-                     return (
-                       <div key={label} className="flex flex-col items-center gap-2">
-                          <div className={`w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
-                            isCurrent ? 'bg-primary border-primary scale-110 shadow-[0_0_15px_rgba(139,92,246,0.6)]' :
-                            isPast ? 'bg-white/10 border-white/20' : 'bg-[#0a0c10] border-white/5'
-                          }`}>
-                             {isPast && !isCurrent ? <CheckCircle2 size={12} className="text-primary" /> : 
-                              isCurrent ? <Layers size={12} className="text-white" /> : null}
-                          </div>
-                          <span className={`text-[7px] font-black uppercase tracking-widest ${isPast ? 'text-white' : 'text-white/20'}`}>{label}</span>
-                       </div>
-                     );
-                   })}
-                </div>
-                {/* Traction Card */}
-                <div className="mt-4 p-3 bg-white/[0.03] border border-white/5 rounded-2xl space-y-2 shadow-inner min-h-[90px]">
-                   <div className="flex justify-between items-center">
-                     <span className="text-[8px] font-black text-primary uppercase tracking-widest">{profile.journeyStage || 'Traction'}</span>
-                     <TrendingUp size={10} className="text-primary" />
-                   </div>
-                    <ul className="text-[8px] text-white/60 space-y-1 font-medium leading-tight max-h-[80px] overflow-hidden">
-                       {(profile.tractionDetails && profile.tractionDetails.length > 0 && profile.tractionDetails[0]) ? profile.tractionDetails.slice(0, 3).map((detail, idx) => (
-                         detail && <li key={idx} className="flex items-start gap-1 text-white/80 line-clamp-1">• <span>{detail}</span></li>
-                       )) : (
-                         <>
-                           <li className="flex items-start gap-1 text-white/80">• <span>Early feedback positive</span></li>
-                           <li className="flex items-start gap-1 text-white/80">• <span>MVP in development</span></li>
-                         </>
-                       )}
-                    </ul>
-                </div>
-             </div>
-          </div>
+          {profile.intent === 'building' || !profile.intent ? (
+            <div className="space-y-4 text-left">
+               <h4 className="text-[8px] font-black uppercase tracking-[0.2em] text-white flex items-center gap-2 px-1">
+                 <Rocket size={10} /> Journey
+               </h4>
+               <div className="relative pt-1 px-1">
+                  <div className="absolute top-[22px] left-3 right-3 h-[1px] bg-white/5" />
+                  <div className="flex justify-between items-center relative z-10">
+                     {['Idea', 'MVP', 'Tract', 'Scale'].map((label, i) => {
+                       const isPast = ['Idea', 'MVP', 'Traction', 'Scale'].indexOf(profile.journeyStage || 'Idea') >= i;
+                       const isCurrent = (profile.journeyStage || 'Idea') === (label === 'Tract' ? 'Traction' : label);
+                       
+                       return (
+                         <div key={label} className="flex flex-col items-center gap-2">
+                            <div className={`w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
+                              isCurrent ? 'bg-primary border-primary scale-110 shadow-[0_0_15px_rgba(139,92,246,0.6)]' :
+                              isPast ? 'bg-white/10 border-white/20' : 'bg-[#0a0c10] border-white/5'
+                            }`}>
+                               {isPast && !isCurrent ? <CheckCircle2 size={12} className="text-primary" /> : 
+                                isCurrent ? <Layers size={12} className="text-white" /> : null}
+                            </div>
+                            <span className={`text-[7px] font-black uppercase tracking-widest ${isPast ? 'text-white' : 'text-white/20'}`}>{label}</span>
+                         </div>
+                       );
+                     })}
+                  </div>
+                  {/* Traction Card */}
+                  <div className="mt-4 p-3 bg-white/[0.03] border border-white/5 rounded-2xl space-y-2 shadow-inner min-h-[90px]">
+                     <div className="flex justify-between items-center">
+                       <span className="text-[8px] font-black text-primary uppercase tracking-widest">{profile.journeyStage || 'Stage'}</span>
+                       <TrendingUp size={10} className="text-primary" />
+                     </div>
+                      <ul className="text-[8px] text-white/60 space-y-1 font-medium leading-tight max-h-[80px] overflow-hidden">
+                         {(profile.tractionDetails && profile.tractionDetails.length > 0 && profile.tractionDetails[0]) ? profile.tractionDetails.slice(0, 3).map((detail, idx) => (
+                           detail && <li key={idx} className="flex items-start gap-1 text-white/80 line-clamp-1">• <span>{detail}</span></li>
+                         )) : (
+                           <>
+                             <li className="flex items-start gap-1 text-white/80">• <span>Early feedback positive</span></li>
+                             <li className="flex items-start gap-1 text-white/80">• <span>MVP in development</span></li>
+                           </>
+                         )}
+                      </ul>
+                  </div>
+               </div>
+            </div>
+          ) : (
+            <div className="space-y-4 text-left">
+               <h4 className="text-[8px] font-black uppercase tracking-[0.2em] text-white flex items-center gap-2 px-1">
+                 <Zap size={10} /> Core Expertise
+               </h4>
+               <div className="space-y-3 px-1">
+                  {profile.tags.slice(0, 3).map((tag, i) => (
+                    <div key={tag} className="space-y-1.5">
+                      <div className="flex justify-between text-[7px] font-black uppercase tracking-widest">
+                        <span className="text-white/60">{tag}</span>
+                        <span className="text-primary">Mastery</span>
+                      </div>
+                      <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${95 - i * 5}%` }}
+                          className="h-full bg-primary/40 rounded-full"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mt-4 p-3 bg-white/[0.03] border border-white/5 rounded-2xl space-y-2 shadow-inner min-h-[90px]">
+                    <div className="flex justify-between items-center">
+                       <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest">Professional History</span>
+                       <Briefcase size={10} className="text-blue-400" />
+                    </div>
+                    <p className="text-[8px] text-white/60 font-medium leading-relaxed line-clamp-4 italic">
+                      {profile.work || "Proven track record in high-growth environments, bringing specialized knowledge to the co-founding team."}
+                    </p>
+                  </div>
+               </div>
+            </div>
+          )}
         </div>
 
         {/* Footer Info */}
