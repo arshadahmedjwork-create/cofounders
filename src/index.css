@@ -44,9 +44,10 @@
 
     --institutional-cream: 37 32% 94%;  /* Cream #F5F1EB */
 
-    --font-display: 'Cormorant Garamond', serif;
-    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-display: 'Playfair Display', 'Baskerville', serif;
+    --font-body: 'Montserrat', 'Open Sans', 'Roboto', sans-serif;
     --font-accent: 'Lora', serif;
+    --font-script: 'Great Vibes', 'Pinyon Script', 'Allura', cursive;
 
     --sidebar-background: 232 62% 12%;
     --sidebar-foreground: 231 29% 93%;
@@ -84,6 +85,7 @@
 /* ─── Fonts ─────────────────────────────────────────────────────────────── */
 .font-display { font-family: var(--font-display); }
 .font-accent  { font-family: var(--font-accent); }
+.font-script  { font-family: var(--font-script); }
 
 /* ─── Animated background gradient ─────────────────────────────────────── */
 @keyframes gradient-shift {

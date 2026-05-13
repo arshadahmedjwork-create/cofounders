@@ -29,13 +29,15 @@ export default function Index() {
       style={{ background: "hsl(232, 62%, 12%)" }}
     >
       <Navbar />
-      <HeroSection />
-      <div className="hidden md:block">
-        <ProfilesPreview />
-      </div>
+      <main id="main-content">
+        <HeroSection />
+        <div className="hidden md:block">
+          <ProfilesPreview />
+        </div>
 
-      <TestimonialsSection />
-      <PricingSection />
+        <TestimonialsSection />
+        <PricingSection />
+      </main>
       <Footer />
     </div>
   );
