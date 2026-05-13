@@ -76,10 +76,10 @@ export default function Navbar() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
         style={scrolled ? {
-          background: "hsl(222, 30%, 7%, 0.88)",
+          background: "hsl(232, 62%, 12%, 0.88)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid hsl(222, 22%, 16%)",
+          borderBottom: "1px solid hsl(232, 39%, 20%)",
           paddingTop: "0.5rem",
           paddingBottom: "0.5rem",
         } : {
@@ -100,11 +100,11 @@ export default function Navbar() {
             }}
           >
             <img
-              src="/logo-symbol.png"
+              src="/new_logo.png"
               alt="Cofounder Matrimony Logo"
               className="h-10 lg:h-12 w-auto object-contain"
             />
-            <span className="font-accent text-xl font-semibold" style={{ color: "hsl(218, 22%, 94%)" }}>
+            <span className="font-accent text-xl font-semibold" style={{ color: "hsl(231, 29%, 93%)" }}>
               Cofounder Matrimony
             </span>
           </Link>
@@ -122,7 +122,7 @@ export default function Navbar() {
                     key={link.label}
                     to={link.href}
                     className="text-sm font-medium relative group py-1"
-                    style={{ color: active ? "hsl(262, 75%, 72%)" : "hsl(218, 14%, 62%)" }}
+                    style={{ color: active ? "hsl(252, 100%, 72%)" : "hsl(227, 13%, 65%)" }}
                     onClick={(e) => {
                       if (location.pathname === "/") {
                         e.preventDefault();
@@ -140,7 +140,7 @@ export default function Navbar() {
                       {link.label}
                     </motion.span>
                     <span className="absolute bottom-0 left-0 w-full h-px rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
-                      style={{ background: "hsl(262, 75%, 68%)" }} />
+                      style={{ background: "hsl(252, 100%, 68%)" }} />
                   </Link>
                 );
               }
@@ -150,7 +150,7 @@ export default function Navbar() {
                   key={link.label}
                   to={link.href}
                   className="text-sm font-medium relative group py-1"
-                  style={{ color: active ? "hsl(262, 75%, 72%)" : "hsl(218, 14%, 62%)" }}
+                  style={{ color: active ? "hsl(252, 100%, 72%)" : "hsl(227, 13%, 65%)" }}
                 >
                   <motion.span
                     initial={{ opacity: 0, y: -10 }}
@@ -160,7 +160,7 @@ export default function Navbar() {
                     {link.label}
                   </motion.span>
                   <span className="absolute bottom-0 left-0 w-full h-px rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
-                    style={{ background: "hsl(262, 75%, 68%)" }} />
+                    style={{ background: "hsl(252, 100%, 68%)" }} />
                 </Link>
               );
             })}
@@ -175,9 +175,9 @@ export default function Navbar() {
                   to="/login"
                   className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all inline-block"
                   style={{
-                    background: "hsl(222, 28%, 13%)",
-                    border: "1px solid hsl(222, 22%, 22%)",
-                    color: "hsl(218, 18%, 72%)",
+                    background: "hsl(232, 49%, 14%)",
+                    border: "1px solid hsl(232, 39%, 20%)",
+                    color: "hsl(227, 13%, 65%)",
                   }}
                 >
                   Login
@@ -186,11 +186,11 @@ export default function Navbar() {
             ) : (
               <div className="relative group">
                 <div className="flex items-center gap-3 p-1 pr-4 rounded-full cursor-pointer hover:bg-[hsl(222,28%,14%)] transition-colors relative"
-                  style={{ background: "hsl(222, 28%, 12%)", border: "1px solid hsl(222, 22%, 20%)" }}>
+                  style={{ background: "hsl(232, 49%, 14%)", border: "1px solid hsl(232, 39%, 20%)" }}>
                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-sm">
                     {user.email?.[0].toUpperCase()}
                   </div>
-                  <span className="text-sm font-semibold" style={{ color: "hsl(218, 14%, 56%)" }}>Dashboard</span>
+                  <span className="text-sm font-semibold" style={{ color: "hsl(227, 13%, 65%)" }}>Dashboard</span>
                   
                   {pendingCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4">
@@ -203,9 +203,9 @@ export default function Navbar() {
                 </div>
                 
                 {/* Dropdown Options for Backend Features */}
-                <div className="absolute right-0 mt-2 w-48 rounded-xl shadow-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-[hsl(222,22%,20%)]"
-                  style={{ background: "hsl(222, 30%, 7%)" }}>
-                  <Link to="/browse" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
+                <div className="absolute right-0 mt-2 w-48 rounded-xl shadow-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border border-[hsl(232,39%,20%)]"
+                  style={{ background: "hsl(232, 62%, 12%)" }}>
+                  <Link to="/browse" className="block px-4 py-3 text-sm transition-colors text-[hsl(231,29%,82%)] hover:bg-[hsl(232,49%,16%)]">
                     Find your ideal co-founder
                   </Link>
                   <Link to="/profile" className="block px-4 py-3 text-sm transition-colors text-[hsl(218,18%,82%)] hover:bg-[hsl(222,28%,12%)]">
@@ -235,9 +235,9 @@ export default function Navbar() {
                 to="/assessment"
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all inline-block shadow-lg"
                 style={{
-                  background: "hsl(262, 75%, 60%)",
+                  background: "hsl(252, 100%, 68%)",
                   color: "#fff",
-                  boxShadow: "0 0 16px hsl(262 75% 60% / 0.25)",
+                  boxShadow: "0 0 16px hsl(252 100% 68% / 0.25)",
                 }}
               >
                 Understand your founder DNA
@@ -265,7 +265,7 @@ export default function Navbar() {
             transition={{ duration: 0.5, ease: "easeInOut" }}
             className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 lg:hidden"
             style={{
-              background: "hsl(222, 30%, 7%, 0.97)",
+              background: "hsl(232, 62%, 12%, 0.97)",
               backdropFilter: "blur(24px)",
             }}
           >
@@ -279,7 +279,7 @@ export default function Navbar() {
                   transition={{ delay: 0.15 + i * 0.08, type: "spring" }}
                   onClick={() => setMobileOpen(false)}
                   className="text-2xl font-display font-semibold transition-colors"
-                  style={{ color: "hsl(218, 22%, 88%)" }}
+                  style={{ color: "hsl(231, 29%, 93%)" }}
                 >
                   {link.label}
                 </motion.a>
@@ -306,7 +306,7 @@ export default function Navbar() {
 
               {!user ? (
                 <Link to="/login" onClick={() => setMobileOpen(false)}
-                  className="py-4 rounded-2xl text-lg font-semibold text-center transition-all bg-[hsl(222,28%,14%)] border border-[hsl(222,22%,22%)] text-[hsl(218,18%,76%)]">
+                  className="py-4 rounded-2xl text-lg font-semibold text-center transition-all bg-[hsl(232,49%,14%)] border border-[hsl(232,39%,20%)] text-[hsl(227,13%,76%)]">
                   Access Portal
                 </Link>
               ) : (
@@ -316,7 +316,7 @@ export default function Navbar() {
                 </button>
               )}
               <Link to="/assessment" onClick={() => setMobileOpen(false)}
-                className="py-4 rounded-2xl text-lg font-bold text-center shadow-xl bg-[hsl(262,75%,60%)] text-white">
+                className="py-4 rounded-2xl text-lg font-bold text-center shadow-xl bg-[hsl(252, 100%, 68%)] text-white">
                 Understand your founder DNA
               </Link>
             </motion.div>

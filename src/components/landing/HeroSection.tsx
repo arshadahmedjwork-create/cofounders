@@ -26,12 +26,12 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-[1]" style={{
         background: [
           "linear-gradient(180deg,",
-          "  hsl(222,30%,7%) 0%,",   
-          "  hsl(222,30%,7%,0.45) 12%,",
-          "  hsl(222,30%,7%,0.18) 30%,",
-          "  hsl(222,30%,7%,0.18) 65%,",
-          "  hsl(222,30%,7%,0.70) 82%,",
-          "  hsl(222,30%,7%) 100%)"
+          "  hsl(232, 62%, 12%) 0%,",   
+          "  hsl(232, 62%, 12%, 0.45) 12%,",
+          "  hsl(232, 62%, 12%, 0.18) 30%,",
+          "  hsl(232, 62%, 12%, 0.18) 65%,",
+          "  hsl(232, 62%, 12%, 0.70) 82%,",
+          "  hsl(232, 62%, 12%) 100%)"
         ].join("")
       }} />
 
@@ -49,7 +49,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15 }}
             className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-[1.1] md:leading-[1.05] mb-6 tracking-tight"
-            style={{ color: "hsl(218, 22%, 96%)" }}
+            style={{ color: "hsl(231, 29%, 93%)" }}
           >
             Find Your Co-Founder.
             <br />
@@ -62,7 +62,7 @@ export default function HeroSection() {
                 exit={{ opacity: 0, y: -20, clipPath: "inset(-20% 0% 100% 0%)" }}
                 transition={{ duration: 0.45, ease: "easeInOut" }}
                 className="font-accent italic inline-block"
-                style={{ color: "hsl(262, 75%, 72%)" }}
+                style={{ color: "hsl(252, 100%, 72%)" }}
               >
                 {WORDS[wordIdx]}.
               </motion.span>
@@ -75,7 +75,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="text-sm md:text-lg max-w-2xl mx-auto mb-10 px-4 md:px-0"
-            style={{ color: "hsl(218, 14%, 62%)" }}
+            style={{ color: "hsl(227, 13%, 65%)" }}
           >
             Where visionary founders, brilliant freelancers, and seasoned operators
             connect to build the next great company — powered by AI psychographic matching.
@@ -90,10 +90,10 @@ export default function HeroSection() {
           >
             <Link to="/onboarding">
               <motion.button
-                whileHover={{ scale: 1.04, boxShadow: "0 0 36px hsl(262 75% 68% / 0.4)" }}
+                whileHover={{ scale: 1.04, boxShadow: "0 0 36px hsl(252 100% 68% / 0.4)" }}
                 whileTap={{ scale: 0.96 }}
                 className="group relative h-14 px-9 rounded-full font-bold flex items-center gap-3 overflow-hidden text-sm shadow-xl"
-                style={{ background: "hsl(262, 75%, 60%)", color: "#fff" }}
+                style={{ background: "hsl(252, 100%, 68%)", color: "#fff" }}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 Understand your founder DNA
@@ -107,9 +107,9 @@ export default function HeroSection() {
                 whileTap={{ scale: 0.96 }}
                 className="h-14 px-9 rounded-full font-bold flex items-center gap-3 text-sm transition-all"
                 style={{
-                  background: "hsl(222, 28%, 12%)",
-                  border: "1px solid hsl(222, 22%, 22%)",
-                  color: "hsl(218, 18%, 78%)",
+                  background: "hsl(232, 49%, 14%)",
+                  border: "1px solid hsl(232, 39%, 20%)",
+                  color: "hsl(227, 13%, 78%)",
                 }}
               >
                 Find your ideal co-founder

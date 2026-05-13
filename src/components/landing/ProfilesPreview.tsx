@@ -57,7 +57,7 @@ export default function ProfilesPreview() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-4"
             style={{ color: "hsl(218, 22%, 94%)" }}>
             Meet Your Future{" "}
-            <span className="font-accent italic" style={{ color: "hsl(262, 75%, 72%)" }}>
+            <span className="font-accent italic" style={{ color: "hsl(252, 100%, 72%)" }}>
               Co-Founders
             </span>
           </h2>
@@ -68,16 +68,16 @@ export default function ProfilesPreview() {
 
         {/* Filter tabs */}
         <div className="flex justify-center mb-10">
-          <div className="flex gap-1 p-1 rounded-xl" style={{ background: "hsl(222, 28%, 10%)", border: "1px solid hsl(222, 22%, 16%)" }}>
+          <div className="flex gap-1 p-1 rounded-xl" style={{ background: "hsl(232, 49%, 14%)", border: "1px solid hsl(232, 39%, 16%)" }}>
             {filters.map((f) => (
               <motion.button
                 key={f}
                 onClick={() => setActive(f)}
                 className="px-5 py-2 rounded-lg text-sm font-semibold transition-all relative"
                 style={active === f ? {
-                  background: "hsl(262, 75%, 60%)",
+                  background: "hsl(252, 100%, 68%)",
                   color: "#fff",
-                  boxShadow: "0 0 16px hsl(262 75% 60% / 0.3)",
+                  boxShadow: "0 0 16px hsl(252 100% 68% / 0.3)",
                 } : {
                   color: "hsl(218, 14%, 52%)",
                   background: "transparent",
@@ -125,7 +125,7 @@ export default function ProfilesPreview() {
               whileHover={{ scale: 1.04, boxShadow: "0 0 28px hsl(262 75% 68% / 0.35)" }}
               whileTap={{ scale: 0.96 }}
               className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full text-sm font-bold shadow-lg transition-all"
-              style={{ background: "hsl(262, 75%, 60%)", color: "#fff" }}
+              style={{ background: "hsl(252, 100%, 68%)", color: "#fff" }}
             >
               View All Profiles
               <ChevronRight size={16} />

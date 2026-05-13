@@ -147,17 +147,27 @@ export const getProfileById = async (userId: string): Promise<Profile | null> =>
 };
 
 export const getProfiles = async (): Promise<Profile[]> => {
-  const { data, error } = await supabase
+  const { data: profiles, error: profileError } = await supabase
     .from("user_profiles")
     .select("*");
 
-  if (error) {
-    console.error("Error fetching profiles:", error);
+  if (profileError) {
+    console.error("Error fetching profiles:", profileError);
     return [];
   }
 
+  const { data: assessments, error: assessmentError } = await supabase
+    .from("assessments")
+    .select("user_email");
+
+  if (assessmentError) {
+    console.error("Error fetching assessments:", assessmentError);
+  }
+
+  const assessmentEmails = new Set((assessments || []).map(a => a.user_email));
+
   // Map DB structure back to UI Profile interface
-  const dbProfiles = (data || []).map((row: any) => ({
+  const dbProfiles = (profiles || []).map((row: any) => ({
     id: row.id,
     name: `${row.first_name || ''} ${row.last_name || ''}`.trim() || 'Anonymous User',
     role: row.role || 'Founder',
@@ -204,8 +214,11 @@ export const getProfiles = async (): Promise<Profile[]> => {
     compAmbition: row.comp_ambition,
     journeyStage: row.journey_stage,
     tractionDetails: row.traction_details || [],
-    hasTakenSynapse: true, // FORCE TRUE FOR TESTING
+    hasTakenSynapse: assessmentEmails.has(row.email),
   }));
 
-  return [...DEMO_PROFILES, ...dbProfiles];
+  // Ensure demo profiles also "have taken" the test for UI purposes
+  const validatedDemoProfiles = DEMO_PROFILES.map(p => ({ ...p, hasTakenSynapse: true }));
+
+  return [...validatedDemoProfiles, ...dbProfiles];
 };

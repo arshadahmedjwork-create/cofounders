@@ -38,7 +38,7 @@ export default function Login() {
         initial={{ opacity: 0, x: -60 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
-        className="hidden lg:flex lg:w-[45%] relative overflow-hidden bg-secondary"
+        className="hidden lg:flex lg:w-[45%] relative overflow-hidden bg-[hsl(232,49%,14%)]"
       >
         {/* Animated background shapes */}
         <div className="absolute inset-0">

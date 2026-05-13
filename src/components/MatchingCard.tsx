@@ -149,7 +149,7 @@ export const MatchingCard = ({
             </div>
             <div className="space-y-0.5 pt-0.5 text-left">
               <div className="flex items-center gap-1.5">
-                <h2 className="text-xl font-bold tracking-tight line-clamp-1">{profile.name}</h2>
+                <h2 className="text-xl font-bold tracking-tight line-clamp-1 max-w-[120px] sm:max-w-[180px]">{profile.name}</h2>
                 <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center shrink-0 shadow-sm">
                   <CheckCircle2 size={10} className="text-white" strokeWidth={3} />
                 </div>
@@ -158,8 +158,8 @@ export const MatchingCard = ({
                 <MapPin size={10} className="text-primary" /> <span className="text-white/80">{profile.location}</span>
               </div>
               <div className="flex gap-1.5 mt-2">
-                <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md text-[8px] font-black uppercase tracking-widest border border-primary/20">{profile.role}</span>
-                <span className="px-2 py-0.5 bg-white/5 text-white/60 rounded-md text-[8px] font-black uppercase tracking-widest border border-white/5">{profile.domain}</span>
+                <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md text-[8px] font-black uppercase tracking-widest border border-primary/20 whitespace-nowrap">{profile.role}</span>
+                <span className="px-2 py-0.5 bg-white/5 text-white/60 rounded-md text-[8px] font-black uppercase tracking-widest border border-white/5 whitespace-nowrap">{profile.domain}</span>
               </div>
             </div>
           </div>
@@ -174,10 +174,10 @@ export const MatchingCard = ({
 
         {/* Pitch / Quote */}
         <div className="mb-4 z-10 px-1 text-left">
-           <h3 className="text-lg font-medium leading-tight italic text-white">
+           <h3 className="text-lg font-medium leading-tight italic text-white line-clamp-2">
              "{profile.bio?.split('.')[0] || "Innovation is our middle name"}."
            </h3>
-           <p className="text-[10px] text-white/70 mt-2 font-medium leading-snug">
+           <p className="text-[10px] text-white/70 mt-2 font-medium leading-snug line-clamp-3">
              {profile.lookingFor}
            </p>
         </div>
@@ -252,16 +252,16 @@ export const MatchingCard = ({
                      <span className="text-[8px] font-black text-primary uppercase tracking-widest">{profile.journeyStage || 'Traction'}</span>
                      <TrendingUp size={10} className="text-primary" />
                    </div>
-                   <ul className="text-[8px] text-white/60 space-y-1 font-medium leading-tight">
-                      {(profile.tractionDetails && profile.tractionDetails.length > 0 && profile.tractionDetails[0]) ? profile.tractionDetails.map((detail, idx) => (
-                        detail && <li key={idx} className="flex items-start gap-1 text-white/80">• <span>{detail}</span></li>
-                      )) : (
-                        <>
-                          <li className="flex items-start gap-1">• <span>Early feedback positive</span></li>
-                          <li className="flex items-start gap-1">• <span>MVP in development</span></li>
-                        </>
-                      )}
-                   </ul>
+                    <ul className="text-[8px] text-white/60 space-y-1 font-medium leading-tight max-h-[80px] overflow-hidden">
+                       {(profile.tractionDetails && profile.tractionDetails.length > 0 && profile.tractionDetails[0]) ? profile.tractionDetails.slice(0, 3).map((detail, idx) => (
+                         detail && <li key={idx} className="flex items-start gap-1 text-white/80 line-clamp-1">• <span>{detail}</span></li>
+                       )) : (
+                         <>
+                           <li className="flex items-start gap-1 text-white/80">• <span>Early feedback positive</span></li>
+                           <li className="flex items-start gap-1 text-white/80">• <span>MVP in development</span></li>
+                         </>
+                       )}
+                    </ul>
                 </div>
              </div>
           </div>

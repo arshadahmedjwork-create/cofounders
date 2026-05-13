@@ -25,7 +25,7 @@ export default function Footer() {
         style={{
           width: "60%",
           background:
-            "linear-gradient(90deg, transparent, hsl(262, 78%, 67%, 0.5), transparent)",
+            "linear-gradient(90deg, transparent, hsl(252, 100%, 68%, 0.5), transparent)",
         }}
       />
 
@@ -35,11 +35,11 @@ export default function Footer() {
           {/* Brand col */}
           <div className="lg:col-span-2">
             <div className="flex items-center mb-4">
-              <img src="/logo.png" alt="Cofounder Matrimony" className="h-40 w-auto object-contain" />
+              <img src="/full_logo.png" alt="Cofounder Matrimony" className="h-40 w-auto object-contain" />
             </div>
             <p
               className="text-sm leading-relaxed max-w-xs mb-6"
-              style={{ color: "hsl(220, 12%, 52%)" }}
+              style={{ color: "hsl(227, 13%, 65%)" }}
             >
               Finding your perfect business cofounder through intelligent,
               AI-powered matchmaking designed for modern professionals.
@@ -52,21 +52,21 @@ export default function Footer() {
                   whileHover={{ scale: 1.18, y: -3 }}
                   className="p-2.5 rounded-xl transition-all"
                   style={{
-                    background: "hsl(228, 28%, 12%)",
-                    border: "1px solid hsl(228, 22%, 20%)",
-                    color: "hsl(220, 12%, 52%)",
+                    background: "hsl(232, 49%, 14%)",
+                    border: "1px solid hsl(232, 39%, 20%)",
+                    color: "hsl(227, 13%, 65%)",
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.color =
-                      "hsl(262, 78%, 72%)";
+                      "hsl(252, 100%, 72%)";
                     (e.currentTarget as HTMLElement).style.borderColor =
-                      "hsl(262, 78%, 40%)";
+                      "hsl(252, 100%, 40%)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLElement).style.color =
-                      "hsl(220, 12%, 52%)";
+                      "hsl(227, 13%, 65%)";
                     (e.currentTarget as HTMLElement).style.borderColor =
-                      "hsl(228, 22%, 20%)";
+                      "hsl(232, 39%, 20%)";
                   }}
                   aria-label="Social link"
                 >
@@ -81,7 +81,7 @@ export default function Footer() {
             <div key={title}>
               <h4
                 className="text-xs font-bold tracking-widest uppercase mb-5"
-                style={{ color: "hsl(220, 18%, 70%)" }}
+                style={{ color: "hsl(227, 13%, 70%)" }}
               >
                 {title}
               </h4>
@@ -91,14 +91,14 @@ export default function Footer() {
                     <a
                       href="#"
                       className="text-sm transition-colors duration-200"
-                      style={{ color: "hsl(220, 12%, 45%)" }}
+                      style={{ color: "hsl(227, 13%, 45%)" }}
                       onMouseEnter={(e) => {
                         (e.currentTarget as HTMLElement).style.color =
-                          "hsl(262, 78%, 72%)";
+                          "hsl(252, 100%, 72%)";
                       }}
                       onMouseLeave={(e) => {
                         (e.currentTarget as HTMLElement).style.color =
-                          "hsl(220, 12%, 45%)";
+                          "hsl(227, 13%, 45%)";
                       }}
                     >
                       {item}
@@ -114,21 +114,21 @@ export default function Footer() {
         <div
           className="rounded-2xl p-7 mb-10"
           style={{
-            background: "hsl(228, 28%, 11%)",
-            border: "1px solid hsl(228, 22%, 18%)",
+            background: "hsl(232, 49%, 14%)",
+            border: "1px solid hsl(232, 39%, 20%)",
           }}
         >
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div className="flex-1">
               <h3
                 className="text-base font-semibold mb-1"
-                style={{ color: "hsl(220, 18%, 90%)" }}
+                style={{ color: "hsl(231, 29%, 90%)" }}
               >
                 Stay in the loop
               </h3>
               <p
                 className="text-sm"
-                style={{ color: "hsl(220, 12%, 50%)" }}
+                style={{ color: "hsl(227, 13%, 50%)" }}
               >
                 Get the latest on founder stories, platform updates, and curated matching insights.
               </p>
@@ -139,23 +139,23 @@ export default function Footer() {
                 placeholder="your@email.com"
                 className="flex-1 text-sm rounded-xl px-4 py-3 outline-none focus:ring-2 transition-all"
                 style={{
-                  background: "hsl(228, 28%, 8%)",
-                  border: "1px solid hsl(228, 22%, 22%)",
-                  color: "hsl(220, 18%, 88%)",
+                  background: "hsl(232, 62%, 8%)",
+                  border: "1px solid hsl(232, 39%, 22%)",
+                  color: "hsl(231, 29%, 88%)",
                   // @ts-ignore
-                  "--tw-ring-color": "hsl(262, 78%, 40%)",
+                  "--tw-ring-color": "hsl(252, 100%, 40%)",
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "hsl(262, 78%, 50%)";
+                  e.currentTarget.style.borderColor = "hsl(252, 100%, 50%)";
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "hsl(228, 22%, 22%)";
+                  e.currentTarget.style.borderColor = "hsl(232, 39%, 22%)";
                 }}
               />
               <motion.button
                 whileHover={{
                   scale: 1.04,
-                  boxShadow: "0 0 20px hsl(262, 78%, 50%, 0.3)",
+                  boxShadow: "0 0 20px hsl(252, 100%, 50%, 0.3)",
                 }}
                 whileTap={{ scale: 0.97 }}
                 className="bg-primary text-primary-foreground px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap shadow-lg shadow-primary/20 transition-all"
@@ -169,28 +169,28 @@ export default function Footer() {
         {/* Bottom bar */}
         <div
           className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6"
-          style={{ borderTop: "1px solid hsl(228, 22%, 14%)" }}
+          style={{ borderTop: "1px solid hsl(232, 39%, 14%)" }}
         >
-          <p className="text-xs" style={{ color: "hsl(220, 12%, 36%)" }}>
+          <p className="text-xs" style={{ color: "hsl(227, 13%, 36%)" }}>
             © 2026 CoFounder Matrimony. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
               to="/login"
               className="text-xs transition-colors"
-              style={{ color: "hsl(220, 12%, 36%)" }}
+              style={{ color: "hsl(227, 13%, 36%)" }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.color =
-                  "hsl(262, 78%, 67%)";
+                  "hsl(252, 100%, 67%)";
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLElement).style.color =
-                  "hsl(220, 12%, 36%)";
+                  "hsl(227, 13%, 36%)";
               }}
             >
               Login
             </Link>
-            <p className="text-xs" style={{ color: "hsl(220, 12%, 36%)" }}>
+            <p className="text-xs" style={{ color: "hsl(227, 13%, 36%)" }}>
               Made with ♡ in India 🇮🇳
             </p>
           </div>

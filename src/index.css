@@ -11,52 +11,51 @@
     /* === UNIFIED DARK PALETTE ================================================
        One base. Sections differ by atmospheric depth, not bg color.
     ======================================================================== */
-    --background: 222 30% 7%;          /* Page base — near-black indigo     */
-    --foreground: 218 22% 92%;         /* Near-white copy                    */
+    /* === NEW NAVY PALETTE ================================================ */
+    --background: 232 62% 12%;         /* Deep Space Navy #0B0F2F */
+    --foreground: 231 29% 93%;         /* Primary Text #E6E8F2 */
 
-    --card: 222 28% 10%;               /* Cards — barely lifted from base    */
-    --card-foreground: 218 22% 92%;
+    --card: 232 49% 14%;               /* Surface Navy #121735 */
+    --card-foreground: 231 29% 93%;
 
-    --popover: 222 28% 10%;
-    --popover-foreground: 218 22% 92%;
+    --popover: 232 49% 14%;            /* Surface Navy #121735 */
+    --popover-foreground: 231 29% 93%;
 
-    --primary: 262 75% 68%;            /* Vibrant violet                     */
+    --primary: 252 100% 68%;           /* Violet Primary #7C5CFF */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 222 26% 14%;          /* Slightly lighter than bg           */
-    --secondary-foreground: 218 18% 78%;
+    --secondary: 232 49% 14%;          /* Surface Navy #121735 */
+    --secondary-foreground: 227 13% 65%; /* Muted Text #9AA0B3 */
 
-    --muted: 222 24% 13%;
-    --muted-foreground: 218 14% 54%;
+    --muted: 232 49% 14%;              /* Surface Navy #121735 */
+    --muted-foreground: 227 13% 65%;   /* Muted Text #9AA0B3 */
 
-    --accent: 42 85% 60%;              /* Gold — accent only, never bg       */
-    --accent-foreground: 222 30% 7%;
+    --accent: 252 100% 68%;            /* Violet Primary #7C5CFF */
+    --accent-foreground: 232 62% 12%;
 
-    --destructive: 0 62% 40%;
-    --destructive-foreground: 218 22% 92%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 222 22% 18%;
-    --input: 222 22% 18%;
-    --ring: 262 75% 68%;
-
-    --gold: 42 85% 60%;
-    --teal: 174 52% 52%;
-    --navy: 218 22% 88%;
+    --border: 232 39% 20%;             /* Border #1F2547 */
+    --input: 232 39% 20%;              /* Border #1F2547 */
+    --ring: 252 100% 68%;              /* Violet Primary #7C5CFF */
 
     --radius: 0.875rem;
+
+    --institutional-cream: 37 32% 94%;  /* Cream #F5F1EB */
 
     --font-display: 'Cormorant Garamond', serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
     --font-accent: 'Lora', serif;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 232 62% 12%;
+    --sidebar-foreground: 231 29% 93%;
+    --sidebar-primary: 252 100% 68%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 232 49% 14%;
+    --sidebar-accent-foreground: 231 29% 93%;
+    --sidebar-border: 232 39% 20%;
+    --sidebar-ring: 252 100% 68%;
   }
 }
 
@@ -93,12 +92,12 @@
 }
 .gradient-mesh {
   background: radial-gradient(ellipse 80% 60% at 50% 0%,
-    hsl(262 75% 68% / 0.07) 0%,
+    hsl(252 100% 68% / 0.07) 0%,
     transparent 70%);
 }
 .dark .gradient-mesh {
   background: radial-gradient(ellipse 80% 60% at 50% 0%,
-    hsl(262 75% 68% / 0.08) 0%,
+    hsl(252 100% 68% / 0.08) 0%,
     transparent 70%);
 }
 
@@ -110,7 +109,7 @@
   filter: blur(80px);
   opacity: 0.12;
 }
-.atmo-orb-purple { background: hsl(262 75% 68%); }
+.atmo-orb-purple { background: hsl(252 100% 68%); }
 .atmo-orb-teal   { background: hsl(174 52% 52%); }
 .atmo-orb-gold   { background: hsl(42 85% 60%); }
 
@@ -188,8 +187,8 @@
 @keyframes spin-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); }   }
 @keyframes float        { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @keyframes pulse-glow   {
-  0%,100% { box-shadow: 0 0 8px hsl(262 75% 68% / 0.2); }
-  50%     { box-shadow: 0 0 28px hsl(262 75% 68% / 0.45); }
+  0%,100% { box-shadow: 0 0 8px hsl(252 100% 68% / 0.2); }
+  50%     { box-shadow: 0 0 28px hsl(252 100% 68% / 0.45); }
 }
 @keyframes shimmer {
   0%   { background-position: -200% center; }

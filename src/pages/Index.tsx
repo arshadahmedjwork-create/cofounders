@@ -26,7 +26,7 @@ export default function Index() {
     // Single unified dark base — sections use atmospheric depth, not alternating BGs
     <div
       className="min-h-screen"
-      style={{ background: "hsl(222, 30%, 7%)" }}
+      style={{ background: "hsl(232, 62%, 12%)" }}
     >
       <Navbar />
       <HeroSection />

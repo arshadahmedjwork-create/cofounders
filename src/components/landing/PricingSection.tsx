@@ -33,7 +33,7 @@ const tiers = [
     ],
     cta: "Get Started",
     popular: true,
-    accent: "hsl(262, 75%, 68%)",
+    accent: "hsl(252, 100%, 68%)",
   },
   {
     name: "Founder Pro",
@@ -75,7 +75,7 @@ export default function PricingSection() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-8"
             style={{ color: "hsl(218, 22%, 94%)" }}>
             Simple,{" "}
-            <span className="font-accent italic" style={{ color: "hsl(262, 75%, 72%)" }}>
+            <span className="font-accent italic" style={{ color: "hsl(252, 100%, 72%)" }}>
               Transparent
             </span>{" "}
             Pricing
@@ -83,7 +83,7 @@ export default function PricingSection() {
 
           {/* Toggle */}
           <div className="inline-flex items-center gap-1 p-1 rounded-xl relative z-20"
-            style={{ background: "hsl(222, 28%, 10%)", border: "1px solid hsl(222, 22%, 18%)" }}>
+            style={{ background: "hsl(232, 49%, 14%)", border: "1px solid hsl(232, 39%, 20%)" }}>
             {["Monthly", "Yearly"].map((label) => {
               const isYearly = label === "Yearly";
               const active = isYearly ? yearly : !yearly;
@@ -94,9 +94,9 @@ export default function PricingSection() {
                   onClick={() => setYearly(isYearly)}
                   className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer select-none"
                   style={active ? {
-                    background: "hsl(262, 75%, 60%)",
+                    background: "hsl(252, 100%, 68%)",
                     color: "#fff",
-                    boxShadow: "0 0 16px hsl(262 75% 60% / 0.3)",
+                    boxShadow: "0 0 16px hsl(252 100% 68% / 0.3)",
                   } : {
                     color: "hsl(218, 14%, 52%)",
                   }}
@@ -125,12 +125,12 @@ export default function PricingSection() {
               whileHover={{ y: -8 }}
               className="rounded-2xl p-7 flex flex-col relative cursor-default"
               style={tier.popular ? {
-                background: "hsl(222, 28%, 11%)",
+                background: "hsl(232, 49%, 14%)",
                 border: `1px solid ${tier.accent}44`,
                 boxShadow: `0 0 0 1px ${tier.accent}22, 0 24px 60px ${tier.accent}0A`,
               } : {
-                background: "hsl(222, 28%, 10%)",
-                border: "1px solid hsl(222, 22%, 17%)",
+                background: "hsl(232, 49%, 14%)",
+                border: "1px solid hsl(232, 39%, 17%)",
               }}
             >
               {/* Glow top for popular */}
@@ -148,7 +148,7 @@ export default function PricingSection() {
                   className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider"
                   style={{ 
                     background: tier.accent, 
-                    color: "hsl(222, 30%, 7%)",
+                    color: "hsl(232, 62%, 12%)",
                     boxShadow: `0 0 16px ${tier.accent}66`
                   }}
                 >
@@ -211,12 +211,12 @@ export default function PricingSection() {
                 className="w-full py-3.5 rounded-xl text-sm font-bold transition-all"
                 style={tier.popular ? {
                   background: tier.accent,
-                  color: "hsl(222, 30%, 7%)",
+                  color: "hsl(232, 62%, 12%)",
                   boxShadow: `0 0 16px ${tier.accent}30`,
                 } : {
-                  background: "hsl(222, 28%, 14%)",
-                  border: "1px solid hsl(222, 22%, 22%)",
-                  color: "hsl(218, 18%, 72%)",
+                  background: "hsl(232, 49%, 14%)",
+                  border: "1px solid hsl(232, 39%, 22%)",
+                  color: "hsl(227, 13%, 72%)",
                 }}
               >
                 {tier.cta}

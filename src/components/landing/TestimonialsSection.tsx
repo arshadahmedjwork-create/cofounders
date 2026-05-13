@@ -11,7 +11,7 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
     quote: "Found my technical co-founder within 3 weeks. The PsycheMap™ assessment was eerily accurate — we've barely had a single major disagreement in 18 months.",
     raised: "₹4.2Cr",
     rating: 5,
-    avatarColor: "hsl(262, 75%, 55%)",
+    avatarColor: "hsl(252, 100%, 68%)",
   },
   {
     id: "2",
@@ -83,7 +83,7 @@ export default function TestimonialsSection() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold"
             style={{ color: "hsl(218, 22%, 94%)" }}>
             Built Together,{" "}
-            <span className="font-accent italic" style={{ color: "hsl(262, 75%, 72%)" }}>
+            <span className="font-accent italic" style={{ color: "hsl(252, 100%, 72%)" }}>
               Thriving Together
             </span>
           </h2>
@@ -115,9 +115,9 @@ export default function TestimonialsSection() {
                 style={{
                   [side]: 0,
                   transform: `translateY(-50%) translateX(${side === "left" ? "-120%" : "120%"})`,
-                  background: "hsl(222, 28%, 12%)",
-                  border: "1px solid hsl(222, 22%, 20%)",
-                  color: "hsl(218, 14%, 62%)",
+                  background: "hsl(232, 49%, 14%)",
+                  border: "1px solid hsl(232, 39%, 20%)",
+                  color: "hsl(227, 13%, 65%)",
                 }}
               >
                 <Icon size={18} />
@@ -137,13 +137,13 @@ export default function TestimonialsSection() {
                   transition={{ duration: 0.35, ease: "easeInOut" }}
                   className="w-full rounded-2xl p-10 text-center relative"
                   style={{
-                    background: "hsl(222, 28%, 10%)",
-                    border: "1px solid hsl(222, 22%, 18%)",
+                    background: "hsl(232, 49%, 14%)",
+                    border: "1px solid hsl(232, 39%, 18%)",
                   }}
                 >
                   {/* Quote icon */}
                   <div className="absolute top-8 left-10 opacity-60">
-                    <Quote size={40} style={{ color: "hsl(262, 75%, 72%)" }} />
+                    <Quote size={40} style={{ color: "hsl(252, 100%, 72%)" }} />
                   </div>
 
                   {/* Avatar */}
@@ -196,7 +196,7 @@ export default function TestimonialsSection() {
                   onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
                   animate={{ width: i === current ? 24 : 8, opacity: i === current ? 1 : 0.35 }}
                   className="h-2 rounded-full transition-colors"
-                  style={{ background: "hsl(262, 75%, 68%)" }}
+                  style={{ background: "hsl(252, 100%, 68%)" }}
                   aria-label={`Testimonial ${i + 1}`}
                 />
               ))}

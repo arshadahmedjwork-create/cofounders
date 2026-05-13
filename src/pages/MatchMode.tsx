@@ -47,7 +47,7 @@ export default function MatchMode() {
 
   if (loadingProfile || loadingProfiles) {
     return (
-      <div className="min-h-screen bg-[#020408] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0B0F2F] flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
             <div className="w-16 h-16 border-4 border-primary/20 rounded-full" />
@@ -63,7 +63,7 @@ export default function MatchMode() {
 
   if (isProfileIncomplete) {
     return (
-      <div className="min-h-screen bg-[#020408] text-white flex flex-col items-center justify-center p-8 text-center">
+      <div className="min-h-screen bg-[#0B0F2F] text-white flex flex-col items-center justify-center p-8 text-center">
         <Navbar />
         <div className="max-w-md space-y-8">
            <div className="w-24 h-24 bg-primary/10 rounded-[2rem] flex items-center justify-center mx-auto shadow-2xl">
@@ -97,11 +97,11 @@ export default function MatchMode() {
   const isOutOfCards = currentIndex >= filteredProfiles.length;
 
   return (
-    <div className="min-h-screen bg-[#020408] text-foreground overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-[#0B0F2F] text-foreground overflow-hidden flex flex-col">
       {/* Custom Match Header */}
       <div className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between bg-gradient-to-b from-black/50 to-transparent">
         <div className="flex items-center gap-3">
-           <img src="/logo-symbol.png" alt="Logo" className="w-8 h-8 object-contain" />
+           <img src="/new_logo.png" alt="Logo" className="w-8 h-8 object-contain" />
            <span className="font-accent text-lg font-bold text-white/90">Cofounder Matrimony</span>
         </div>
         <div className="flex items-center gap-4">
@@ -133,12 +133,24 @@ export default function MatchMode() {
                 </div>
                 <h2 className="text-2xl font-display font-bold mb-2">That's everyone!</h2>
                 <p className="text-muted-foreground text-sm mb-8">You've seen all potential co-founders for now. Check back later for new talent.</p>
-                <button 
-                  onClick={() => window.location.href = '/browse'}
-                  className="px-8 py-3 bg-primary text-primary-foreground rounded-2xl font-bold"
-                >
-                  Return to Browse
-                </button>
+                <div className="flex flex-col gap-3 w-full">
+                  <button 
+                    onClick={() => {
+                      setCurrentIndex(0);
+                      setHistory([]);
+                      toast.success("Profiles reset! Start swiping again. 🔄");
+                    }}
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
+                  >
+                    Repeat Profiles
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/browse'}
+                    className="w-full py-4 bg-white/5 text-white/60 rounded-2xl font-bold border border-white/10 hover:bg-white/10 transition-all"
+                  >
+                    Return to Browse
+                  </button>
+                </div>
               </motion.div>
             ) : (
               filteredProfiles.slice(currentIndex, currentIndex + 3).reverse().map((profile, i, arr) => {
