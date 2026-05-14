@@ -37,8 +37,8 @@ const aspirantGoals = ["Explore", "Build seriously", "Join early startup", "Long
 const workStyles = ["Execute fast", "Think first", "Work with users", "Hands-on builder", "Experiment", "Structured"];
 const survivalTimes = ["<1 month", "1–3 months", "3–6 months", "6+ months"];
 
-const lookingForOptions = ["Co-founder", "Technical Partner", "Business Partner", "Advisor", "Investor"];
-const aspirantLookingForOptions = ["Early stage startup", "Founder to build with", "Co-founder role", "Freelance project"];
+const lookingForOptions = ["Co-founder", "CEO", "CTO", "COO", "CPO", "CFO", "Technical Partner", "Business Partner", "Advisor", "Investor"];
+const aspirantLookingForOptions = ["Early stage startup", "Founder to build with", "CEO role", "CTO role", "COO role", "CPO role", "CFO role", "Co-founder role", "Freelance project"];
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -288,9 +288,9 @@ export default function Onboarding() {
                     <div><p className="font-bold">LinkedIn Verified</p><p className="text-xs text-muted-foreground">Your identity is securely synced from LinkedIn.</p></div>
                   </div>
                 ) : (
-                  <div className="relative">
-                    <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-                    <input autoFocus placeholder="linkedin.com/in/username" value={formData.linkedin} onChange={(e) => setFormData({...formData, linkedin: e.target.value})} className="onboarding-input-large pl-12" onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
+                  <div className="relative group">
+                    <Linkedin className="absolute left-1 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={32} />
+                    <input autoFocus placeholder="linkedin.com/in/username" value={formData.linkedin} onChange={(e) => setFormData({...formData, linkedin: e.target.value})} className="onboarding-input-large pl-14" onKeyDown={(e) => e.key === 'Enter' && handleNext()} />
                   </div>
                 )}
               </div>
@@ -389,7 +389,7 @@ export default function Onboarding() {
                   <div className="space-y-8">
                     <h2 className="text-3xl font-display font-bold">About your Startup</h2>
                     <div className="space-y-6">
-                      <div className="relative"><Building className="absolute left-0 top-1/2 -translate-y-1/2 text-primary" size={24} /><input autoFocus placeholder="Company Name" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} className="onboarding-input-large pl-10" /></div>
+                      <div className="relative group"><Building className="absolute left-1 top-1/2 -translate-y-1/2 text-primary transition-colors" size={32} /><input autoFocus placeholder="Company Name" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} className="onboarding-input-large pl-14" /></div>
                       <div className="space-y-2"><label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Tell us more</label><textarea placeholder="Describe what you are building..." value={formData.companyDescription} onChange={(e) => setFormData({...formData, companyDescription: e.target.value})} className="w-full bg-card/50 border border-border rounded-2xl p-4 min-h-[120px] focus:outline-none focus:border-primary" /></div>
                     </div>
                   </div>
@@ -574,7 +574,7 @@ export default function Onboarding() {
       </div>
 
       <style>{`
-        .onboarding-input-large { width: 100%; background: transparent; border: none; border-bottom: 2px solid hsl(var(--border)); font-size: 1.5rem; font-weight: 600; padding: 1rem 0; transition: all 0.3s; color: hsl(var(--foreground)); }
+        .onboarding-input-large { width: 100%; background: transparent; border: none; border-bottom: 2px solid hsl(var(--border)); font-size: 1.5rem; font-weight: 600; padding-top: 1rem; padding-bottom: 1rem; transition: all 0.3s; color: hsl(var(--foreground)); }
         .onboarding-input-large:focus { outline: none; border-color: hsl(var(--primary)); }
         @media (min-width: 768px) { .onboarding-input-large { font-size: 2.5rem; } }
       `}</style>
