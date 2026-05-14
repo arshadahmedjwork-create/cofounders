@@ -59,12 +59,17 @@ export default function HeroSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link to="/onboarding">
                 <motion.button
-                  whileHover={{ scale: 1.04, boxShadow: "0 0 40px hsl(252 100% 68% / 0.5)" }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   className="group relative h-16 px-10 rounded-full font-bold flex items-center gap-3 overflow-hidden text-base shadow-2xl bg-primary text-white"
                 >
-                  Find Your Match
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  {/* Pulse Effect */}
+                  <span className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-150 group-hover:opacity-0 transition-all duration-700 pointer-events-none" />
+                  
+                  <span className="relative z-10 flex items-center gap-3">
+                    Find Your Match
+                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  </span>
                 </motion.button>
               </Link>
 

@@ -217,8 +217,5 @@ export const getProfiles = async (): Promise<Profile[]> => {
     hasTakenSynapse: assessmentEmails.has(row.email),
   }));
 
-  // Ensure demo profiles also "have taken" the test for UI purposes
-  const validatedDemoProfiles = DEMO_PROFILES.map(p => ({ ...p, hasTakenSynapse: true }));
-
-  return [...validatedDemoProfiles, ...dbProfiles];
+  return dbProfiles;
 };
