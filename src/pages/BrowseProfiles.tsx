@@ -21,7 +21,7 @@ import { sendConnectionRequest } from "@/services/connectionService";
 import { useEffect } from "react";
 import { calculateMatchScore } from "@/lib/matching";
 
-const roleFilters = ["All", "Founders", "Freelancers", "Operators"];
+const roleFilters = ["All"];
 
 export default function BrowseProfiles() {
   const [search, setSearch] = useState("");
@@ -91,10 +91,7 @@ export default function BrowseProfiles() {
           (p.tags || []).some(t => t?.toLowerCase().includes(s)) || 
           p.domain?.toLowerCase().includes(s);
 
-        const matchesRole = roleFilter === "All" ||
-          (roleFilter === "Founders" && (p.role.toLowerCase().includes("founder") || p.role.toLowerCase().includes("entrepreneur"))) ||
-          (roleFilter === "Freelancers" && p.role.toLowerCase().includes("freelance")) ||
-          (roleFilter === "Operators" && p.role.toLowerCase().includes("operator"));
+        const matchesRole = true;
 
         return matchesSearch && matchesRole;
       })

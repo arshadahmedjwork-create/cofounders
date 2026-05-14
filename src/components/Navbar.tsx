@@ -7,7 +7,6 @@ import { supabase } from "@/lib/supabase";
 
 const navLinks = [
   { label: "Find your ideal co-founder", href: "/browse" },
-  { label: "Success Stories", href: "/#testimonials" },
   { label: "Pricing", href: "/#pricing" },
 ];
 
@@ -100,11 +99,11 @@ export default function Navbar() {
             }}
           >
             <img
-              src="/new_logo.png"
-              alt="Cofounder Matrimony Logo"
-              className="h-10 lg:h-12 w-auto object-contain"
+              src="/cfm_icon_only.png"
+              alt="Cofounder Matrimony Icon"
+              className="h-14 lg:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-110"
             />
-            <span className="font-accent text-xl font-semibold" style={{ color: "hsl(231, 29%, 93%)" }}>
+            <span className="font-accent text-2xl font-bold tracking-tight" style={{ color: "hsl(231, 29%, 93%)" }}>
               Cofounder Matrimony
             </span>
           </Link>

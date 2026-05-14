@@ -6,7 +6,7 @@ import ProfileCard from "@/components/ProfileCard";
 import { Profile } from "@/data/profiles";
 import { getProfiles } from "@/services/profileService";
 
-const filters = ["All", "Founders", "Freelancers", "Operators"];
+const filters = ["All"];
 
 export default function ProfilesPreview() {
   const [active, setActive] = useState("All");
@@ -27,14 +27,7 @@ export default function ProfilesPreview() {
     loadProfiles();
   }, []);
 
-  const filtered = profiles.filter((p) => {
-    if (active === "All") return true;
-    const roleLower = p.role?.toLowerCase() || "";
-    if (active === "Founders") return roleLower.includes("founder") || roleLower.includes("entrepreneur");
-    if (active === "Freelancers") return roleLower.includes("freelance");
-    if (active === "Operators") return roleLower.includes("operator");
-    return true;
-  });
+  const filtered = profiles;
 
   // If we have few profiles, show them all. Otherwise limit to 6 for the preview grid.
   const displayProfiles = filtered.length <= 8 ? filtered : filtered.slice(0, 6);
@@ -53,16 +46,14 @@ export default function ProfilesPreview() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <p className="section-label justify-center mb-3">The Community</p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-4"
+          <p className="section-label justify-center mb-3">Discovery</p>
+          <h2 className="text-4xl md:text-5xl font-display font-bold mb-4"
             style={{ color: "hsl(218, 22%, 94%)" }}>
-            Meet Your Future{" "}
-            <span className="font-accent italic" style={{ color: "hsl(252, 100%, 72%)" }}>
-              Co-Founders
-            </span>
+            Browse Top{" "}
+            <span className="text-primary italic">Matches</span>
           </h2>
-          <p className="text-sm max-w-xl mx-auto" style={{ color: "hsl(218, 14%, 54%)" }}>
-            Real people. Real ambitions. Browse verified founder profiles and find your perfect match.
+          <p className="text-sm max-w-xl mx-auto text-slate-500">
+            “Every great founder needs the right counterpart.”
           </p>
         </motion.div>
 
